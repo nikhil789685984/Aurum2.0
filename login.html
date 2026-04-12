@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURUM Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#F6F1E7;
+  --paper:#FFFDF9;
+  --gold:#C9A84C;
+  --gold2:#E8C97A;
+  --ink:#1A1612;
+  --ink-soft:#3A322A;
+  --stone:#7A6F62;
+  --line:rgba(26,22,18,.14);
+  --ok:#1E6A3A;
+  --err:#8F1F1F;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;
+  font-family:'Manrope',sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1100px 700px at -10% -10%, #fff7e3 0%, transparent 55%),
+    radial-gradient(900px 650px at 110% 110%, #f0dfbe 0%, transparent 58%),
+    linear-gradient(145deg,#f7f2e9 0%,#f2e8d8 50%,#efe3cf 100%);
+  display:grid;
+  place-items:center;
+  padding:28px;
+  animation:pageFade .6s ease;
+}
+
+.glow{
+  position:fixed;
+  width:280px;
+  height:280px;
+  border-radius:50%;
+  filter:blur(60px);
+  opacity:.32;
+  pointer-events:none;
+}
+.g1{background:#f3d289;top:5%;left:8%;animation:drift 11s ease-in-out infinite}
+.g2{background:#d7b06d;bottom:8%;right:6%;animation:drift 13s ease-in-out infinite reverse}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(24px,-18px)}}
+
+.shell{
+  width:min(940px,100%);
+  background:rgba(255,255,255,.55);
+  border:1px solid rgba(201,168,76,.45);
+  backdrop-filter:blur(12px);
+  box-shadow:0 34px 85px rgba(26,22,18,.18);
+  display:grid;
+  grid-template-columns:1fr 1.05fr;
+  overflow:hidden;
+  opacity:0;
+  transform:translateY(16px) scale(.985);
+  animation:shellIn .72s .08s cubic-bezier(.2,.7,.2,1) forwards;
+}
+
+.left{
+  position:relative;
+  padding:44px 40px;
+  background:
+    linear-gradient(165deg,rgba(26,22,18,.86) 0%,rgba(43,34,26,.88) 48%,rgba(24,20,16,.92) 100%),
+    url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80&auto=format&fit=crop') center/cover;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.left::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to top,rgba(26,22,18,.68),transparent 55%);
+  pointer-events:none;
+}
+.left > *{position:relative;z-index:1}
+.brand{font-family:'Playfair Display',serif;font-size:40px;letter-spacing:6px}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--gold2);
+}
+.badge::before{content:'';width:26px;height:1px;background:var(--gold2)}
+.left h2{font-family:'Playfair Display',serif;font-size:48px;font-weight:500;line-height:1.02;margin-top:12px}
+.left p{font-size:14px;line-height:1.8;color:rgba(255,255,255,.74);max-width:290px;margin-top:14px}
+.left-foot{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5)}
+
+.right{
+  background:var(--paper);
+  padding:42px 38px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.kicker{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--stone)}
+.title{font-family:'Playfair Display',serif;font-size:52px;font-weight:500;line-height:.95;margin:14px 0 14px}
+.desc{font-size:14px;line-height:1.8;color:var(--stone);margin-bottom:24px;max-width:420px}
+.field{margin-bottom:14px}
+label{display:block;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);margin-bottom:8px}
+input{
+  width:100%;
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  font-size:15px;
+  padding:14px 16px;
+  outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+input:focus{border-color:rgba(201,168,76,.9);box-shadow:0 0 0 3px rgba(201,168,76,.16)}
+
+.btn{
+  width:100%;
+  border:1px solid var(--gold);
+  background:var(--gold);
+  color:var(--ink);
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  font-weight:600;
+  padding:14px 16px;
+  cursor:pointer;
+  transition:all .25s;
+}
+.btn:hover{background:transparent;transform:translateY(-1px)}
+.btn.secondary{background:transparent}
+.btn.secondary:hover{background:rgba(201,168,76,.08)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.otp-wrap{
+  margin-top:16px;
+  padding-top:0;
+  border-top:1px solid transparent;
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  transition:max-height .35s ease,opacity .35s ease,padding-top .35s ease,border-color .35s ease;
+}
+.otp-wrap.on{max-height:220px;opacity:1;padding-top:16px;border-color:var(--line)}
+.row{display:flex;gap:10px}
+.row .btn{flex:1}
+
+.msg{margin-top:14px;min-height:22px;font-size:13px;line-height:1.5}
+.msg.ok{color:var(--ok)}
+.msg.err{color:var(--err)}
+.back{
+  margin-top:16px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:11px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--stone);
+  text-decoration:none;
+}
+.back:hover{color:var(--gold)}
+.back::before{content:'←'}
+.right .kicker,
+.right .title,
+.right .desc,
+.right .field,
+.right .btn,
+.right .msg,
+.right .back{
+  opacity:0;
+  transform:translateY(10px);
+  animation:riseIn .45s ease forwards;
+}
+.right .kicker{animation-delay:.18s}
+.right .title{animation-delay:.22s}
+.right .desc{animation-delay:.26s}
+.right .field{animation-delay:.3s}
+.right .btn{animation-delay:.34s}
+.right .msg{animation-delay:.38s}
+.right .back{animation-delay:.42s}
+.right .back + .back{animation-delay:.46s}
+
+@keyframes pageFade{from{opacity:0}to{opacity:1}}
+@keyframes shellIn{to{opacity:1;transform:none}}
+@keyframes riseIn{to{opacity:1;transform:none}}
+
+@media(max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .left{padding:34px 28px;min-height:260px}
+  .left h2{font-size:40px}
+  .right{padding:32px 24px}
+  .title{font-size:44px}
+}
+</style>
+</head>
+<body>
+  <div class="glow g1"></div>
+  <div class="glow g2"></div>
+
+  <main class="shell">
+    <section class="left">
+      <div>
+        <div class="brand">AURUM</div>
+        <div class="badge">Guest Access</div>
+        <h2>Private Login<br>With OTP</h2>
+        <p>Use your email to receive a one-time code. Sign in is secure, fast, and expires automatically for protection.</p>
+      </div>
+      <div class="left-foot">Mayfair, London</div>
+    </section>
+
+    <section class="right">
+      <div class="kicker">Secure Login</div>
+      <h1 class="title">Welcome<br>Back</h1>
+      <p class="desc">Enter your email to receive a 6-digit OTP. Code validity: 5 minutes.</p>
+
+      <div class="field">
+        <label for="email">Email Address</label>
+        <input id="email" type="email" placeholder="yourname@gmail.com" autocomplete="email">
+      </div>
+      <button id="sendBtn" class="btn">Send OTP</button>
+
+      <div id="otpWrap" class="otp-wrap">
+        <div class="field">
+          <label for="otp">One-Time Password</label>
+          <input id="otp" type="text" maxlength="6" placeholder="6-digit OTP" inputmode="numeric" autocomplete="one-time-code">
+        </div>
+        <div class="row">
+          <button id="verifyBtn" class="btn">Verify OTP</button>
+          <button id="resendBtn" class="btn secondary" type="button">Resend</button>
+        </div>
+      </div>
+
+      <div id="msg" class="msg"></div>
+      <a class="back" href="signup.html">Create Account</a>
+      <a class="back" href="index.html">Back to Website</a>
+    </section>
+  </main>
+
+<script>
+const emailEl=document.getElementById('email');
+const otpEl=document.getElementById('otp');
+const sendBtn=document.getElementById('sendBtn');
+const verifyBtn=document.getElementById('verifyBtn');
+const resendBtn=document.getElementById('resendBtn');
+const otpWrap=document.getElementById('otpWrap');
+const msg=document.getElementById('msg');
+const DEMO_OTP_PREFIX='aurum_demo_otp_';
+const DEMO_SESSION_KEY='aurum_auth_email';
+
+function showMsg(text,type){
+  msg.textContent=text;
+  msg.className='msg'+(type?(' '+type):'');
+}
+
+function cleanEmail(v){
+  return String(v||'').replace(/\s+/g,'').trim().toLowerCase();
+}
+
+function isApiUnavailableError(err){
+  const txt=String(err&&err.message||'').toLowerCase();
+  return txt.includes('api not found')||txt.includes('failed to fetch')||txt.includes('networkerror')||txt.includes('load failed');
+}
+
+function setLocalSession(email){
+  try{
+    localStorage.setItem(DEMO_SESSION_KEY,email);
+    localStorage.setItem('aurum_auth_ts',String(Date.now()));
+  }catch(_){}
+}
+
+function hasLocalSession(){
+  try{return Boolean(localStorage.getItem(DEMO_SESSION_KEY));}
+  catch(_){return false;}
+}
+
+function saveDemoOtp(email,otp){
+  const rec={otp,expiresAt:Date.now()+5*60*1000};
+  try{localStorage.setItem(DEMO_OTP_PREFIX+email,JSON.stringify(rec));}catch(_){}
+}
+
+function readDemoOtp(email){
+  try{
+    const raw=localStorage.getItem(DEMO_OTP_PREFIX+email);
+    if(!raw) return null;
+    const rec=JSON.parse(raw);
+    if(!rec||Date.now()>Number(rec.expiresAt||0)) return null;
+    return rec;
+  }catch(_){
+    return null;
+  }
+}
+
+async function sendOtp(){
+  const email=cleanEmail(emailEl.value);
+  emailEl.value=email;
+  if(!email){showMsg('Enter your email address.','err');return;}
+  sendBtn.disabled=true;
+  sendBtn.textContent='Sending OTP...';
+  try{
+    const res=await fetch('/api/auth/send-otp',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email})
+    });
+    if(res.status===404){
+      throw new Error('Login API not found. Backend server is not running/deployed.');
+    }
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error(data.error||'Failed to send OTP.');
+    otpWrap.classList.add('on');
+    showMsg('OTP sent. Check your inbox.','ok');
+  }catch(err){
+    if(isApiUnavailableError(err)){
+      const demoOtp=String(Math.floor(100000+Math.random()*900000));
+      saveDemoOtp(email,demoOtp);
+      otpWrap.classList.add('on');
+      showMsg(`Demo mode OTP: ${demoOtp}`,'ok');
+    }else{
+      showMsg(err.message||'Failed to send OTP.','err');
+    }
+  }finally{
+    sendBtn.disabled=false;
+    sendBtn.textContent='Send OTP';
+  }
+}
+
+async function verifyOtp(){
+  const email=cleanEmail(emailEl.value);
+  const otp=String(otpEl.value||'').replace(/\s+/g,'').trim();
+  if(!email||!otp){showMsg('Enter email and OTP.','err');return;}
+  verifyBtn.disabled=true;
+  verifyBtn.textContent='Verifying...';
+  try{
+    const res=await fetch('/api/auth/verify-otp',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email,otp})
+    });
+    if(res.status===404){
+      throw new Error('Login API not found. Backend server is not running/deployed.');
+    }
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error(data.error||'OTP verification failed.');
+    showMsg('Login successful. Redirecting...','ok');
+    setTimeout(()=>{window.location.href='index.html'},900);
+  }catch(err){
+    if(isApiUnavailableError(err)){
+      const rec=readDemoOtp(email);
+      if(!rec||String(rec.otp)!==otp){
+        showMsg('Invalid or expired OTP. Please resend OTP.','err');
+      }else{
+        setLocalSession(email);
+        showMsg('Demo login successful. Redirecting...','ok');
+        setTimeout(()=>{window.location.href='index.html'},900);
+      }
+    }else{
+      showMsg(err.message||'OTP verification failed.','err');
+    }
+  }finally{
+    verifyBtn.disabled=false;
+    verifyBtn.textContent='Verify OTP';
+  }
+}
+
+sendBtn.addEventListener('click',sendOtp);
+resendBtn.addEventListener('click',sendOtp);
+verifyBtn.addEventListener('click',verifyOtp);
+otpEl.addEventListener('keydown',e=>{if(e.key==='Enter')verifyOtp();});
+emailEl.addEventListener('keydown',e=>{if(e.key==='Enter')sendOtp();});
+
+fetch('/api/auth/status')
+  .then(res=>res.json())
+  .then(data=>{
+    if((data&&data.authenticated)||hasLocalSession()) window.location.href='index.html';
+  })
+  .catch(()=>{if(hasLocalSession()) window.location.href='index.html';});
+</script>
+</body>
+</html>

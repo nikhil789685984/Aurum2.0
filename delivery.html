@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURUM Delivery · London</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --cream:#FAF7F2;--warm:#F0E8DA;--gold:#C9A84C;--gold2:#E8C97A;
+  --charcoal:#1A1612;--stone:#7A6F62;--white:#FFFFFF;
+}
+body{font-family:'Manrope',sans-serif;background:radial-gradient(circle at 15% 10%,#fffdf8 0%,var(--cream) 36%,#f3ebdd 100%);color:var(--charcoal);overflow-x:hidden}
+body::before,body::after{content:"";position:fixed;z-index:-1;pointer-events:none;border-radius:50%;filter:blur(3px)}
+body::before{width:520px;height:520px;right:-170px;top:-120px;background:radial-gradient(circle at center,rgba(201,168,76,.24),rgba(201,168,76,0));animation:floatGlowA 16s ease-in-out infinite}
+body::after{width:470px;height:470px;left:-190px;bottom:-120px;background:radial-gradient(circle at center,rgba(26,22,18,.09),rgba(26,22,18,0));animation:floatGlowB 18s ease-in-out infinite}
+
+.topbar{position:sticky;top:0;z-index:1000;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(201,168,76,.2)}
+.topbar-inner{max-width:1500px;margin:0 auto;padding:22px 34px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--charcoal)}
+.brand-word{font-family:'Playfair Display',serif;font-size:36px;letter-spacing:9px;font-weight:300}
+.aurum-symbol{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;flex-shrink:0}
+.aurum-symbol svg{width:100%;height:100%}
+.aurum-symbol .ring{stroke:currentColor;stroke-opacity:.35}
+.aurum-symbol .monogram{stroke:currentColor}
+.aurum-symbol .gem{fill:var(--gold2)}
+.aurum-symbol .dot{fill:var(--gold)}
+.top-links{display:flex;align-items:center;gap:10px}
+.link-btn{font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:13px 19px;border:1px solid rgba(26,22,18,.18);color:var(--stone);transition:all .35s;background:transparent;cursor:pointer}
+.link-btn:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px)}
+.link-btn.gold{border-color:rgba(201,168,76,.75);color:var(--gold)}
+.cart-top-btn{position:relative;padding-right:48px}
+.cart-count{position:absolute;right:14px;top:50%;transform:translateY(-50%);min-width:22px;height:22px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:var(--gold);color:var(--charcoal);font-size:10px;letter-spacing:0;font-weight:600;box-shadow:0 5px 12px rgba(26,22,18,.22)}
+.mini-nav{display:flex;align-items:center;gap:18px}
+.mini-nav a{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);text-decoration:none;transition:color .3s}
+.mini-nav a:hover{color:var(--gold)}
+
+.hero{position:relative;overflow:hidden;padding:140px 32px 110px;min-height:78vh;background:linear-gradient(165deg,var(--charcoal) 0%,#2a221a 58%,#3a2f25 100%)}
+.hero::before,.hero::after{content:"";position:absolute;border-radius:50%;filter:blur(2px)}
+.hero::before{width:520px;height:520px;right:-120px;top:-120px;background:radial-gradient(circle,rgba(232,201,122,.34) 0%,rgba(232,201,122,0) 62%);animation:orbPulse 8s ease-in-out infinite}
+.hero::after{width:600px;height:600px;left:-220px;bottom:-220px;background:radial-gradient(circle,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 68%);animation:orbPulse 9s ease-in-out infinite reverse}
+.hero-inner{max-width:1500px;margin:0 auto;position:relative;z-index:1}
+.kicker{font-size:13px;letter-spacing:5px;text-transform:uppercase;color:var(--gold2);margin-bottom:20px;animation:slideUp .8s ease forwards}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(56px,8.2vw,126px);font-weight:300;line-height:.9;color:var(--white);max-width:980px;animation:slideUp .95s ease forwards}
+.hero p{margin-top:24px;max-width:900px;font-size:20px;line-height:1.95;color:rgba(255,255,255,.77);animation:slideUp 1.1s ease forwards}
+
+.wrap{max-width:1500px;margin:0 auto;padding:0 32px}
+.quick{margin-top:-54px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{background:var(--white);border:1px solid rgba(201,168,76,.28);padding:34px;box-shadow:0 14px 30px rgba(26,22,18,.08);animation:riseCard .8s ease both}
+.card:nth-child(2){animation-delay:.18s}
+.card:nth-child(3){animation-delay:.34s}
+.card h3{font-family:'Playfair Display',serif;font-size:42px;font-weight:400;color:var(--charcoal)}
+.card p{margin-top:14px;color:var(--stone);line-height:1.86;font-size:18px}
+
+.section{padding:120px 0}
+.head{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:42px}
+.head h2{font-family:'Playfair Display',serif;font-size:clamp(56px,7vw,96px);font-weight:300;line-height:.95}
+.head p{max-width:760px;font-size:20px;line-height:1.86;color:var(--stone)}
+.menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.menu-item{background:var(--white);border:1px solid rgba(201,168,76,.2);padding:30px;display:flex;justify-content:space-between;gap:22px;align-items:flex-start;box-shadow:0 10px 24px rgba(26,22,18,.06);transform:translateY(0);transition:transform .45s,box-shadow .45s,border-color .45s;animation:riseCard .8s ease both}
+.menu-item:nth-child(2){animation-delay:.12s}
+.menu-item:nth-child(3){animation-delay:.24s}
+.menu-item:nth-child(4){animation-delay:.36s}
+.menu-item:nth-child(5){animation-delay:.48s}
+.menu-item:nth-child(6){animation-delay:.6s}
+.menu-item:nth-child(7){animation-delay:.72s}
+.menu-item:nth-child(8){animation-delay:.84s}
+.menu-item:nth-child(9){animation-delay:.96s}
+.menu-item:nth-child(10){animation-delay:1.08s}
+.menu-item:hover{transform:translateY(-8px);box-shadow:0 20px 38px rgba(26,22,18,.12);border-color:rgba(201,168,76,.55)}
+.menu-name{font-family:'Playfair Display',serif;font-size:38px;font-weight:400;color:var(--charcoal);margin-bottom:9px}
+.menu-desc{font-size:18px;color:var(--stone);line-height:1.76;max-width:520px}
+.menu-actions{display:flex;flex-direction:column;gap:14px;align-items:flex-end}
+.menu-price{font-family:'Playfair Display',serif;color:var(--gold);font-size:42px;line-height:1;white-space:nowrap}
+.add-cart-btn{position:relative;overflow:hidden;border:1px solid rgba(201,168,76,.9);background:linear-gradient(135deg,#dec17b 0%,#c9a84c 40%,#b9953a 100%);color:#1f1912;font-size:10px;letter-spacing:2.2px;text-transform:uppercase;font-weight:700;padding:12px 16px;cursor:pointer;transition:transform .28s,box-shadow .28s,filter .28s}
+.add-cart-btn::before{content:"";position:absolute;left:-140%;top:0;width:120%;height:100%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.45),rgba(255,255,255,0));transform:skewX(-22deg)}
+.add-cart-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 10px 22px rgba(94,67,19,.35);filter:saturate(1.08)}
+.add-cart-btn:hover::before{animation:btnShine .8s ease}
+.add-cart-btn:active{transform:translateY(0) scale(.98)}
+.add-cart-btn.added{background:#2b9957;border-color:#2b9957;color:#fff;animation:addPulse .44s ease}
+
+.cta{background:linear-gradient(130deg,#efe4d0 0%,#f8efde 55%,#ece0ca 100%);border:1px solid rgba(201,168,76,.34);padding:44px;margin-top:40px;display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap;box-shadow:0 14px 26px rgba(26,22,18,.08);animation:riseCard .9s ease both}
+.cta p{font-size:19px;line-height:1.95;color:#5f554a;max-width:820px}
+.cta a{display:inline-block;text-decoration:none;background:var(--gold);color:var(--charcoal);border:1px solid var(--gold);padding:16px 28px;font-size:11px;letter-spacing:3px;text-transform:uppercase;transition:all .35s}
+.cta a:hover{background:transparent;color:var(--gold);transform:translateY(-3px)}
+
+.whatsapp-strip{margin-top:28px;padding:26px 30px;background:#1f9f58;color:#fff;border-radius:14px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:0 12px 30px rgba(18,69,42,.35);animation:riseCard 1s ease both}
+.whatsapp-strip h3{font-family:'Playfair Display',serif;font-size:44px;font-weight:400}
+.whatsapp-strip p{font-size:18px;line-height:1.8;color:rgba(255,255,255,.92)}
+.wa-number{font-size:24px;letter-spacing:1px;font-weight:500;color:#fff;text-decoration:none;padding:12px 18px;border:1px solid rgba(255,255,255,.55);transition:background .3s,transform .3s}
+.wa-number:hover{background:rgba(255,255,255,.16);transform:translateY(-2px)}
+
+.cart-fab{position:fixed;right:28px;bottom:24px;z-index:1200;border:1px solid rgba(26,22,18,.18);background:rgba(255,252,246,.96);backdrop-filter:blur(10px);box-shadow:0 14px 30px rgba(26,22,18,.22);display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer}
+.cart-fab-label{font-size:10px;letter-spacing:2.4px;text-transform:uppercase;color:#4b4238;font-weight:600}
+.cart-badge{min-width:24px;height:24px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:var(--gold);font-size:11px;font-weight:700;color:#20180f}
+.cart-total{font-family:'Playfair Display',serif;font-size:28px;color:#2a2219}
+.cart-fab.bump{animation:cartBump .42s ease}
+
+.cart-toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,120px);z-index:1300;background:#1f1912;color:#fff;padding:12px 16px;border:1px solid rgba(232,201,122,.48);box-shadow:0 10px 24px rgba(0,0,0,.34);font-size:12px;letter-spacing:1.2px;opacity:0;pointer-events:none;transition:transform .34s ease,opacity .34s ease}
+.cart-toast.show{transform:translate(-50%,0);opacity:1}
+
+.cart-overlay{position:fixed;inset:0;z-index:1350;background:rgba(18,13,8,.42);opacity:0;pointer-events:none;transition:opacity .34s ease}
+.cart-overlay.open{opacity:1;pointer-events:auto}
+.cart-panel{position:fixed;top:0;right:0;height:100vh;width:min(460px,94vw);z-index:1400;background:linear-gradient(180deg,#fffdf9 0%,#f6edde 100%);border-left:1px solid rgba(201,168,76,.35);box-shadow:-20px 0 44px rgba(0,0,0,.24);transform:translateX(104%);transition:transform .4s cubic-bezier(.2,.7,.2,1);display:flex;flex-direction:column}
+.cart-panel.open{transform:translateX(0)}
+.cart-panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 14px;border-bottom:1px solid rgba(201,168,76,.3)}
+.cart-panel-title{font-family:'Playfair Display',serif;font-size:36px;line-height:1;color:#21180f}
+.cart-close{border:1px solid rgba(26,22,18,.24);background:#fff;padding:10px 12px;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .25s}
+.cart-close:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-1px)}
+.cart-items{padding:16px;display:flex;flex-direction:column;gap:12px;overflow:auto;flex:1}
+.cart-empty{font-size:14px;line-height:1.8;color:#6d6155;text-align:center;padding:26px 14px;border:1px dashed rgba(201,168,76,.45);background:rgba(255,255,255,.55)}
+.cart-line{background:#fff;border:1px solid rgba(201,168,76,.24);padding:12px;display:grid;grid-template-columns:1fr auto;gap:8px 12px;animation:slideUp .25s ease both}
+.cart-line-name{font-family:'Playfair Display',serif;font-size:28px;line-height:1.08;color:#1f1710}
+.cart-line-price{font-size:14px;color:#6e6458;margin-top:4px}
+.cart-line-total{font-family:'Playfair Display',serif;font-size:32px;color:#a27a1f;white-space:nowrap}
+.cart-line-actions{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between}
+.qty-controls{display:flex;align-items:center;gap:8px}
+.qty-btn{width:30px;height:30px;border:1px solid rgba(26,22,18,.25);background:#fff;cursor:pointer;font-size:16px;line-height:1;transition:all .22s}
+.qty-btn:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-1px)}
+.qty-value{min-width:26px;text-align:center;font-size:14px;font-weight:600;color:#3f352a}
+.remove-btn{border:1px solid rgba(26,22,18,.2);background:#fff;font-size:10px;letter-spacing:1.8px;text-transform:uppercase;padding:7px 9px;cursor:pointer;transition:all .22s}
+.remove-btn:hover{border-color:#c14545;color:#c14545}
+.cart-panel-foot{padding:14px 16px 18px;border-top:1px solid rgba(201,168,76,.3);background:rgba(255,255,255,.72);backdrop-filter:blur(5px)}
+.cart-summary{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:12px}
+.cart-summary small{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#6a6054}
+.cart-summary strong{font-family:'Playfair Display',serif;font-size:42px;line-height:.9;color:#241b12}
+.cart-checkout{display:block;width:100%;text-align:center;text-decoration:none;background:var(--gold);color:#1f170f;border:1px solid var(--gold);padding:13px 16px;font-size:10px;letter-spacing:2.3px;text-transform:uppercase;font-weight:700;transition:all .28s;cursor:pointer}
+.cart-checkout:hover{background:transparent;color:#8a6b22;transform:translateY(-2px)}
+.cart-checkout:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.location-box{margin-top:12px;padding:10px;border:1px solid rgba(201,168,76,.3);background:rgba(255,255,255,.85)}
+.location-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#6a6054;margin-bottom:8px}
+.location-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.location-input,.location-textarea{width:100%;padding:10px;border:1px solid rgba(26,22,18,.2);font-size:12px;background:#fff;color:#2a2219}
+.location-input:focus,.location-textarea:focus{outline:none;border-color:var(--gold)}
+.location-textarea{grid-column:1 / -1;resize:vertical;min-height:70px}
+.location-input.full{grid-column:1 / -1}
+
+.fly-item{position:fixed;left:0;top:0;width:14px;height:14px;border-radius:999px;background:radial-gradient(circle at 30% 30%,#fff8dc 0%,#c9a84c 54%,#9f7f2d 100%);z-index:1500;pointer-events:none;box-shadow:0 0 0 6px rgba(201,168,76,.18);transition:transform .62s cubic-bezier(.2,.75,.2,1),opacity .62s cubic-bezier(.2,.75,.2,1)}
+
+footer{padding:42px 28px 52px;border-top:1px solid rgba(201,168,76,.18);margin-top:40px}
+footer p{font-size:14px;color:var(--stone);text-align:center}
+
+@keyframes slideUp{
+  0%{opacity:0;transform:translateY(42px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+@keyframes riseCard{
+  0%{opacity:0;transform:translateY(46px) scale(.98)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes orbPulse{
+  0%{transform:scale(.92) translateY(0)}
+  50%{transform:scale(1.08) translateY(-20px)}
+  100%{transform:scale(.92) translateY(0)}
+}
+@keyframes floatGlowA{
+  0%{transform:translate(0,0)}
+  50%{transform:translate(-28px,20px)}
+  100%{transform:translate(0,0)}
+}
+@keyframes floatGlowB{
+  0%{transform:translate(0,0)}
+  50%{transform:translate(26px,-22px)}
+  100%{transform:translate(0,0)}
+}
+@keyframes btnShine{
+  0%{transform:translateX(0) skewX(-22deg)}
+  100%{transform:translateX(220%) skewX(-22deg)}
+}
+@keyframes addPulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+  100%{transform:scale(1)}
+}
+@keyframes cartBump{
+  0%{transform:translateY(0) scale(1)}
+  45%{transform:translateY(-4px) scale(1.05)}
+  100%{transform:translateY(0) scale(1)}
+}
+
+@media(max-width:900px){
+  .quick,.menu-grid{grid-template-columns:1fr}
+  .topbar-inner{padding:14px 16px}
+  .mini-nav{display:none}
+  .brand-word{font-size:24px;letter-spacing:5px}
+  .hero{padding:88px 16px 64px;min-height:initial}
+  .hero h1{font-size:clamp(46px,13vw,80px)}
+  .hero p{font-size:17px}
+  .wrap{padding:0 16px}
+  .quick{margin-top:-26px}
+  .card{padding:24px}
+  .card h3{font-size:34px}
+  .card p,.head p,.menu-desc,.cta p,.whatsapp-strip p{font-size:16px}
+  .head h2{font-size:clamp(42px,12vw,72px)}
+  .menu-name{font-size:30px}
+  .menu-price{font-size:34px}
+  .menu-actions{align-items:flex-start}
+  .add-cart-btn{font-size:9px;letter-spacing:2px}
+  .whatsapp-strip{padding:20px}
+  .whatsapp-strip h3{font-size:36px}
+  .wa-number{font-size:22px}
+  .cart-fab{right:14px;bottom:14px;padding:10px 12px}
+  .cart-total{font-size:24px}
+  .cart-panel{width:100vw}
+  .cart-panel-title{font-size:30px}
+  .cart-line-name{font-size:24px}
+}
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="index.html" class="brand">
+        <span class="aurum-symbol" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <circle class="ring" cx="32" cy="32" r="30" fill="none" stroke-width="2.2"></circle>
+            <path class="monogram" d="M20 44L32 16L44 44M24.8 34H39.2" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+            <polygon class="gem" points="32,9 36,13 32,17 28,13"></polygon>
+            <circle class="dot" cx="32" cy="50" r="2.2"></circle>
+          </svg>
+        </span>
+        <span class="brand-word">AURUM</span>
+      </a>
+      <nav class="mini-nav" aria-label="Delivery sections">
+        <a href="#overview">Overview</a>
+        <a href="#delivery-menu">Menu</a>
+        <a href="#order">Order</a>
+      </nav>
+      <div class="top-links">
+        <a class="link-btn" href="gym-chatbot.html">Gym AI</a>
+        <a class="link-btn" href="index.html">Back to Home</a>
+        <button class="link-btn cart-top-btn" id="cartTopBtn" type="button">Cart <span class="cart-count" id="cartCount">0</span></button>
+        <button class="link-btn gold" id="logoutBtn" type="button">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero" id="overview">
+    <div class="hero-inner">
+      <div class="kicker">Aurum at Home · London</div>
+      <h1>Fine Dining Delivery, Crafted for Your Table</h1>
+      <p>Signature mains, curated tasting boxes, and elegant desserts delivered with premium temperature-controlled packaging. Delivery slots are limited daily to maintain kitchen precision.</p>
+    </div>
+  </section>
+
+  <main class="wrap">
+    <section class="quick">
+      <article class="card">
+        <h3>Hours</h3>
+        <p>Mon-Thu: 12:00-22:00<br>Fri-Sun: 12:00-23:00</p>
+      </article>
+      <article class="card">
+        <h3>Delivery Radius</h3>
+        <p>Central London zones 1-3 in 45-60 minutes. Extended radius available by pre-booking.</p>
+      </article>
+      <article class="card">
+        <h3>Live Support</h3>
+        <p>WhatsApp or call 7988379826 for custom menus, allergen guidance, and chef's notes.</p>
+      </article>
+    </section>
+
+    <section class="section" id="delivery-menu">
+      <div class="head">
+        <h2>Delivery Menu</h2>
+        <p>Daily curated selection. Items may rotate based on seasonal ingredients and market availability.</p>
+      </div>
+      <div class="menu-grid">
+        <article class="menu-item">
+          <div>
+            <div class="menu-name">Wagyu Beef Fillet A5</div>
+            <p class="menu-desc">Celeriac puree, truffle jus, crispy marrow shard, charred greens.</p>
+          </div>
+          <div class="menu-actions">
+            <div class="menu-price">₹7,099</div>
+            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
+          </div>
+        </article>
+        <article class="menu-item">
+          <div>
+            <div class="menu-name">Pan-Roasted Turbot</div>
+            <p class="menu-desc">Champagne beurre blanc, leek fondue, lemon finish.</p>
+          </div>
+          <div class="menu-actions">
+            <div class="menu-price">₹7,599</div>
+            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
+          </div>
+        </article>
+        <article class="menu-item">
+          <div>
+            <div class="menu-name">Garden Tasting Box</div>
+            <p class="menu-desc">Seasonal vegetarian course set for two guests, with plating card.</p>
+          </div>
+          <div class="menu-actions">
+            <div class="menu-price">₹9,199</div>
+            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
+          </div>
+        </article>
+        <article class="menu-item">
+          <div>
+            <div class="menu-name">Valrhona Chocolate Sphere</div>
+            <p class="menu-desc">Salted caramel core, hazelnut praline, edible gold accent.</p>
+          </div>
+          <div class="menu-actions">
+            <div class="menu-price">₹1,949</div>
+            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
+          </div>
+        </article>
+        <article class="menu-item">
+          <div>
+            <div class="menu-name">Lobster Thermidor Gratin</div>
+            <p class="menu-desc">Butter-poached lobster, mustard cream glaze, herb crumb, citrus leaf oil.</p>
+          </div>
+          <div class="menu-actions">
+            <div class="menu-price">₹6,699</div>
+            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
+          </div>
+        </article>
+        <article class="menu-item">
+          <div>
+            <div class="menu-name">Truffle Mushroom Risotto</div>
+            <p class="menu-desc">Aged parmesan, black truffle shavings, roasted shallot, chive butter.</p>
+          </div>
+          <div class="menu-actions">
+            <div class="menu-price">₹3,799</div>
+            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
+          </div>
+        </article>
+        <article class="menu-item">
+          <div>
+            <div class="menu-name">Herb-Crusted Lamb Rack</div>
+            <p class="menu-desc">Potato fondant, rosemary jus, glazed root vegetables.</p>
+          </div>
+          <div class="menu-actions">
+            <div class="menu-price">₹6,099</div>
+            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
+          </div>
+        </article>
+        <article class="menu-item">
+          <div>
+            <div class="menu-name">Burrata & Heirloom Tomato</div>
+            <p class="menu-desc">Basil pearls, balsamic reduction, toasted sourdough crisps.</p>
+          </div>
+          <div class="menu-actions">
+            <div class="menu-price">₹2,299</div>
+            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
+          </div>
+        </article>
+        <article class="menu-item">
+          <div>
+            <div class="menu-name">Charred Asparagus Spears</div>
+            <p class="menu-desc">Lemon zest, smoked sea salt, whipped ricotta, pine nut crumble.</p>
+          </div>
+          <div class="menu-actions">
+            <div class="menu-price">₹1,749</div>
+            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
+          </div>
+        </article>
+        <article class="menu-item">
+          <div>
+            <div class="menu-name">Pistachio Tiramisu Royale</div>
+            <p class="menu-desc">Espresso sponge, mascarpone mousse, pistachio praline and cocoa veil.</p>
+          </div>
+          <div class="menu-actions">
+            <div class="menu-price">₹2,099</div>
+            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
+          </div>
+        </article>
+      </div>
+
+      <div class="cta" id="order">
+        <p>To place an order, message us on WhatsApp with your name, address, preferred slot, and selected items.</p>
+        <a href="https://wa.me/917988379826" target="_blank" rel="noopener">Order on WhatsApp</a>
+      </div>
+
+      <div class="whatsapp-strip">
+        <div>
+          <h3>WhatsApp Fast Order</h3>
+          <p>Send your order directly on WhatsApp for priority confirmation and delivery slot locking.</p>
+        </div>
+        <a class="wa-number" href="https://wa.me/917988379826" target="_blank" rel="noopener">+91 79883 79826</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 AURUM Fine Dining Ltd. Delivery service available in selected London areas.</p>
+  </footer>
+
+  <button id="cartFab" class="cart-fab" type="button" aria-label="Cart summary">
+    <span class="cart-fab-label">Cart</span>
+    <span class="cart-badge" id="cartFabCount">0</span>
+    <span class="cart-total" id="cartFabTotal">₹0</span>
+  </button>
+  <div id="cartToast" class="cart-toast" role="status" aria-live="polite"></div>
+  <div id="cartOverlay" class="cart-overlay" aria-hidden="true"></div>
+  <aside id="cartPanel" class="cart-panel" aria-label="Cart drawer">
+    <div class="cart-panel-head">
+      <h3 class="cart-panel-title">Your Cart</h3>
+      <button id="cartCloseBtn" class="cart-close" type="button">Close</button>
+    </div>
+    <div id="cartItems" class="cart-items">
+      <div id="cartEmpty" class="cart-empty">Your cart is empty. Add dishes from the menu to build your order.</div>
+    </div>
+    <div class="cart-panel-foot">
+      <div class="cart-summary">
+        <div>
+          <small id="cartSummaryCount">0 items</small>
+        </div>
+        <strong id="cartSummaryTotal">₹0</strong>
+      </div>
+      <button id="cartCheckoutBtn" class="cart-checkout" type="button">Order Now</button>
+      <div class="location-box">
+        <div class="location-title">Delivery Location</div>
+        <div class="location-grid">
+          <input id="locFullName" class="location-input" placeholder="Full Name" />
+          <input id="locPhone" class="location-input" placeholder="Phone Number" />
+          <input id="locAddress1" class="location-input full" placeholder="Address Line 1" />
+          <input id="locAddress2" class="location-input full" placeholder="Address Line 2 (optional)" />
+          <input id="locLandmark" class="location-input" placeholder="Landmark (optional)" />
+          <input id="locCity" class="location-input" placeholder="City" />
+          <input id="locPincode" class="location-input full" placeholder="PIN Code" />
+          <textarea id="locInstructions" class="location-textarea" placeholder="Delivery instructions (optional)"></textarea>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+const DEMO_SESSION_KEY = 'aurum_auth_email';
+
+(async function ensureAccess() {
+  try {
+    const res = await fetch('/api/auth/status', { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+      if (data && data.authenticated) return;
+    }
+  } catch (_) { }
+  let localAuth = false;
+  try { localAuth = Boolean(localStorage.getItem(DEMO_SESSION_KEY)); } catch (_) { }
+  if (!localAuth) window.location.href = 'login.html';
+})();
+
+const addCartButtons = Array.from(document.querySelectorAll('.add-cart-btn'));
+const cartTopBtn = document.getElementById('cartTopBtn');
+const cartCount = document.getElementById('cartCount');
+const cartFab = document.getElementById('cartFab');
+const cartFabCount = document.getElementById('cartFabCount');
+const cartFabTotal = document.getElementById('cartFabTotal');
+const cartToast = document.getElementById('cartToast');
+const cartOverlay = document.getElementById('cartOverlay');
+const cartPanel = document.getElementById('cartPanel');
+const cartCloseBtn = document.getElementById('cartCloseBtn');
+const cartItems = document.getElementById('cartItems');
+const cartEmpty = document.getElementById('cartEmpty');
+const cartSummaryCount = document.getElementById('cartSummaryCount');
+const cartSummaryTotal = document.getElementById('cartSummaryTotal');
+const cartCheckoutBtn = document.getElementById('cartCheckoutBtn');
+const locFullName = document.getElementById('locFullName');
+const locPhone = document.getElementById('locPhone');
+const locAddress1 = document.getElementById('locAddress1');
+const locAddress2 = document.getElementById('locAddress2');
+const locLandmark = document.getElementById('locLandmark');
+const locCity = document.getElementById('locCity');
+const locPincode = document.getElementById('locPincode');
+const locInstructions = document.getElementById('locInstructions');
+
+const cartState = { items: new Map() };
+const CART_STORAGE_KEY = 'aurum_delivery_cart_v1';
+const LOCATION_STORAGE_KEY = 'aurum_delivery_location_v1';
+let toastTimer = null;
+let checkoutLoading = false;
+
+function parsePrice(text) {
+  return Number(String(text || '').replace(/[^\d.]/g, '')) || 0;
+}
+
+function formatPrice(value) {
+  return `₹${Math.round(value).toLocaleString('en-IN')}`;
+}
+
+function setAddButtonText(button, isAdded) {
+  button.textContent = isAdded ? '✓ Added' : '🛒 Add to Cart';
+}
+
+addCartButtons.forEach(button => setAddButtonText(button, false));
+
+function getCartTotals() {
+  let count = 0;
+  let total = 0;
+  cartState.items.forEach(item => {
+    count += item.qty;
+    total += item.qty * item.price;
+  });
+  return { count, total };
+}
+
+function showToast(message) {
+  cartToast.textContent = message;
+  cartToast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => cartToast.classList.remove('show'), 1800);
+}
+
+function bumpCart() {
+  cartFab.classList.remove('bump');
+  void cartFab.offsetWidth;
+  cartFab.classList.add('bump');
+}
+
+function flyToCart(sourceButton) {
+  const from = sourceButton.getBoundingClientRect();
+  const to = cartFab.getBoundingClientRect();
+  const dot = document.createElement('span');
+  dot.className = 'fly-item';
+  dot.style.left = `${from.left + from.width / 2}px`;
+  dot.style.top = `${from.top + from.height / 2}px`;
+  document.body.appendChild(dot);
+  requestAnimationFrame(() => {
+    const dx = (to.left + to.width / 2) - (from.left + from.width / 2);
+    const dy = (to.top + to.height / 2) - (from.top + from.height / 2);
+    dot.style.transform = `translate(${dx}px,${dy}px) scale(.35)`;
+    dot.style.opacity = '0';
+  });
+  setTimeout(() => dot.remove(), 700);
+}
+
+function openCart() {
+  cartPanel.classList.add('open');
+  cartOverlay.classList.add('open');
+}
+
+function closeCart() {
+  cartPanel.classList.remove('open');
+  cartOverlay.classList.remove('open');
+}
+
+function createCartLine(item) {
+  const line = document.createElement('article');
+  line.className = 'cart-line';
+  line.innerHTML = `
+    <div>
+      <div class="cart-line-name"></div>
+      <div class="cart-line-price"></div>
+    </div>
+    <div class="cart-line-total"></div>
+    <div class="cart-line-actions">
+      <div class="qty-controls">
+        <button class="qty-btn" type="button" data-action="decrease" aria-label="Decrease quantity">-</button>
+        <span class="qty-value"></span>
+        <button class="qty-btn" type="button" data-action="increase" aria-label="Increase quantity">+</button>
+      </div>
+      <button class="remove-btn" type="button" data-action="remove">Remove</button>
+    </div>
+  `;
+  line.dataset.name = item.name;
+  line.querySelector('.cart-line-name').textContent = item.name;
+  line.querySelector('.cart-line-price').textContent = `${formatPrice(item.price)} each`;
+  line.querySelector('.qty-value').textContent = String(item.qty);
+  line.querySelector('.cart-line-total').textContent = formatPrice(item.price * item.qty);
+  return line;
+}
+
+function renderCartPanel() {
+  const entries = Array.from(cartState.items.values());
+  cartItems.innerHTML = '';
+  if (entries.length === 0) {
+    cartItems.appendChild(cartEmpty);
+  } else {
+    entries.forEach(item => cartItems.appendChild(createCartLine(item)));
+  }
+}
+
+function persistCart() {
+  try {
+    const records = Array.from(cartState.items.values()).map(item => ({
+      name: item.name,
+      price: item.price,
+      qty: item.qty
+    }));
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(records));
+  } catch (_) {
+    // Ignore storage errors.
+  }
+}
+
+function loadCartFromStorage() {
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return;
+    const records = JSON.parse(raw);
+    if (!Array.isArray(records)) return;
+    cartState.items.clear();
+    records.forEach(record => {
+      const name = String(record?.name || '').trim();
+      const price = Number(record?.price) || 0;
+      const qty = Number(record?.qty) || 0;
+      if (!name || price <= 0 || qty <= 0) return;
+      cartState.items.set(name, { name, price, qty });
+    });
+  } catch (_) {
+    // Ignore invalid local storage data.
+  }
+}
+
+function getDeliveryLocationPayload() {
+  return {
+    fullName: String(locFullName?.value || '').trim(),
+    phone: String(locPhone?.value || '').trim(),
+    addressLine1: String(locAddress1?.value || '').trim(),
+    addressLine2: String(locAddress2?.value || '').trim(),
+    landmark: String(locLandmark?.value || '').trim(),
+    city: String(locCity?.value || '').trim(),
+    pincode: String(locPincode?.value || '').trim(),
+    instructions: String(locInstructions?.value || '').trim()
+  };
+}
+
+function validateDeliveryLocation(location) {
+  if (!location.fullName) return 'Enter full name for delivery.';
+  if (!location.phone) return 'Enter phone number for delivery.';
+  if (!location.addressLine1) return 'Enter address line 1.';
+  if (!location.city) return 'Enter city.';
+  if (!location.pincode) return 'Enter PIN code.';
+  return '';
+}
+
+function persistDeliveryLocation() {
+  try {
+    localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(getDeliveryLocationPayload()));
+  } catch (_) {
+    // Ignore storage errors.
+  }
+}
+
+function loadDeliveryLocation() {
+  try {
+    const raw = localStorage.getItem(LOCATION_STORAGE_KEY);
+    if (!raw) return;
+    const location = JSON.parse(raw);
+    if (!location || typeof location !== 'object') return;
+    if (locFullName) locFullName.value = String(location.fullName || '');
+    if (locPhone) locPhone.value = String(location.phone || '');
+    if (locAddress1) locAddress1.value = String(location.addressLine1 || '');
+    if (locAddress2) locAddress2.value = String(location.addressLine2 || '');
+    if (locLandmark) locLandmark.value = String(location.landmark || '');
+    if (locCity) locCity.value = String(location.city || '');
+    if (locPincode) locPincode.value = String(location.pincode || '');
+    if (locInstructions) locInstructions.value = String(location.instructions || '');
+  } catch (_) {
+    // Ignore bad storage data.
+  }
+}
+
+function setCheckoutLoading(loading) {
+  checkoutLoading = loading;
+  if (loading) {
+    cartCheckoutBtn.textContent = 'Opening...';
+    cartCheckoutBtn.disabled = true;
+    return;
+  }
+  const { count } = getCartTotals();
+  cartCheckoutBtn.textContent = 'Order Now';
+  cartCheckoutBtn.disabled = count === 0;
+}
+
+function updateCartUI() {
+  const { count, total } = getCartTotals();
+  const countText = String(count);
+  const totalText = formatPrice(total);
+  cartCount.textContent = countText;
+  cartFabCount.textContent = countText;
+  cartFabTotal.textContent = totalText;
+  cartSummaryCount.textContent = `${count} item${count === 1 ? '' : 's'}`;
+  cartSummaryTotal.textContent = totalText;
+  if (count > 0) {
+    cartTopBtn.title = `${count} item(s) · ${totalText}`;
+    cartFab.title = `${count} item(s) · ${totalText}`;
+  } else {
+    cartTopBtn.title = 'Cart is empty';
+    cartFab.title = 'Cart is empty';
+  }
+  if (!checkoutLoading) {
+    cartCheckoutBtn.disabled = count === 0;
+    cartCheckoutBtn.textContent = 'Order Now';
+  }
+  renderCartPanel();
+  persistCart();
+}
+
+function addItemToCart(name, price) {
+  const existing = cartState.items.get(name);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cartState.items.set(name, { name, price, qty: 1 });
+  }
+}
+
+function decreaseItem(name) {
+  const item = cartState.items.get(name);
+  if (!item) return;
+  item.qty -= 1;
+  if (item.qty <= 0) {
+    cartState.items.delete(name);
+  }
+}
+
+function increaseItem(name) {
+  const item = cartState.items.get(name);
+  if (!item) return;
+  item.qty += 1;
+}
+
+function removeItem(name) {
+  cartState.items.delete(name);
+}
+
+async function startCheckout() {
+  const items = Array.from(cartState.items.values());
+  const deliveryLocation = getDeliveryLocationPayload();
+  if (!items.length) {
+    showToast('Cart is empty. Add items first.');
+    return;
+  }
+  const locationError = validateDeliveryLocation(deliveryLocation);
+  if (locationError) {
+    showToast(locationError);
+    return;
+  }
+  persistDeliveryLocation();
+  try {
+    setCheckoutLoading(true);
+    const res = await fetch('/api/orders/create-razorpay-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items, deliveryLocation })
+    });
+    const contentType = String(res.headers.get('content-type') || '');
+    const data = contentType.includes('application/json')
+      ? await res.json().catch(() => ({}))
+      : {};
+    if (!res.ok || !data?.orderId || !data?.keyId) {
+      throw new Error(data?.error || 'Unable to start payment.');
+    }
+
+    if (typeof window.Razorpay !== 'function') {
+      throw new Error('Razorpay SDK failed to load. Check your internet connection.');
+    }
+
+    const options = {
+      key: data.keyId,
+      amount: data.amount,
+      currency: data.currency || 'INR',
+      name: 'AURUM Delivery',
+      description: 'Food Order Payment',
+      order_id: data.orderId,
+      prefill: data.prefill || {},
+      theme: { color: '#C9A84C' },
+      handler: async function (response) {
+        try {
+          const verifyRes = await fetch('/api/orders/verify-razorpay-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(response)
+          });
+          const verifyType = String(verifyRes.headers.get('content-type') || '');
+          const verifyData = verifyType.includes('application/json')
+            ? await verifyRes.json().catch(() => ({}))
+            : {};
+          if (!verifyRes.ok) {
+            throw new Error(verifyData?.error || 'Payment verification failed.');
+          }
+          cartState.items.clear();
+          updateCartUI();
+          showToast('Payment successful.');
+          closeCart();
+          setTimeout(() => {
+            window.location.href = 'order-success.html';
+          }, 400);
+        } catch (verifyErr) {
+          showToast(verifyErr?.message || 'Payment verification failed.');
+        } finally {
+          setCheckoutLoading(false);
+        }
+      },
+      modal: {
+        ondismiss: function () {
+          setCheckoutLoading(false);
+          showToast('Payment window closed.');
+        }
+      }
+    };
+
+    const rz = new window.Razorpay(options);
+    rz.open();
+  } catch (err) {
+    setCheckoutLoading(false);
+    showToast(err?.message || 'Payment start failed.');
+  }
+}
+
+async function confirmPaymentFromUrl() {
+  // Kept for backward compatibility with old Stripe redirect params.
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('payment') || params.get('session_id')) {
+    history.replaceState({}, '', window.location.pathname);
+  }
+}
+
+addCartButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const item = button.closest('.menu-item');
+    if (!item) return;
+    const name = item.querySelector('.menu-name')?.textContent?.trim() || 'Item';
+    const price = parsePrice(item.querySelector('.menu-price')?.textContent);
+    addItemToCart(name, price);
+    updateCartUI();
+    bumpCart();
+    flyToCart(button);
+    showToast(`${name} added to cart`);
+    button.classList.add('added');
+    setAddButtonText(button, true);
+    setTimeout(() => {
+      button.classList.remove('added');
+      setAddButtonText(button, false);
+    }, 820);
+  });
+});
+
+cartItems.addEventListener('click', event => {
+  const actionBtn = event.target.closest('[data-action]');
+  if (!actionBtn) return;
+  const line = actionBtn.closest('.cart-line');
+  if (!line) return;
+  const name = line.dataset.name;
+  const action = actionBtn.dataset.action;
+  if (action === 'increase') increaseItem(name);
+  if (action === 'decrease') decreaseItem(name);
+  if (action === 'remove') removeItem(name);
+  updateCartUI();
+});
+
+cartCheckoutBtn?.addEventListener('click', startCheckout);
+cartTopBtn?.addEventListener('click', openCart);
+cartFab?.addEventListener('click', openCart);
+cartCloseBtn?.addEventListener('click', closeCart);
+cartOverlay?.addEventListener('click', closeCart);
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') closeCart();
+});
+
+loadCartFromStorage();
+loadDeliveryLocation();
+updateCartUI();
+confirmPaymentFromUrl();
+
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', async () => {
+    try { await fetch('/api/auth/logout', { method: 'POST' }); } catch (_) { }
+    try {
+      localStorage.removeItem('aurum_auth_email');
+      localStorage.removeItem('aurum_auth_ts');
+    } catch (_) { }
+    window.location.href = 'login.html';
+  });
+}
+</script>
+</body>
+</html>

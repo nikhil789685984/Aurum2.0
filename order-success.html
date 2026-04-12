@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Confirmed · AURUM Delivery</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:radial-gradient(circle at 20% 10%,#fff7e6 0%,#f7edd8 45%,#efe1c2 100%);
+  color:#1f1912;
+  font-family:'Manrope',sans-serif;
+}
+.card{
+  width:min(680px,100%);
+  background:#fffdf8;
+  border:1px solid rgba(201,168,76,.38);
+  box-shadow:0 20px 42px rgba(26,22,18,.12);
+  padding:38px 34px;
+  text-align:center;
+}
+.kicker{
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:#8a6b22;
+  margin-bottom:14px;
+}
+h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(38px,6vw,60px);
+  font-weight:300;
+  line-height:.95;
+  margin-bottom:18px;
+}
+p{
+  font-size:16px;
+  line-height:1.8;
+  color:#5d5245;
+}
+.eta{
+  margin:20px auto 0;
+  display:inline-block;
+  padding:10px 16px;
+  border:1px solid rgba(201,168,76,.55);
+  color:#7b6120;
+  font-size:12px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+.actions{
+  margin-top:24px;
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.btn{
+  display:inline-block;
+  text-decoration:none;
+  padding:12px 18px;
+  border:1px solid rgba(31,25,18,.22);
+  color:#3d3328;
+  font-size:11px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+.btn.primary{
+  border-color:#c9a84c;
+  background:#c9a84c;
+  color:#1f1912;
+}
+</style>
+</head>
+<body>
+  <main class="card">
+    <div class="kicker">AURUM Delivery</div>
+    <h1>Payment Successful</h1>
+    <p>Your order has been confirmed and sent to our kitchen team.</p>
+    <div class="eta">Estimated Delivery: 3-4 Hours</div>
+    <div class="actions">
+      <a class="btn primary" href="delivery.html">Back to Delivery</a>
+      <a class="btn" href="index.html">Back to Home</a>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURUM Fit AI Coach</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--cream:#FAF7F2;--warm:#F0E8DA;--gold:#C9A84C;--gold2:#E8C97A;--char:#1A1612;--stone:#7A6F62;--white:#FFFFFF;--green:#2D8A4D}
+body{font-family:'Manrope',sans-serif;background:var(--cream);color:var(--char)}
+
+.top{position:sticky;top:0;z-index:1000;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(201,168,76,.2)}
+.top-inner{max-width:1100px;margin:0 auto;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.brand{display:inline-flex;align-items:center;gap:10px;color:var(--char);text-decoration:none}
+.logo-word{font-family:'Playfair Display',serif;font-size:28px;letter-spacing:6px;font-weight:300}
+.badge{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--green);border:1px solid rgba(45,138,77,.35);padding:8px 10px}
+.btn{font-size:10px;letter-spacing:3px;text-transform:uppercase;padding:10px 14px;border:1px solid rgba(26,22,18,.18);text-decoration:none;color:var(--stone);background:transparent;cursor:pointer}
+.btn:hover{border-color:var(--gold);color:var(--gold)}
+
+.hero{max-width:1100px;margin:0 auto;padding:40px 20px 20px}
+.kicker{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold)}
+h1{font-family:'Playfair Display',serif;font-size:clamp(36px,6vw,66px);font-weight:300;line-height:.95;margin-top:8px}
+.hero p{margin-top:12px;color:var(--stone);line-height:1.8;max-width:760px}
+
+.chat-wrap{max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:1fr 300px;gap:16px}
+.chat-card{border:1px solid rgba(201,168,76,.22);background:var(--white);min-height:68vh;display:flex;flex-direction:column}
+.chat-head{padding:16px 18px;border-bottom:1px solid rgba(201,168,76,.18);display:flex;justify-content:space-between;gap:10px;align-items:center}
+.chat-head strong{font-family:'Playfair Display',serif;font-size:27px;font-weight:400}
+.status{font-size:11px;color:var(--stone)}
+.messages{padding:18px;display:flex;flex-direction:column;gap:12px;overflow:auto;flex:1;background:linear-gradient(180deg,#fff 0%,#fcf8f2 100%)}
+.bubble{max-width:78%;padding:12px 14px;line-height:1.6;font-size:14px;border:1px solid transparent}
+.user{align-self:flex-end;background:#efe5d4;border-color:#e3cfad}
+.bot{align-self:flex-start;background:#fff;border-color:#eadbbf}
+.composer{padding:14px;border-top:1px solid rgba(201,168,76,.18);display:flex;gap:10px}
+.composer textarea{flex:1;resize:none;height:52px;padding:12px;border:1px solid rgba(26,22,18,.15);font:inherit}
+.composer textarea:focus{outline:none;border-color:var(--gold)}
+.send{padding:0 16px;border:1px solid var(--gold);background:var(--gold);color:var(--char);font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer}
+.send:hover{background:transparent;color:var(--gold)}
+
+.side{border:1px solid rgba(201,168,76,.22);background:var(--warm);padding:18px}
+.side h3{font-family:'Playfair Display',serif;font-size:28px;font-weight:400}
+.side ul{margin-top:10px;padding-left:18px;display:flex;flex-direction:column;gap:8px;color:var(--stone);line-height:1.6;font-size:14px}
+.disclaimer{margin-top:14px;font-size:12px;color:var(--stone);line-height:1.6}
+
+@media(max-width:900px){
+  .chat-wrap{grid-template-columns:1fr}
+  .bubble{max-width:90%}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <a class="brand" href="index.html">
+      <span class="logo-word">AURUM</span>
+      <span class="badge">Fit AI Coach</span>
+    </a>
+    <div>
+      <a class="btn" href="delivery.html">Delivery</a>
+      <a class="btn" href="index.html">Home</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="kicker">Gym Assistant</div>
+  <h1>Ask Anything About Workouts, Diet, and Training Plans</h1>
+  <p>Share your goal, current level, available equipment, and training days. The chatbot will return a practical plan you can follow immediately.</p>
+</section>
+
+<main class="chat-wrap">
+  <section class="chat-card">
+    <div class="chat-head">
+      <strong>Gym Chatbot</strong>
+      <span class="status" id="botStatus">Ready</span>
+    </div>
+    <div class="messages" id="messages">
+      <div class="bubble bot">Hi. I am your gym AI coach. Tell me your goal and I will create a focused plan.</div>
+    </div>
+    <form class="composer" id="chatForm">
+      <textarea id="chatInput" placeholder="Example: I am 72kg, beginner, want fat loss, 4 days/week gym"></textarea>
+      <button class="send" id="sendBtn" type="submit">Send</button>
+    </form>
+  </section>
+
+  <aside class="side">
+    <h3>Good Prompts</h3>
+    <ul>
+      <li>Make me a 3-day beginner full-body plan.</li>
+      <li>I want fat loss with vegetarian diet suggestions.</li>
+      <li>How much protein should I eat for muscle gain?</li>
+      <li>Build a 4-week progressive overload plan.</li>
+    </ul>
+    <p class="disclaimer">This chatbot provides general fitness guidance, not medical advice. For injuries or health conditions, consult a doctor or licensed professional.</p>
+  </aside>
+</main>
+
+<script>
+const form=document.getElementById('chatForm');
+const input=document.getElementById('chatInput');
+const sendBtn=document.getElementById('sendBtn');
+const messages=document.getElementById('messages');
+const botStatus=document.getElementById('botStatus');
+
+function addMessage(text,role){
+  const div=document.createElement('div');
+  div.className=`bubble ${role}`;
+  div.textContent=text;
+  messages.appendChild(div);
+  messages.scrollTop=messages.scrollHeight;
+}
+
+async function askGymBot(message){
+  const res=await fetch('/api/gym-chatbot',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({message})
+  });
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok){
+    throw new Error(data.error||'Request failed');
+  }
+  return String(data.reply||'').trim()||'Please ask again with more details.';
+}
+
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const message=input.value.trim();
+  if(!message) return;
+  addMessage(message,'user');
+  input.value='';
+  sendBtn.disabled=true;
+  botStatus.textContent='Thinking...';
+  try{
+    const reply=await askGymBot(message);
+    addMessage(reply,'bot');
+    botStatus.textContent='Ready';
+  }catch(err){
+    addMessage(err.message||'Could not get response.','bot');
+    botStatus.textContent='Error';
+  }finally{
+    sendBtn.disabled=false;
+    input.focus();
+  }
+});
+</script>
+</body>
+</html>

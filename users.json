@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Persist Test",
+    "email": "persist2026@gmail.com",
+    "salt": "9f44eaa3fbfb89adb1e4e04812f36c30",
+    "passwordHash": "b0db55b11d4fb5c675bbc452a657f7afe65f84eb0da1777e2facb471dcc798cf3cdc658b26d3b4f9d870964aea07ab334534199f68dc2ab1bbb00705412c5d06",
+    "createdAt": 1775939614473
+  },
+  {
+    "name": "Nikhil Sheoran",
+    "email": "nikhilsheoran78@gmail.com",
+    "salt": "4485e37d68fd13eff55c642fccdde209",
+    "passwordHash": "bcdb2800aabc7b148c45dc89676f538bbc2974e365410cd6a2f49b92568c1812c824b875f13c3e4466b16c8ee39376770dbc613cc9be88f363c40ac9f942eef3",
+    "createdAt": 1775939784094
+  }
+]

@@ -1,0 +1,32 @@
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/"
+  to = "/login.html"
+  status = 302
+
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/signup"
+  to = "/signup.html"
+  status = 200
+
+[[redirects]]
+  from = "/delivery"
+  to = "/delivery.html"
+  status = 200
+
+[[redirects]]
+  from = "/gym-chatbot"
+  to = "/gym-chatbot.html"
+  status = 200
+
+[[redirects]]
+  from = "/order-success"
+  to = "/order-success.html"
+  status = 200

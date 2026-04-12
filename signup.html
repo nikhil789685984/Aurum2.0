@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURUM Signup</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#F6F1E7;
+  --paper:#FFFDF9;
+  --gold:#C9A84C;
+  --gold2:#E8C97A;
+  --ink:#1A1612;
+  --stone:#7A6F62;
+  --line:rgba(26,22,18,.14);
+  --ok:#1E6A3A;
+  --err:#8F1F1F;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;
+  font-family:'Manrope',sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1000px 700px at 10% -10%,#fff6e1 0%,transparent 58%),
+    radial-gradient(900px 700px at 120% 120%,#edd7ad 0%,transparent 60%),
+    linear-gradient(150deg,#f8f2e8 0%,#efe3cd 100%);
+  display:grid;
+  place-items:center;
+  padding:28px;
+  animation:pageFade .6s ease;
+}
+.wrap{
+  width:min(980px,100%);
+  display:grid;
+  grid-template-columns:1fr 1.05fr;
+  background:rgba(255,255,255,.6);
+  border:1px solid rgba(201,168,76,.45);
+  backdrop-filter:blur(12px);
+  box-shadow:0 34px 85px rgba(26,22,18,.18);
+  overflow:hidden;
+  opacity:0;
+  transform:translateY(16px) scale(.985);
+  animation:shellIn .72s .08s cubic-bezier(.2,.7,.2,1) forwards;
+}
+.left{
+  position:relative;
+  padding:44px 40px;
+  color:#fff;
+  background:
+    linear-gradient(160deg,rgba(26,22,18,.9),rgba(35,28,22,.9)),
+    url('https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?w=1200&q=80&auto=format&fit=crop') center/cover;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.logo{font-family:'Playfair Display',serif;font-size:40px;letter-spacing:6px}
+.left h2{font-family:'Playfair Display',serif;font-size:48px;line-height:1.04;margin-top:14px}
+.left p{margin-top:14px;font-size:14px;line-height:1.8;color:rgba(255,255,255,.74);max-width:310px}
+.pill{display:inline-flex;align-items:center;gap:10px;color:var(--gold2);font-size:10px;letter-spacing:3px;text-transform:uppercase}
+.pill::before{content:'';width:24px;height:1px;background:var(--gold2)}
+.left-foot{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5)}
+
+.right{background:var(--paper);padding:40px 36px;display:flex;flex-direction:column;justify-content:center}
+.kicker{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--stone)}
+.title{font-family:'Playfair Display',serif;font-size:50px;line-height:.95;margin:14px 0 14px}
+.desc{font-size:14px;line-height:1.8;color:var(--stone);margin-bottom:22px;max-width:420px}
+.field{margin-bottom:12px}
+label{display:block;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);margin-bottom:8px}
+input{width:100%;padding:14px 16px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s}
+input:focus{border-color:rgba(201,168,76,.9);box-shadow:0 0 0 3px rgba(201,168,76,.16)}
+.btn{width:100%;padding:14px 16px;border:1px solid var(--gold);background:var(--gold);color:var(--ink);font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600;cursor:pointer;transition:all .25s;margin-top:4px}
+.btn:hover{background:transparent;transform:translateY(-1px)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.msg{margin-top:14px;min-height:22px;font-size:13px;line-height:1.5}
+.msg.ok{color:var(--ok)}
+.msg.err{color:var(--err)}
+.links{margin-top:16px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.links a{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);text-decoration:none}
+.links a:hover{color:var(--gold)}
+.right .kicker,
+.right .title,
+.right .desc,
+.right .field,
+.right .btn,
+.right .msg,
+.right .links{
+  opacity:0;
+  transform:translateY(10px);
+  animation:riseIn .45s ease forwards;
+}
+.right .kicker{animation-delay:.18s}
+.right .title{animation-delay:.22s}
+.right .desc{animation-delay:.26s}
+.right .field:nth-of-type(1){animation-delay:.3s}
+.right .field:nth-of-type(2){animation-delay:.33s}
+.right .field:nth-of-type(3){animation-delay:.36s}
+.right .field:nth-of-type(4){animation-delay:.39s}
+.right .btn{animation-delay:.42s}
+.right .msg{animation-delay:.46s}
+.right .links{animation-delay:.5s}
+
+@keyframes pageFade{from{opacity:0}to{opacity:1}}
+@keyframes shellIn{to{opacity:1;transform:none}}
+@keyframes riseIn{to{opacity:1;transform:none}}
+
+@media(max-width:900px){
+  .wrap{grid-template-columns:1fr}
+  .left{padding:34px 28px;min-height:240px}
+  .left h2{font-size:40px}
+  .right{padding:32px 24px}
+  .title{font-size:42px}
+}
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="left">
+      <div>
+        <div class="logo">AURUM</div>
+        <div class="pill">Create Account</div>
+        <h2>Join AURUM<br>Members</h2>
+        <p>Create your account for faster bookings and personalized dining updates.</p>
+      </div>
+      <div class="left-foot">Mayfair, London</div>
+    </section>
+
+    <section class="right">
+      <div class="kicker">Guest Signup</div>
+      <h1 class="title">Create<br>Account</h1>
+      <p class="desc">Use your name, email, and password to create your account.</p>
+
+      <div class="field">
+        <label for="name">Full Name</label>
+        <input id="name" type="text" placeholder="Your full name" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="email">Email Address</label>
+        <input id="email" type="email" placeholder="yourname@gmail.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Minimum 8 characters" autocomplete="new-password">
+      </div>
+      <div class="field">
+        <label for="confirmPassword">Confirm Password</label>
+        <input id="confirmPassword" type="password" placeholder="Re-enter password" autocomplete="new-password">
+      </div>
+      <button id="signupBtn" class="btn">Create Account</button>
+
+      <div id="msg" class="msg"></div>
+      <div class="links">
+        <a href="login.html">Already have account? Login</a>
+        <a href="index.html">Back to Website</a>
+      </div>
+    </section>
+  </main>
+
+<script>
+const nameEl=document.getElementById('name');
+const emailEl=document.getElementById('email');
+const passwordEl=document.getElementById('password');
+const confirmPasswordEl=document.getElementById('confirmPassword');
+const signupBtn=document.getElementById('signupBtn');
+const msg=document.getElementById('msg');
+const DEMO_USERS_KEY='aurum_demo_users';
+
+function showMsg(text,type){
+  msg.textContent=text;
+  msg.className='msg'+(type?(' '+type):'');
+}
+
+function cleanEmail(v){
+  return String(v||'').replace(/\s+/g,'').trim().toLowerCase();
+}
+
+function isApiUnavailableError(err){
+  const txt=String(err&&err.message||'').toLowerCase();
+  return txt.includes('api not found')||txt.includes('failed to fetch')||txt.includes('networkerror')||txt.includes('load failed');
+}
+
+function getDemoUsers(){
+  try{
+    const raw=localStorage.getItem(DEMO_USERS_KEY);
+    const parsed=raw?JSON.parse(raw):[];
+    return Array.isArray(parsed)?parsed:[];
+  }catch(_){
+    return [];
+  }
+}
+
+function saveDemoUsers(users){
+  try{localStorage.setItem(DEMO_USERS_KEY,JSON.stringify(users));}catch(_){}
+}
+
+async function signup(){
+  const name=String(nameEl.value||'').trim();
+  const email=cleanEmail(emailEl.value);
+  const password=String(passwordEl.value||'');
+  const confirmPassword=String(confirmPasswordEl.value||'');
+  emailEl.value=email;
+
+  if(!name||!email||!password||!confirmPassword){
+    showMsg('Please fill all fields.','err');
+    return;
+  }
+  if(password.length<8){
+    showMsg('Password must be at least 8 characters.','err');
+    return;
+  }
+  if(password!==confirmPassword){
+    showMsg('Passwords do not match.','err');
+    return;
+  }
+
+  signupBtn.disabled=true;
+  signupBtn.textContent='Creating...';
+  try{
+    const res=await fetch('/api/auth/signup',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,email,password,confirmPassword})
+    });
+    if(res.status===404){
+      throw new Error('Signup API not found. Backend server is not running/deployed.');
+    }
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error(data.error||'Signup failed.');
+    showMsg('Account created successfully. Redirecting to login...','ok');
+    nameEl.value='';
+    emailEl.value='';
+    passwordEl.value='';
+    confirmPasswordEl.value='';
+    setTimeout(()=>{window.location.href='login.html';},1200);
+  }catch(err){
+    if(isApiUnavailableError(err)){
+      const users=getDemoUsers();
+      if(users.some(u=>String(u.email||'').toLowerCase()===email)){
+        showMsg('Account already exists for this email.','err');
+      }else{
+        users.push({name,email,createdAt:Date.now()});
+        saveDemoUsers(users);
+        showMsg('Account created in demo mode. Redirecting to login...','ok');
+        nameEl.value='';
+        emailEl.value='';
+        passwordEl.value='';
+        confirmPasswordEl.value='';
+        setTimeout(()=>{window.location.href='login.html';},1200);
+      }
+    }else{
+      showMsg(err.message||'Signup failed.','err');
+    }
+  }finally{
+    signupBtn.disabled=false;
+    signupBtn.textContent='Create Account';
+  }
+}
+
+signupBtn.addEventListener('click',signup);
+[nameEl,emailEl,passwordEl,confirmPasswordEl].forEach(el=>{
+  el.addEventListener('keydown',e=>{if(e.key==='Enter')signup();});
+});
+</script>
+</body>
+</html>
