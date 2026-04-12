@@ -56,7 +56,7 @@ nav.scrolled .nav-links a{color:var(--stone)}
 nav.scrolled .nav-links a:hover{color:var(--gold)}
 .nav-cta{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.7);padding:11px 26px;text-decoration:none;transition:all .4s;white-space:nowrap}
 .nav-cta:hover{background:var(--gold);color:var(--charcoal)}
-.nav-ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none}
+.nav-ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
 .nav-ham span{display:block;width:24px;height:1px;background:var(--white);transition:all .3s}
 nav.scrolled .nav-ham span{background:var(--charcoal)}
 
@@ -411,29 +411,14 @@ footer{background:var(--char2);padding:90px 70px 44px}
 @media(max-width:1024px){
   nav{padding:20px 28px}
   nav.scrolled{padding:16px 28px}
-  .nav-cta{display:none}
-  .nav-ham{display:flex;z-index:1201}
-  .nav-links{position:fixed;top:78px;left:16px;right:16px;display:flex;flex-direction:column;gap:0;background:rgba(26,22,18,.96);border:1px solid rgba(201,168,76,.35);padding:8px 14px;max-height:calc(100svh - 96px);overflow:auto;opacity:0;transform:translateY(-10px);pointer-events:none;transition:opacity .25s ease,transform .25s ease}
-  .nav-links li{border-bottom:1px solid rgba(255,255,255,.08)}
-  .nav-links li:last-child{border-bottom:none}
-  .nav-links a{display:block;padding:14px 2px;font-size:10px;letter-spacing:2.5px;color:rgba(255,255,255,.86)}
-  .nav-links a::after{display:none}
-  nav.scrolled .nav-links a{color:rgba(255,255,255,.86)}
-  nav.open .nav-links{opacity:1;transform:none;pointer-events:auto}
-  nav.open .nav-ham span:nth-child(1){transform:translateY(6px) rotate(45deg)}
-  nav.open .nav-ham span:nth-child(2){opacity:0}
-  nav.open .nav-ham span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+  .nav-links,.nav-cta{display:none}
+  .nav-ham{display:flex}
   .story-inner,.chef-inner,.wine-inner,.tasting-head,.events-head,.contact-inner{grid-template-columns:1fr;gap:44px;padding:0 28px}
   .story,.tasting-sec,.reviews-sec,.values-sec,.events-sec,.contact-sec,.private-sec,.chef-sec,.wine-sec{padding:90px 0}
   .story-img-float{display:none}
   .features,.gallery-head,.gallery-grid2,.tasting-inner,.private-inner,.reviews-inner,.values-inner{padding:0 28px 90px}
   .menu-inner,.press-inner,.res-inner,.foot-top{padding:0 28px}
   .gallery-strip{padding:0 28px}
-  .menu-tabs{justify-content:flex-start;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;scrollbar-width:none}
-  .menu-tabs::-webkit-scrollbar{display:none}
-  .tab{padding:12px 16px;letter-spacing:2px;white-space:nowrap;flex:0 0 auto}
-  .mi{padding:22px 14px}
-  .mi-name,.mi-price{font-size:19px}
   .menu-grid,.reviews-grid,.rooms,.press-quotes,.values-grid{grid-template-columns:1fr;gap:16px}
   .rform{grid-template-columns:1fr}
   .course{grid-template-columns:60px 1fr;gap:20px}
@@ -447,83 +432,6 @@ footer{background:var(--char2);padding:90px 70px 44px}
   .review-score{flex-wrap:wrap;justify-content:center;gap:30px;padding:36px 28px}
   .events-list .event{grid-template-columns:80px 1fr;gap:20px}
   .event-tag{display:none}
-}
-
-@media(max-width:640px){
-  nav{padding:16px}
-  nav.scrolled{padding:14px 16px}
-  .nav-logo{font-size:20px;letter-spacing:6px}
-  .nav-logo .aurum-symbol{width:18px;height:18px}
-  .nav-links{top:66px;left:12px;right:12px}
-  .hero{min-height:100svh;height:auto;padding:120px 0 80px}
-  .hero-scroll{display:none}
-  .hero-tagline{font-size:11px;letter-spacing:2.4px}
-  .hero-actions{flex-direction:column;gap:12px}
-  .btn-gold,.btn-ghost{width:100%;text-align:center;padding:14px 18px}
-  .story-inner,.chef-inner,.wine-inner,.tasting-head,.events-head,.contact-inner{padding:0 16px;gap:30px}
-  .features,.gallery-head,.gallery-grid2,.tasting-inner,.private-inner,.reviews-inner,.values-inner{padding:0 16px 70px}
-  .menu-inner,.press-inner,.res-inner,.foot-top,.values-inner,.contact-inner{padding-left:16px;padding-right:16px}
-  .gallery-strip{padding:0 16px 24px}
-  .event{padding:24px 18px}
-  .review{padding:34px 22px}
-  .map-banner{height:380px}
-  .map-pin-wrap h3{font-size:28px}
-  .map-pin-wrap p{font-size:10px;letter-spacing:2px}
-  footer{padding:50px 16px 26px}
-  .foot-top{grid-template-columns:1fr;gap:24px}
-  .mail-popup{left:12px;right:12px;top:16px;min-width:0}
-}
-
-@media(max-width:420px){
-  .loader-logo{font-size:34px;letter-spacing:6px;gap:8px}
-  .loader-logo .aurum-symbol{width:34px;height:34px}
-  .loader-sub{letter-spacing:3px}
-  .hero-content{padding:0 14px}
-  .hero-badge{font-size:8px;letter-spacing:2px;gap:8px;margin-bottom:18px;flex-wrap:wrap;justify-content:center}
-  .hero-badge::before,.hero-badge::after{width:14px}
-  .hero-h1{font-size:clamp(42px,14vw,58px)}
-  .hero-tagline{font-size:10px;letter-spacing:1.8px;margin-top:20px}
-  .label{letter-spacing:3px;gap:8px}
-  .label::before{width:20px}
-  .story-text .story-h2,
-  .gallery-head h2,
-  .chef-text h2,
-  .wine-text h2,
-  .tasting-head h2,
-  .private-head h2,
-  .reviews-head h2,
-  .events-head h2,
-  .values-head h2,
-  .res-inner h2{font-size:clamp(32px,10vw,44px)}
-  .story-text p,.chef-text p,.wine-text p,.events-head p,.tasting-head p,.private-head p{font-size:14px;line-height:1.75}
-  .story-stats{grid-template-columns:1fr;gap:14px}
-  .stat-item,.stat-item:not(:last-child){border-right:none;margin-right:0;padding-right:0}
-  .stat-num{font-size:40px}
-  .mi{flex-direction:column;gap:10px}
-  .mi-price{font-size:18px}
-  .menu-note{font-size:10px;letter-spacing:1px}
-  .course{grid-template-columns:1fr;gap:8px;padding:26px 0}
-  .course-num{font-size:36px}
-  .course-info h3{font-size:24px}
-  .tp-text h3{font-size:28px}
-  .tp-price .amount{font-size:52px}
-  .review{padding:28px 16px}
-  .review blockquote{font-size:17px;line-height:1.6}
-  .review-score{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:26px 16px}
-  .rs-num{font-size:38px}
-  .event{grid-template-columns:1fr;gap:8px;padding:18px 14px}
-  .event-date{display:flex;align-items:flex-end;gap:8px;text-align:left}
-  .event-date .day{font-size:32px}
-  .event-date .month{font-size:9px;letter-spacing:2px}
-  .event-info h3{font-size:21px}
-  .value-item{padding:24px 14px;gap:14px}
-  .value-num{font-size:42px;width:40px}
-  .value-body h3{font-size:22px}
-  .contact-col h3{font-size:26px}
-  .hours-table td{font-size:12px}
-  .hours-table td:first-child{font-size:9px;letter-spacing:1.4px}
-  .foot-brand .flogo{font-size:26px;letter-spacing:5px}
-  .foot-brand p{max-width:none}
 }
 </style>
 </head>
@@ -575,9 +483,9 @@ footer{background:var(--char2);padding:90px 70px 44px}
     <li><a href="#" id="logoutLink">Logout</a></li>
   </ul>
   <a href="#reservations" class="nav-cta">Reserve a Table</a>
-  <button class="nav-ham" id="ham" type="button" aria-label="Toggle menu" aria-expanded="false">
+  <div class="nav-ham" id="ham">
     <span></span><span></span><span></span>
-  </button>
+  </div>
 </nav>
 
 <!-- ══════════════ HERO ══════════════ -->
@@ -1345,21 +1253,6 @@ footer{background:var(--char2);padding:90px 70px 44px}
 </footer>
 
 <script>
-const DEMO_SESSION_KEY='aurum_auth_email';
-
-(async function ensureAccess(){
-  try{
-    const res=await fetch('/api/auth/status',{cache:'no-store'});
-    if(res.ok){
-      const data=await res.json().catch(()=>({}));
-      if(data&&data.authenticated) return;
-    }
-  }catch(_){}
-  let localAuth=false;
-  try{ localAuth=Boolean(localStorage.getItem(DEMO_SESSION_KEY)); }catch(_){}
-  if(!localAuth){ window.location.href='login.html'; }
-})();
-
 /* ── LOADER ── */
 window.addEventListener('load',()=>{
   setTimeout(()=>document.getElementById('loader').classList.add('done'),1800);
@@ -1379,24 +1272,6 @@ document.querySelectorAll('a,button,.tab,.gi,.room,.event,.feat,.course').forEac
 /* ── NAV SCROLL ── */
 const nav=document.getElementById('nav');
 window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>80));
-const ham=document.getElementById('ham');
-const navLinks=[...document.querySelectorAll('.nav-links a')];
-
-function closeMobileNav(){
-  nav.classList.remove('open');
-  if(ham) ham.setAttribute('aria-expanded','false');
-}
-
-if(ham){
-  ham.addEventListener('click',()=>{
-    const willOpen=!nav.classList.contains('open');
-    nav.classList.toggle('open',willOpen);
-    ham.setAttribute('aria-expanded',String(willOpen));
-  });
-}
-
-navLinks.forEach(link=>link.addEventListener('click',closeMobileNav));
-window.addEventListener('resize',()=>{if(window.innerWidth>1024) closeMobileNav();});
 
 /* ── REVEAL ── */
 const obs=new IntersectionObserver(entries=>{
@@ -1559,10 +1434,6 @@ if(logoutLink){
     e.preventDefault();
     try{
       await fetch('/api/auth/logout',{method:'POST'});
-    }catch(_){}
-    try{
-      localStorage.removeItem('aurum_auth_email');
-      localStorage.removeItem('aurum_auth_ts');
     }catch(_){}
     window.location.href='login.html';
   });

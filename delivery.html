@@ -428,21 +428,6 @@ footer p{font-size:14px;color:var(--stone);text-align:center}
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-const DEMO_SESSION_KEY = 'aurum_auth_email';
-
-(async function ensureAccess() {
-  try {
-    const res = await fetch('/api/auth/status', { cache: 'no-store' });
-    if (res.ok) {
-      const data = await res.json().catch(() => ({}));
-      if (data && data.authenticated) return;
-    }
-  } catch (_) { }
-  let localAuth = false;
-  try { localAuth = Boolean(localStorage.getItem(DEMO_SESSION_KEY)); } catch (_) { }
-  if (!localAuth) window.location.href = 'login.html';
-})();
-
 const addCartButtons = Array.from(document.querySelectorAll('.add-cart-btn'));
 const cartTopBtn = document.getElementById('cartTopBtn');
 const cartCount = document.getElementById('cartCount');
@@ -861,10 +846,6 @@ const logoutBtn = document.getElementById('logoutBtn');
 if (logoutBtn) {
   logoutBtn.addEventListener('click', async () => {
     try { await fetch('/api/auth/logout', { method: 'POST' }); } catch (_) { }
-    try {
-      localStorage.removeItem('aurum_auth_email');
-      localStorage.removeItem('aurum_auth_ts');
-    } catch (_) { }
     window.location.href = 'login.html';
   });
 }

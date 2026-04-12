@@ -164,7 +164,6 @@ const passwordEl=document.getElementById('password');
 const confirmPasswordEl=document.getElementById('confirmPassword');
 const signupBtn=document.getElementById('signupBtn');
 const msg=document.getElementById('msg');
-const DEMO_USERS_KEY='aurum_demo_users';
 
 function showMsg(text,type){
   msg.textContent=text;
@@ -173,25 +172,6 @@ function showMsg(text,type){
 
 function cleanEmail(v){
   return String(v||'').replace(/\s+/g,'').trim().toLowerCase();
-}
-
-function isApiUnavailableError(err){
-  const txt=String(err&&err.message||'').toLowerCase();
-  return txt.includes('api not found')||txt.includes('failed to fetch')||txt.includes('networkerror')||txt.includes('load failed');
-}
-
-function getDemoUsers(){
-  try{
-    const raw=localStorage.getItem(DEMO_USERS_KEY);
-    const parsed=raw?JSON.parse(raw):[];
-    return Array.isArray(parsed)?parsed:[];
-  }catch(_){
-    return [];
-  }
-}
-
-function saveDemoUsers(users){
-  try{localStorage.setItem(DEMO_USERS_KEY,JSON.stringify(users));}catch(_){}
 }
 
 async function signup(){
@@ -205,14 +185,6 @@ async function signup(){
     showMsg('Please fill all fields.','err');
     return;
   }
-  if(password.length<8){
-    showMsg('Password must be at least 8 characters.','err');
-    return;
-  }
-  if(password!==confirmPassword){
-    showMsg('Passwords do not match.','err');
-    return;
-  }
 
   signupBtn.disabled=true;
   signupBtn.textContent='Creating...';
@@ -222,9 +194,6 @@ async function signup(){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({name,email,password,confirmPassword})
     });
-    if(res.status===404){
-      throw new Error('Signup API not found. Backend server is not running/deployed.');
-    }
     const data=await res.json().catch(()=>({}));
     if(!res.ok) throw new Error(data.error||'Signup failed.');
     showMsg('Account created successfully. Redirecting to login...','ok');
@@ -234,23 +203,7 @@ async function signup(){
     confirmPasswordEl.value='';
     setTimeout(()=>{window.location.href='login.html';},1200);
   }catch(err){
-    if(isApiUnavailableError(err)){
-      const users=getDemoUsers();
-      if(users.some(u=>String(u.email||'').toLowerCase()===email)){
-        showMsg('Account already exists for this email.','err');
-      }else{
-        users.push({name,email,createdAt:Date.now()});
-        saveDemoUsers(users);
-        showMsg('Account created in demo mode. Redirecting to login...','ok');
-        nameEl.value='';
-        emailEl.value='';
-        passwordEl.value='';
-        confirmPasswordEl.value='';
-        setTimeout(()=>{window.location.href='login.html';},1200);
-      }
-    }else{
-      showMsg(err.message||'Signup failed.','err');
-    }
+    showMsg(err.message||'Signup failed.','err');
   }finally{
     signupBtn.disabled=false;
     signupBtn.textContent='Create Account';
