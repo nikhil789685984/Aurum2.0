@@ -428,6 +428,28 @@ footer p{font-size:14px;color:var(--stone);text-align:center}
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+const DEMO_SESSION_KEY = 'aurum_auth_email';
+const API_BASE = (() => {
+  let saved = '';
+  try { saved = String(localStorage.getItem('aurum_api_base') || '').trim(); } catch (_) { }
+  const inferred = 'https://aurum2-0-1-1.onrender.com';
+  return String(window.AURUM_API_BASE || saved || inferred).replace(/\/+$/, '');
+})();
+const apiUrl = path => API_BASE ? `${API_BASE}${path}` : path;
+
+(async function ensureAccess() {
+  try {
+    const res = await fetch(apiUrl('/api/auth/status'), { cache: 'no-store', credentials: 'include' });
+    if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+      if (data && data.authenticated) return;
+    }
+  } catch (_) { }
+  let localAuth = false;
+  try { localAuth = Boolean(localStorage.getItem(DEMO_SESSION_KEY)); } catch (_) { }
+  if (!localAuth) window.location.href = 'login.html';
+})();
+
 const addCartButtons = Array.from(document.querySelectorAll('.add-cart-btn'));
 const cartTopBtn = document.getElementById('cartTopBtn');
 const cartCount = document.getElementById('cartCount');
@@ -718,7 +740,8 @@ async function startCheckout() {
   persistDeliveryLocation();
   try {
     setCheckoutLoading(true);
-    const res = await fetch('/api/orders/create-razorpay-order', {
+    const res = await fetch(apiUrl('/api/orders/create-razorpay-order'), {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ items, deliveryLocation })
@@ -746,7 +769,8 @@ async function startCheckout() {
       theme: { color: '#C9A84C' },
       handler: async function (response) {
         try {
-          const verifyRes = await fetch('/api/orders/verify-razorpay-payment', {
+          const verifyRes = await fetch(apiUrl('/api/orders/verify-razorpay-payment'), {
+            credentials: 'include',
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(response)
@@ -845,7 +869,11 @@ confirmPaymentFromUrl();
 const logoutBtn = document.getElementById('logoutBtn');
 if (logoutBtn) {
   logoutBtn.addEventListener('click', async () => {
-    try { await fetch('/api/auth/logout', { method: 'POST' }); } catch (_) { }
+    try { await fetch(apiUrl('/api/auth/logout'), { method: 'POST', credentials: 'include' }); } catch (_) { }
+    try {
+      localStorage.removeItem('aurum_auth_email');
+      localStorage.removeItem('aurum_auth_ts');
+    } catch (_) { }
     window.location.href = 'login.html';
   });
 }

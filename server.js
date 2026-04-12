@@ -9,6 +9,15 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const DEFAULT_ALLOWED_ORIGINS = [
+  'https://nikhil789685984.github.io',
+  'https://sprightly-brioche-bdd3e4.netlify.app'
+];
+const ENV_ALLOWED_ORIGINS = String(process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map(v => v.trim())
+  .filter(Boolean);
+const ALLOWED_ORIGINS = new Set([...DEFAULT_ALLOWED_ORIGINS, ...ENV_ALLOWED_ORIGINS]);
 const otpStore = new Map();
 const usersStore = new Map();
 const sessionsStore = new Map();
@@ -25,6 +34,21 @@ const razorpayOrderStore = new Map();
 const notifiedRazorpayOrders = new Set();
 let stripeClient = null;
 let razorpayClient = null;
+
+app.use((req, res, next) => {
+  const origin = String(req.headers.origin || '').trim();
+  if (origin && (ALLOWED_ORIGINS.has(origin) || ALLOWED_ORIGINS.has('*'))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Vary', 'Origin');
+  }
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
 
 app.post('/api/orders/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   try {
@@ -125,16 +149,22 @@ function createSession(email) {
 
 function setSessionCookie(res, token) {
   const maxAge = Math.floor(SESSION_TTL_MS / 1000);
+  const isProduction = process.env.NODE_ENV === 'production';
+  const sameSite = isProduction ? 'None' : 'Lax';
+  const secure = isProduction ? '; Secure' : '';
   res.setHeader(
     'Set-Cookie',
-    `aurum_session=${token}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=Lax`
+    `aurum_session=${token}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=${sameSite}${secure}`
   );
 }
 
 function clearSessionCookie(res) {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const sameSite = isProduction ? 'None' : 'Lax';
+  const secure = isProduction ? '; Secure' : '';
   res.setHeader(
     'Set-Cookie',
-    'aurum_session=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax'
+    `aurum_session=; HttpOnly; Path=/; Max-Age=0; SameSite=${sameSite}${secure}`
   );
 }
 
@@ -167,6 +197,9 @@ function createTransporter() {
     host: smtpHost,
     port: smtpPort,
     secure: smtpPort === 465,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
     auth: {
       user: smtpUser,
       pass: smtpPass

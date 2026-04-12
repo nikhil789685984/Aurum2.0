@@ -248,6 +248,23 @@ const verifyBtn=document.getElementById('verifyBtn');
 const resendBtn=document.getElementById('resendBtn');
 const otpWrap=document.getElementById('otpWrap');
 const msg=document.getElementById('msg');
+const DEMO_OTP_PREFIX='aurum_demo_otp_';
+const DEMO_SESSION_KEY='aurum_auth_email';
+const API_BASE=(()=>{
+  let saved='';
+  try{saved=String(localStorage.getItem('aurum_api_base')||'').trim();}catch(_){}
+  let fromUrl='';
+  try{
+    fromUrl=String(new URLSearchParams(location.search).get('api')||'').trim();
+    if(fromUrl){
+      fromUrl=fromUrl.replace(/\/+$/,'');
+      localStorage.setItem('aurum_api_base',fromUrl);
+    }
+  }catch(_){}
+  const inferred='https://aurum2-0-1-1.onrender.com';
+  return String(window.AURUM_API_BASE||fromUrl||saved||inferred).replace(/\/+$/,'');
+})();
+const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
 
 function showMsg(text,type){
   msg.textContent=text;
@@ -258,6 +275,40 @@ function cleanEmail(v){
   return String(v||'').replace(/\s+/g,'').trim().toLowerCase();
 }
 
+function isApiUnavailableError(err){
+  const txt=String(err&&err.message||'').toLowerCase();
+  return txt.includes('api not found')||txt.includes('failed to fetch')||txt.includes('networkerror')||txt.includes('load failed');
+}
+
+function setLocalSession(email){
+  try{
+    localStorage.setItem(DEMO_SESSION_KEY,email);
+    localStorage.setItem('aurum_auth_ts',String(Date.now()));
+  }catch(_){}
+}
+
+function hasLocalSession(){
+  try{return Boolean(localStorage.getItem(DEMO_SESSION_KEY));}
+  catch(_){return false;}
+}
+
+function saveDemoOtp(email,otp){
+  const rec={otp,expiresAt:Date.now()+5*60*1000};
+  try{localStorage.setItem(DEMO_OTP_PREFIX+email,JSON.stringify(rec));}catch(_){}
+}
+
+function readDemoOtp(email){
+  try{
+    const raw=localStorage.getItem(DEMO_OTP_PREFIX+email);
+    if(!raw) return null;
+    const rec=JSON.parse(raw);
+    if(!rec||Date.now()>Number(rec.expiresAt||0)) return null;
+    return rec;
+  }catch(_){
+    return null;
+  }
+}
+
 async function sendOtp(){
   const email=cleanEmail(emailEl.value);
   emailEl.value=email;
@@ -265,17 +316,28 @@ async function sendOtp(){
   sendBtn.disabled=true;
   sendBtn.textContent='Sending OTP...';
   try{
-    const res=await fetch('/api/auth/send-otp',{
+    const res=await fetch(apiUrl('/api/auth/send-otp'),{
       method:'POST',
+      credentials:'include',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({email})
     });
+    if(res.status===404){
+      throw new Error('Login API not found. Backend server is not running/deployed.');
+    }
     const data=await res.json().catch(()=>({}));
     if(!res.ok) throw new Error(data.error||'Failed to send OTP.');
     otpWrap.classList.add('on');
     showMsg('OTP sent. Check your inbox.','ok');
   }catch(err){
-    showMsg(err.message||'Failed to send OTP.','err');
+    if(isApiUnavailableError(err)){
+      const demoOtp=String(Math.floor(100000+Math.random()*900000));
+      saveDemoOtp(email,demoOtp);
+      otpWrap.classList.add('on');
+      showMsg(`Demo mode OTP: ${demoOtp}`,'ok');
+    }else{
+      showMsg(err.message||'Failed to send OTP.','err');
+    }
   }finally{
     sendBtn.disabled=false;
     sendBtn.textContent='Send OTP';
@@ -289,17 +351,33 @@ async function verifyOtp(){
   verifyBtn.disabled=true;
   verifyBtn.textContent='Verifying...';
   try{
-    const res=await fetch('/api/auth/verify-otp',{
+    const res=await fetch(apiUrl('/api/auth/verify-otp'),{
       method:'POST',
+      credentials:'include',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({email,otp})
     });
+    if(res.status===404){
+      throw new Error('Login API not found. Backend server is not running/deployed.');
+    }
     const data=await res.json().catch(()=>({}));
     if(!res.ok) throw new Error(data.error||'OTP verification failed.');
+    setLocalSession(email);
     showMsg('Login successful. Redirecting...','ok');
     setTimeout(()=>{window.location.href='index.html'},900);
   }catch(err){
-    showMsg(err.message||'OTP verification failed.','err');
+    if(isApiUnavailableError(err)){
+      const rec=readDemoOtp(email);
+      if(!rec||String(rec.otp)!==otp){
+        showMsg('Invalid or expired OTP. Please resend OTP.','err');
+      }else{
+        setLocalSession(email);
+        showMsg('Demo login successful. Redirecting...','ok');
+        setTimeout(()=>{window.location.href='index.html'},900);
+      }
+    }else{
+      showMsg(err.message||'OTP verification failed.','err');
+    }
   }finally{
     verifyBtn.disabled=false;
     verifyBtn.textContent='Verify OTP';
@@ -312,10 +390,12 @@ verifyBtn.addEventListener('click',verifyOtp);
 otpEl.addEventListener('keydown',e=>{if(e.key==='Enter')verifyOtp();});
 emailEl.addEventListener('keydown',e=>{if(e.key==='Enter')sendOtp();});
 
-fetch('/api/auth/status')
+fetch(apiUrl('/api/auth/status'),{credentials:'include'})
   .then(res=>res.json())
-  .then(data=>{if(data&&data.authenticated) window.location.href='index.html';})
-  .catch(()=>{});
+  .then(data=>{
+    if((data&&data.authenticated)||hasLocalSession()) window.location.href='index.html';
+  })
+  .catch(()=>{if(hasLocalSession()) window.location.href='index.html';});
 </script>
 </body>
 </html>

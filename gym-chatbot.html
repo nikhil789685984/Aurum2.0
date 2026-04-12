@@ -102,6 +102,13 @@ const input=document.getElementById('chatInput');
 const sendBtn=document.getElementById('sendBtn');
 const messages=document.getElementById('messages');
 const botStatus=document.getElementById('botStatus');
+const API_BASE=(()=>{
+  let saved='';
+  try{saved=String(localStorage.getItem('aurum_api_base')||'').trim();}catch(_){}
+  const inferred='https://aurum2-0-1-1.onrender.com';
+  return String(window.AURUM_API_BASE||saved||inferred).replace(/\/+$/,'');
+})();
+const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
 
 function addMessage(text,role){
   const div=document.createElement('div');
@@ -112,7 +119,8 @@ function addMessage(text,role){
 }
 
 async function askGymBot(message){
-  const res=await fetch('/api/gym-chatbot',{
+  const res=await fetch(apiUrl('/api/gym-chatbot'),{
+    credentials:'include',
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({message})
