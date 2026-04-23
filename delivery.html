@@ -436,13 +436,29 @@ const API_BASE = (() => {
   return String(window.AURUM_API_BASE || sameOrigin || saved).replace(/\/+$/, '');
 })();
 const apiUrl = path => API_BASE ? `${API_BASE}${path}` : path;
+function clearLocalSession() {
+  try {
+    localStorage.removeItem(DEMO_SESSION_KEY);
+    localStorage.removeItem('aurum_auth_ts');
+  } catch (_) { }
+}
 
 (async function ensureAccess() {
   try {
     const res = await fetch(apiUrl('/api/auth/status'), { cache: 'no-store', credentials: 'include' });
     if (res.ok) {
-      const data = await res.json().catch(() => ({}));
-      if (data && data.authenticated) return;
+            const data = await res.json().catch(() => null);
+            if (data && typeof data.authenticated === 'boolean') {
+              if (data.authenticated) return;
+              else {
+                clearLocalSession();
+                window.location.href='login.html';
+                return;
+              }
+            }
+            clearLocalSession();
+            window.location.href = 'login.html';
+            return;
     }
   } catch (_) { }
   let localAuth = false;

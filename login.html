@@ -260,7 +260,7 @@ input:focus{border-color:rgba(201,168,76,.9);box-shadow:0 0 0 3px rgba(201,168,7
 
       <div id="msg" class="msg"></div>
       <a class="back" href="signup.html">Create Account</a>
-      <a class="back" href="index.html">Back to Website</a>
+      <a class="back" href="/">Back to Website</a>
     </section>
   </main>
 
@@ -312,6 +312,13 @@ function setLocalSession(email){
   try{
     localStorage.setItem(DEMO_SESSION_KEY,email);
     localStorage.setItem('aurum_auth_ts',String(Date.now()));
+  }catch(_){}
+}
+
+function clearLocalSession(){
+  try{
+    localStorage.removeItem(DEMO_SESSION_KEY);
+    localStorage.removeItem('aurum_auth_ts');
   }catch(_){}
 }
 
@@ -441,12 +448,22 @@ identifierEl.addEventListener('keydown',e=>{
   else sendOtp();
 });
 
-fetch(apiUrl('/api/auth/status'),{credentials:'include'})
-  .then(res=>res.json())
-  .then(data=>{
-    if((data&&data.authenticated)||hasLocalSession()) window.location.href='index.html';
+fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include'})
+  .then(res=>{
+    if(!res.ok) throw new Error('API unreachable');
+    return res.json();
   })
-  .catch(()=>{if(hasLocalSession()) window.location.href='index.html';});
+  .then(data=>{
+    if(data&&typeof data.authenticated==='boolean'){
+      if(data.authenticated) window.location.href='index.html';
+      else clearLocalSession();
+      return;
+    }
+    clearLocalSession();
+  })
+  .catch(err=>{
+    if(isApiUnavailableError(err) && hasLocalSession()) window.location.href='index.html';
+  });
 </script>
 </body>
 </html>

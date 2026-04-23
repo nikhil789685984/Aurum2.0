@@ -1741,6 +1741,10 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'login.html'));
 });
 
+app.get('/login.html', (req, res) => {
+  res.redirect('/login');
+});
+
 app.get('/signup', (req, res) => {
   if (getAuthenticatedEmail(req)) {
     return res.redirect('/');
@@ -1748,14 +1752,15 @@ app.get('/signup', (req, res) => {
   res.sendFile(path.join(__dirname, 'signup.html'));
 });
 
-app.get('/', (req, res) => {
-  if (getAuthenticatedEmail(req)) {
-    return res.sendFile(path.join(__dirname, 'index.html'));
-  }
-  return res.sendFile(path.join(__dirname, 'login.html'));
+app.get('/signup.html', (req, res) => {
+  res.redirect('/signup');
 });
 
-app.get('/index.html', requireAuth, (req, res) => {
+app.get('/', (req, res) => {
+  return res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/index.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 

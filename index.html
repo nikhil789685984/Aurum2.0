@@ -1345,7 +1345,6 @@ footer{background:var(--char2);padding:90px 70px 44px}
 </footer>
 
 <script>
-const DEMO_SESSION_KEY='aurum_auth_email';
 const API_BASE=(()=>{
   let saved='';
   try{saved=String(localStorage.getItem('aurum_api_base')||'').trim();}catch(_){}
@@ -1353,19 +1352,6 @@ const API_BASE=(()=>{
   return String(window.AURUM_API_BASE||sameOrigin||saved).replace(/\/+$/,'');
 })();
 const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
-
-(async function ensureAccess(){
-  try{
-    const res=await fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include'});
-    if(res.ok){
-      const data=await res.json().catch(()=>({}));
-      if(data&&data.authenticated) return;
-    }
-  }catch(_){}
-  let localAuth=false;
-  try{ localAuth=Boolean(localStorage.getItem(DEMO_SESSION_KEY)); }catch(_){}
-  if(!localAuth){ window.location.href='login.html'; }
-})();
 
 /* ── LOADER ── */
 window.addEventListener('load',()=>{
@@ -1581,8 +1567,23 @@ function showMailPopup(message){
 }
 
 const logoutLink=document.getElementById('logoutLink');
+function setGuestNavState(){
+  if(!logoutLink) return;
+  logoutLink.textContent='Login';
+  logoutLink.setAttribute('href','login.html');
+}
+
+fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include'})
+  .then(res=>res.ok?res.json():null)
+  .then(data=>{
+    if(data&&data.authenticated) return;
+    setGuestNavState();
+  })
+  .catch(()=>setGuestNavState());
+
 if(logoutLink){
   logoutLink.addEventListener('click',async e=>{
+    if(logoutLink.getAttribute('href')==='login.html') return;
     e.preventDefault();
     try{
       await fetch(apiUrl('/api/auth/logout'),{method:'POST',credentials:'include'});
