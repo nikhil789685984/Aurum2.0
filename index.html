@@ -16,7 +16,7 @@
   --white:#FFFFFF;--offwhite:#FDF9F4;
 }
 html{scroll-behavior:smooth}
-body{background:var(--cream);color:var(--charcoal);font-family:'Manrope',sans-serif;overflow-x:hidden;cursor:auto}
+body{background:var(--cream);color:var(--charcoal);font-family:'Manrope',sans-serif;overflow-x:hidden;cursor:auto;width:100%;max-width:100%}
 
 /* ─── CURSOR ─────────────────────────────── */
 #cur{display:none}
@@ -455,15 +455,29 @@ footer{background:var(--char2);padding:90px 70px 44px}
   .nav-logo{font-size:20px;letter-spacing:6px}
   .nav-logo .aurum-symbol{width:18px;height:18px}
   .nav-links{top:66px;left:12px;right:12px}
-  .hero{min-height:100svh;height:auto;padding:120px 0 80px}
+  .hero{min-height:100svh;height:auto;padding:104px 0 72px}
+  .hero-bg{background-position:center center}
+  .hero-content{max-width:none;width:100%;padding:0 16px}
   .hero-scroll{display:none}
   .hero-tagline{font-size:11px;letter-spacing:2.4px}
   .hero-actions{flex-direction:column;gap:12px}
-  .btn-gold,.btn-ghost{width:100%;text-align:center;padding:14px 18px}
+  .btn-gold,.btn-ghost{display:block;width:100%;text-align:center;padding:14px 18px}
   .story-inner,.chef-inner,.wine-inner,.tasting-head,.events-head,.contact-inner{padding:0 16px;gap:30px}
   .features,.gallery-head,.gallery-grid2,.tasting-inner,.private-inner,.reviews-inner,.values-inner{padding:0 16px 70px}
   .menu-inner,.press-inner,.res-inner,.foot-top,.values-inner,.contact-inner{padding-left:16px;padding-right:16px}
   .gallery-strip{padding:0 16px 24px}
+  .gallery-strip .gi{width:82vw!important;max-width:none}
+  .gallery-grid2{grid-template-columns:1fr;gap:12px}
+  .gg img{height:220px}
+  .story-img-main,.chef-img-wrap img,.wine-img-wrap img{height:auto;max-height:none}
+  .story-visual,.chef-img-wrap,.wine-img-wrap{width:100%}
+  .menu-grid{grid-template-columns:1fr}
+  .mi{padding:20px 0}
+  .rooms{grid-template-columns:1fr}
+  .room img{height:260px}
+  .events-head,.tasting-head{margin-bottom:36px}
+  .res-inner{max-width:none}
+  .rform input,.rform select,.rform textarea{padding:14px 16px}
   .event{padding:24px 18px}
   .review{padding:34px 22px}
   .map-banner{height:380px}
@@ -483,6 +497,9 @@ footer{background:var(--char2);padding:90px 70px 44px}
   .hero-badge::before,.hero-badge::after{width:14px}
   .hero-h1{font-size:clamp(42px,14vw,58px)}
   .hero-tagline{font-size:10px;letter-spacing:1.8px;margin-top:20px}
+  .hero-actions{margin-top:28px}
+  .btn-gold,.btn-ghost{padding:13px 14px;font-size:9px;letter-spacing:2.2px}
+  .ticker-track span{padding:0 18px;font-size:9px;letter-spacing:2.5px}
   .label{letter-spacing:3px;gap:8px}
   .label::before{width:20px}
   .story-text .story-h2,
@@ -496,6 +513,11 @@ footer{background:var(--char2);padding:90px 70px 44px}
   .values-head h2,
   .res-inner h2{font-size:clamp(32px,10vw,44px)}
   .story-text p,.chef-text p,.wine-text p,.events-head p,.tasting-head p,.private-head p{font-size:14px;line-height:1.75}
+  .story-inner,.chef-inner,.wine-inner,.tasting-head,.events-head,.contact-inner{padding:0 14px;gap:24px}
+  .features,.gallery-head,.gallery-grid2,.tasting-inner,.private-inner,.reviews-inner,.values-inner{padding:0 14px 56px}
+  .menu-inner,.press-inner,.res-inner,.foot-top,.values-inner,.contact-inner{padding-left:14px;padding-right:14px}
+  .gallery-strip{padding:0 14px 22px}
+  .gallery-strip .gi{width:86vw!important}
   .story-stats{grid-template-columns:1fr;gap:14px}
   .stat-item,.stat-item:not(:last-child){border-right:none;margin-right:0;padding-right:0}
   .stat-num{font-size:40px}
@@ -516,6 +538,7 @@ footer{background:var(--char2);padding:90px 70px 44px}
   .event-date .day{font-size:32px}
   .event-date .month{font-size:9px;letter-spacing:2px}
   .event-info h3{font-size:21px}
+  .room-info{padding:22px 18px 24px}
   .value-item{padding:24px 14px;gap:14px}
   .value-num{font-size:42px;width:40px}
   .value-body h3{font-size:22px}
