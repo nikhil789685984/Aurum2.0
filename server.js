@@ -1757,7 +1757,10 @@ app.get('/signup.html', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  return res.sendFile(path.join(__dirname, 'index.html'));
+  if (getAuthenticatedEmail(req)) {
+    return res.sendFile(path.join(__dirname, 'index.html'));
+  }
+  return res.sendFile(path.join(__dirname, 'login.html'));
 });
 
 app.get('/index.html', (req, res) => {
