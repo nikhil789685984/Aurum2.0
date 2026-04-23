@@ -1764,6 +1764,9 @@ app.get('/', (req, res) => {
 });
 
 app.get('/index.html', (req, res) => {
+  if (!getAuthenticatedEmail(req)) {
+    return res.redirect('/login');
+  }
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
