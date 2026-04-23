@@ -111,7 +111,7 @@
         <h1>AURUM Admin Dashboard</h1>
       </div>
       <div class="top-actions">
-        <a class="btn secondary" href="/index.html">Website</a>
+        <a class="btn secondary" href="index.html">Website</a>
         <button class="btn secondary" id="refreshBtn" type="button">Refresh</button>
         <button class="btn" id="logoutBtn" type="button">Logout</button>
       </div>
@@ -370,7 +370,7 @@
 
     logoutBtn.addEventListener('click', async () => {
       try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch (_) {}
-      window.location.href = '/login';
+      window.location.href = 'login.html';
     });
 
     loadAdmin();
