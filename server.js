@@ -1230,6 +1230,117 @@ app.post('/api/orders/create-razorpay-order', requireAuth, createRateLimit({ key
   }
 });
 
+app.post('/api/orders/place-cod-order', requireAuth, createRateLimit({ key: 'place-cod-order', windowMs: 5 * 60 * 1000, max: 12 }), async (req, res) => {
+  try {
+    const items = normalizeCart(req.body?.items);
+    const deliveryLocation = normalizeDeliveryLocation(req.body?.deliveryLocation);
+    if (!items.length) {
+      return res.status(400).json({ error: 'Cart is empty or invalid.' });
+    }
+    const locationError = validateDeliveryLocation(deliveryLocation);
+    if (locationError) {
+      return res.status(400).json({ error: locationError });
+    }
+
+    const amountPaise = getCartTotalInPaise(items);
+    if (!Number.isFinite(amountPaise) || amountPaise <= 0) {
+      return res.status(400).json({ error: 'Unable to calculate cart total.' });
+    }
+
+    const amountTotal = amountPaise / 100;
+    const itemsText = buildCartItemsText(items);
+    const locationText = [
+      `Name: ${deliveryLocation.fullName || 'Not provided'}`,
+      `Phone: ${deliveryLocation.phone || 'Not provided'}`,
+      `Address 1: ${deliveryLocation.addressLine1 || 'Not provided'}`,
+      `Address 2: ${deliveryLocation.addressLine2 || 'Not provided'}`,
+      `Landmark: ${deliveryLocation.landmark || 'Not provided'}`,
+      `City: ${deliveryLocation.city || 'Not provided'}`,
+      `PIN Code: ${deliveryLocation.pincode || 'Not provided'}`,
+      `Instructions: ${deliveryLocation.instructions || 'None'}`
+    ].join('\n');
+    const orderRef = createId('cod');
+    const customerEmail = req.authEmail;
+    const ownerEmail = process.env.ORDER_NOTIFICATION_EMAIL || process.env.TO_EMAIL || 'nikhilsheoran093@gmail.com';
+
+    await sendEmail({
+      to: ownerEmail,
+      subject: `New COD Delivery Order - ${orderRef}`,
+      text: [
+        'A new cash on delivery order has been placed.',
+        '',
+        `Order Ref: ${orderRef}`,
+        `Customer Email: ${customerEmail}`,
+        `Amount: ₹${amountTotal.toFixed(2)}`,
+        '',
+        'Delivery Location:',
+        locationText,
+        '',
+        'Items:',
+        itemsText
+      ].join('\n'),
+      html: `
+        <h2>New COD Delivery Order</h2>
+        <p><strong>Order Ref:</strong> ${orderRef}</p>
+        <p><strong>Customer Email:</strong> ${customerEmail}</p>
+        <p><strong>Amount:</strong> ₹${amountTotal.toFixed(2)}</p>
+        <h3>Delivery Location</h3>
+        <pre style="font-family:Arial,sans-serif;white-space:pre-wrap">${locationText}</pre>
+        <h3>Items</h3>
+        <pre style="font-family:Arial,sans-serif;white-space:pre-wrap">${itemsText}</pre>
+      `
+    });
+
+    try {
+      await sendEmail({
+        to: customerEmail,
+        subject: 'Your AURUM delivery order has been received',
+        text: [
+          'Thank you for ordering from AURUM.',
+          'We have received your cash on delivery order and our team will contact you if needed before dispatch.',
+          '',
+          `Order Ref: ${orderRef}`,
+          `Amount payable on delivery: ₹${amountTotal.toFixed(2)}`,
+          '',
+          'For help with your order, contact us on 7988379826.',
+          '',
+          'Team AURUM'
+        ].join('\n'),
+        html: `
+          <h2>Your Order Has Been Received</h2>
+          <p>Thank you for ordering from AURUM.</p>
+          <p>We have received your cash on delivery order and our team will contact you if needed before dispatch.</p>
+          <p><strong>Order Ref:</strong> ${orderRef}</p>
+          <p><strong>Amount payable on delivery:</strong> ₹${amountTotal.toFixed(2)}</p>
+          <p>For help with your order, contact us on <strong>7988379826</strong>.</p>
+          <p>Team AURUM</p>
+        `
+      });
+    } catch (_) {
+      // Owner order creation should still succeed even if customer email fails.
+    }
+
+    paidOrdersStore.unshift({
+      id: createId('ord'),
+      provider: 'cod',
+      status: 'pending',
+      orderRef,
+      customerEmail,
+      amountTotal,
+      currency: 'INR',
+      items,
+      deliveryLocation,
+      createdAt: new Date().toISOString()
+    });
+    if (paidOrdersStore.length > 1000) paidOrdersStore.length = 1000;
+    persistPaidOrdersToDisk();
+
+    return res.json({ ok: true, orderRef });
+  } catch (err) {
+    return res.status(500).json({ error: err?.message || 'Failed to place order.' });
+  }
+});
+
 app.post('/api/orders/verify-razorpay-payment', requireAuth, createRateLimit({ key: 'verify-razorpay-payment', windowMs: 5 * 60 * 1000, max: 20 }), async (req, res) => {
   try {
     const orderId = String(req.body?.razorpay_order_id || '').trim();
@@ -1559,7 +1670,7 @@ app.delete('/api/admin/reservations/:id', requireAdmin, createRateLimit({ key: '
 app.post('/api/admin/orders/:id/status', requireAdmin, createRateLimit({ key: 'admin-order-status', windowMs: 60 * 1000, max: 60 }), (req, res) => {
   const id = String(req.params?.id || '').trim();
   const status = String(req.body?.status || '').trim().toLowerCase();
-  if (!['paid', 'processing', 'completed'].includes(status)) {
+  if (!['pending', 'paid', 'processing', 'completed'].includes(status)) {
     return res.status(400).json({ error: 'Invalid order status.' });
   }
   const order = findPaidOrderById(id);

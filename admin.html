@@ -303,7 +303,7 @@
           tableId: 'ordersTable',
           emptyId: 'ordersEmpty',
           buildRow: row => `
-            <td><span class="pill ${escapeHtml(row.status || 'paid')}">${escapeHtml(row.provider || 'Payment')}</span><div class="muted">${escapeHtml(row.orderId || row.sessionId || row.paymentId || '')}</div></td>
+            <td><span class="pill ${escapeHtml(row.status || 'paid')}">${escapeHtml(row.provider || 'Payment')}</span><div class="muted">${escapeHtml(row.orderRef || row.orderId || row.sessionId || row.paymentId || '')}</div></td>
             <td>${escapeHtml(row.customerEmail || 'Unknown')}</td>
             <td class="ok">${escapeHtml(row.amountTotal)} ${escapeHtml(row.currency || 'INR')}</td>
             <td>${escapeHtml(Array.isArray(row.items) ? row.items.map(item => `${item.name} x${item.qty}`).join(', ') : 'No items')}</td>
