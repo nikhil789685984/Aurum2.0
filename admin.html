@@ -101,6 +101,35 @@
       .grid{grid-template-columns:1fr}
       h1{font-size:34px}
     }
+    @media(max-width:760px){
+      .wrap{padding:20px 12px 42px}
+      .top{align-items:flex-start}
+      h1{font-size:28px}
+      .top-actions{width:100%}
+      .btn{flex:1 1 140px;text-align:center}
+      .panel{padding:16px 14px;overflow:hidden}
+      .panel h2{font-size:22px}
+      table{min-width:0;display:block}
+      thead{display:none}
+      tbody{display:block}
+      tr{display:block;padding:12px 0;border-bottom:1px solid var(--line)}
+      td{
+        display:grid;
+        grid-template-columns:minmax(88px,108px) 1fr;
+        gap:12px;
+        padding:8px 0;
+        border-bottom:none;
+      }
+      td::before{
+        content:attr(data-label);
+        font-size:10px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--muted);
+      }
+      .actions{gap:6px}
+      .mini-btn{flex:1 1 120px}
+    }
   </style>
 </head>
 <body>
@@ -210,6 +239,15 @@
         .replaceAll("'", '&#39;');
     }
 
+    function applyTableLabels(table) {
+      const labels = Array.from(table.querySelectorAll('thead th')).map(cell => cell.textContent.trim());
+      table.querySelectorAll('tbody tr').forEach(row => {
+        Array.from(row.children).forEach((cell, index) => {
+          if (cell.tagName === 'TD') cell.setAttribute('data-label', labels[index] || '');
+        });
+      });
+    }
+
     function renderTable({ rows, tableId, emptyId, buildRow }) {
       const table = document.getElementById(tableId);
       const empty = document.getElementById(emptyId);
@@ -226,6 +264,7 @@
         tr.innerHTML = buildRow(row);
         body.appendChild(tr);
       });
+      applyTableLabels(table);
       empty.hidden = true;
       table.hidden = false;
     }

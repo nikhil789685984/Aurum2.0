@@ -206,6 +206,46 @@ footer p{font-size:14px;color:var(--stone);text-align:center}
   .cart-panel-title{font-size:30px}
   .cart-line-name{font-size:24px}
 }
+@media(max-width:640px){
+  .topbar-inner{flex-wrap:wrap;align-items:flex-start}
+  .brand{width:100%}
+  .top-links{width:100%;display:grid;grid-template-columns:1fr 1fr}
+  .link-btn{width:100%;text-align:center;padding:12px 10px;letter-spacing:2px}
+  .hero{padding:76px 14px 56px}
+  .hero p{font-size:15px;line-height:1.75}
+  .head{flex-direction:column;align-items:flex-start;margin-bottom:28px}
+  .menu-item{padding:20px;flex-direction:column}
+  .menu-actions{width:100%;align-items:stretch}
+  .menu-price{font-size:30px}
+  .add-cart-btn{width:100%}
+  .cta{padding:24px}
+  .cta a{width:100%;text-align:center}
+  .whatsapp-strip{padding:18px}
+  .whatsapp-strip h3{font-size:30px}
+  .wa-number{width:100%;text-align:center;font-size:18px;padding:12px}
+  .cart-fab{left:12px;right:12px;bottom:12px;justify-content:space-between}
+  .cart-panel-head{padding:16px 14px 12px}
+  .cart-items{padding:12px}
+  .cart-line{grid-template-columns:1fr}
+  .cart-line-total{font-size:28px}
+  .cart-line-actions{flex-wrap:wrap;gap:10px}
+  .cart-summary{flex-direction:column;align-items:flex-start}
+  .cart-summary strong{font-size:34px}
+  .location-grid{grid-template-columns:1fr}
+  .location-input.full,.location-textarea{grid-column:auto}
+}
+@media(max-width:420px){
+  .top-links{grid-template-columns:1fr}
+  .brand-word{font-size:20px;letter-spacing:3px}
+  .hero h1{font-size:clamp(40px,14vw,56px)}
+  .hero p,.card p,.head p,.menu-desc,.cta p,.whatsapp-strip p{font-size:14px}
+  .card{padding:20px}
+  .card h3{font-size:28px}
+  .menu-name{font-size:24px}
+  .menu-price{font-size:26px}
+  .cart-fab-label{letter-spacing:1.6px}
+  .cart-total{font-size:20px}
+}
 </style>
 </head>
 <body>
