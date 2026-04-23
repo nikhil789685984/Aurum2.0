@@ -222,6 +222,18 @@
     const logoutBtn = document.getElementById('logoutBtn');
     const reservationsTable = document.getElementById('reservationsTable');
     const ordersTable = document.getElementById('ordersTable');
+    function clearAuthStorage() {
+      try {
+        localStorage.removeItem('aurum_auth_email');
+        localStorage.removeItem('aurum_auth_ts');
+        sessionStorage.removeItem('aurum_auth_email');
+        sessionStorage.removeItem('aurum_auth_ts');
+      } catch (_) {}
+    }
+
+    window.addEventListener('pageshow', event => {
+      if (event.persisted) location.reload();
+    });
 
     function formatDate(value) {
       if (!value) return 'Not available';
@@ -409,7 +421,8 @@
 
     logoutBtn.addEventListener('click', async () => {
       try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch (_) {}
-      window.location.href = 'login.html';
+      clearAuthStorage();
+      window.location.replace('login.html');
     });
 
     loadAdmin();

@@ -94,6 +94,13 @@ app.post('/api/orders/webhook', express.raw({ type: 'application/json' }), async
 
 app.use(express.json({ limit: '1mb' }));
 
+function setNoStore(res) {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+}
+
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim());
 }
@@ -1699,6 +1706,7 @@ app.post('/api/auth/logout', (req, res) => {
     sessionsStore.delete(token);
     persistSessionsToDisk();
   }
+  setNoStore(res);
   clearSessionCookie(res);
   return res.json({ ok: true });
 });
@@ -1735,6 +1743,7 @@ app.get('/refund-policy', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
+  setNoStore(res);
   if (getAuthenticatedEmail(req)) {
     return res.redirect('/');
   }
@@ -1746,6 +1755,7 @@ app.get('/login.html', (req, res) => {
 });
 
 app.get('/signup', (req, res) => {
+  setNoStore(res);
   if (getAuthenticatedEmail(req)) {
     return res.redirect('/');
   }
@@ -1757,6 +1767,7 @@ app.get('/signup.html', (req, res) => {
 });
 
 app.get('/', (req, res) => {
+  setNoStore(res);
   if (getAuthenticatedEmail(req)) {
     return res.sendFile(path.join(__dirname, 'index.html'));
   }
@@ -1764,6 +1775,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/index.html', (req, res) => {
+  setNoStore(res);
   if (!getAuthenticatedEmail(req)) {
     return res.redirect('/login');
   }
@@ -1775,34 +1787,42 @@ app.get('/website.html', requireAuth, (req, res) => {
 });
 
 app.get('/delivery', requireAuth, (req, res) => {
+  setNoStore(res);
   res.sendFile(path.join(__dirname, 'delivery.html'));
 });
 
 app.get('/delivery.html', requireAuth, (req, res) => {
+  setNoStore(res);
   res.sendFile(path.join(__dirname, 'delivery.html'));
 });
 
 app.get('/admin', requireAdmin, (req, res) => {
+  setNoStore(res);
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
 app.get('/admin.html', requireAdmin, (req, res) => {
+  setNoStore(res);
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
 app.get('/gym-chatbot', requireAuth, (req, res) => {
+  setNoStore(res);
   res.sendFile(path.join(__dirname, 'gym-chatbot.html'));
 });
 
 app.get('/gym-chatbot.html', requireAuth, (req, res) => {
+  setNoStore(res);
   res.sendFile(path.join(__dirname, 'gym-chatbot.html'));
 });
 
 app.get('/order-success', requireAuth, (req, res) => {
+  setNoStore(res);
   res.sendFile(path.join(__dirname, 'order-success.html'));
 });
 
 app.get('/order-success.html', requireAuth, (req, res) => {
+  setNoStore(res);
   res.sendFile(path.join(__dirname, 'order-success.html'));
 });
 

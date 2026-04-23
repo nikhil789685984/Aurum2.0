@@ -480,6 +480,8 @@ function clearLocalSession() {
   try {
     localStorage.removeItem(DEMO_SESSION_KEY);
     localStorage.removeItem('aurum_auth_ts');
+    sessionStorage.removeItem(DEMO_SESSION_KEY);
+    sessionStorage.removeItem('aurum_auth_ts');
   } catch (_) { }
 }
 
@@ -505,6 +507,10 @@ function clearLocalSession() {
   try { localAuth = Boolean(localStorage.getItem(DEMO_SESSION_KEY)); } catch (_) { }
   if (!localAuth) window.location.href = 'login.html';
 })();
+
+window.addEventListener('pageshow', event => {
+  if (event.persisted) location.reload();
+});
 
 const addCartButtons = Array.from(document.querySelectorAll('.add-cart-btn'));
 const cartTopBtn = document.getElementById('cartTopBtn');
@@ -927,11 +933,8 @@ const logoutBtn = document.getElementById('logoutBtn');
 if (logoutBtn) {
   logoutBtn.addEventListener('click', async () => {
     try { await fetch(apiUrl('/api/auth/logout'), { method: 'POST', credentials: 'include' }); } catch (_) { }
-    try {
-      localStorage.removeItem('aurum_auth_email');
-      localStorage.removeItem('aurum_auth_ts');
-    } catch (_) { }
-    window.location.href = 'login.html';
+    clearLocalSession();
+    window.location.replace('login.html');
   });
 }
 </script>
