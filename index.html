@@ -1345,6 +1345,7 @@ footer{background:var(--char2);padding:90px 70px 44px}
 </footer>
 
 <script>
+const DEMO_SESSION_KEY='aurum_auth_email';
 const API_BASE=(()=>{
   let saved='';
   try{saved=String(localStorage.getItem('aurum_api_base')||'').trim();}catch(_){}
@@ -1352,6 +1353,30 @@ const API_BASE=(()=>{
   return String(window.AURUM_API_BASE||sameOrigin||saved).replace(/\/+$/,'');
 })();
 const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
+function clearLocalSession(){
+  try{
+    localStorage.removeItem(DEMO_SESSION_KEY);
+    localStorage.removeItem('aurum_auth_ts');
+  }catch(_){}
+}
+
+(async function ensureAccess(){
+  try{
+    const res=await fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include'});
+    if(res.ok){
+      const data=await res.json().catch(()=>null);
+      if(data&&typeof data.authenticated==='boolean'){
+        if(data.authenticated) return;
+        clearLocalSession();
+        window.location.href='login.html';
+        return;
+      }
+    }
+  }catch(_){}
+  let localAuth=false;
+  try{ localAuth=Boolean(localStorage.getItem(DEMO_SESSION_KEY)); }catch(_){}
+  if(!localAuth){ window.location.href='login.html'; }
+})();
 
 /* ── LOADER ── */
 window.addEventListener('load',()=>{
