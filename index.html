@@ -1334,7 +1334,7 @@ footer{background:var(--char2);padding:90px 70px 44px}
     </div>
   </div>
   <div class="foot-bottom">
-    <p>© 2025 AURUM Fine Dining Ltd. All rights reserved. · <a href="#" style="color:rgba(255,255,255,.18);text-decoration:none">Privacy Policy</a> · <a href="#" style="color:rgba(255,255,255,.18);text-decoration:none">Terms</a> · <a href="#" style="color:rgba(255,255,255,.18);text-decoration:none">Allergen Info</a></p>
+    <p>© 2025 AURUM Fine Dining Ltd. All rights reserved. · <a href="/privacy" style="color:rgba(255,255,255,.18);text-decoration:none">Privacy Policy</a> · <a href="/terms" style="color:rgba(255,255,255,.18);text-decoration:none">Terms</a> · <a href="/refund-policy" style="color:rgba(255,255,255,.18);text-decoration:none">Refund Policy</a></p>
     <div class="foot-social">
       <a href="#" class="fs-btn">IG</a>
       <a href="#" class="fs-btn">FB</a>
@@ -1349,8 +1349,8 @@ const DEMO_SESSION_KEY='aurum_auth_email';
 const API_BASE=(()=>{
   let saved='';
   try{saved=String(localStorage.getItem('aurum_api_base')||'').trim();}catch(_){}
-  const inferred='https://aurum2-0-1-1.onrender.com';
-  return String(window.AURUM_API_BASE||saved||inferred).replace(/\/+$/,'');
+  const sameOrigin=location.protocol.startsWith('http')?location.origin:'';
+  return String(window.AURUM_API_BASE||sameOrigin||saved).replace(/\/+$/,'');
 })();
 const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
 
@@ -1476,6 +1476,20 @@ function renderMenu(key){
 }
 renderMenu('starters');
 
+function getReservationMinDateValue(){
+  const date=new Date();
+  date.setHours(0,0,0,0);
+  date.setDate(date.getDate()+5);
+  return date.toISOString().slice(0,10);
+}
+
+function applyReservationMinDate(){
+  const dateInput=document.querySelector('.rform input[type="date"]');
+  if(dateInput) dateInput.min=getReservationMinDateValue();
+}
+
+applyReservationMinDate();
+
 /* ── GALLERY DRAG SCROLL ── */
 const strip=document.getElementById('galStrip');
 let down=false,sx,sl;
@@ -1500,12 +1514,17 @@ function handleRes(btn){
   const winePairing=selects[3]?.value||'';
   const notes=form.querySelector('textarea')?.value.trim()||'';
   const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const minDate=getReservationMinDateValue();
   if(!firstName||!lastName||!guestEmail||!date){
     alert('Please fill First Name, Last Name, Email Address, and Date.');
     return;
   }
   if(!emailPattern.test(guestEmail)){
     alert('Please enter a valid email address.');
+    return;
+  }
+  if(date<minDate){
+    showMailPopup('Reservations at AURUM can only be secured at least five days in advance. Please select a later date.');
     return;
   }
   if(emailInput) emailInput.value=guestEmail;

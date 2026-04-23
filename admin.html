@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AURUM Admin</title>
+  <style>
+    :root{
+      --bg:#f4ede2;
+      --card:#fffaf2;
+      --ink:#1d1711;
+      --muted:#6f6254;
+      --gold:#c9a84c;
+      --line:rgba(29,23,17,.12);
+      --ok:#245b33;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Georgia,serif;
+      color:var(--ink);
+      background:
+        radial-gradient(900px 500px at 0% 0%, rgba(255,255,255,.55), transparent 60%),
+        linear-gradient(145deg,#f5efe5,#ecddc1);
+    }
+    .wrap{max-width:1280px;margin:0 auto;padding:28px 18px 56px}
+    .top{
+      display:flex;
+      gap:16px;
+      justify-content:space-between;
+      align-items:flex-end;
+      margin-bottom:20px;
+      flex-wrap:wrap;
+    }
+    .eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+    h1{margin:8px 0 0;font-size:42px;font-weight:600}
+    .top-actions{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{
+      border:1px solid var(--gold);
+      background:var(--gold);
+      color:#1d1711;
+      padding:12px 16px;
+      font-size:11px;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      cursor:pointer;
+      text-decoration:none;
+    }
+    .btn.secondary{background:transparent}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:16px;
+      margin-bottom:16px;
+    }
+    .card,.panel{
+      background:rgba(255,250,242,.92);
+      border:1px solid var(--line);
+      box-shadow:0 22px 40px rgba(29,23,17,.08);
+    }
+    .card{padding:20px}
+    .stat-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+    .stat-value{font-size:36px;margin-top:8px}
+    .panel{padding:18px;margin-bottom:16px;overflow:auto}
+    .panel h2{margin:0 0 14px;font-size:26px}
+    table{width:100%;border-collapse:collapse;min-width:760px}
+    th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    th{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+    td{font-size:14px;line-height:1.5}
+    .muted{color:var(--muted)}
+    .ok{color:var(--ok)}
+    .empty{padding:10px 0;color:var(--muted)}
+    .pill{
+      display:inline-block;
+      padding:4px 8px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:11px;
+      letter-spacing:1px;
+      text-transform:uppercase;
+    }
+    .pill.pending{background:#fff7e1}
+    .pill.approved,.pill.completed{background:#ebf7ee}
+    .pill.rejected{background:#fdeceb}
+    .pill.processing{background:#eef3fb}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .mini-btn{
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--ink);
+      padding:7px 10px;
+      font-size:10px;
+      letter-spacing:1.5px;
+      text-transform:uppercase;
+      cursor:pointer;
+    }
+    .mini-btn.gold{border-color:var(--gold);background:#fbf2d7}
+    .mini-btn.danger{border-color:#d6aaa4;background:#fff1ef}
+    .top-note{margin:0 0 18px;color:var(--muted);line-height:1.6}
+    @media(max-width:900px){
+      .grid{grid-template-columns:1fr}
+      h1{font-size:34px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <div class="eyebrow">Operations Panel</div>
+        <h1>AURUM Admin Dashboard</h1>
+      </div>
+      <div class="top-actions">
+        <a class="btn secondary" href="/index.html">Website</a>
+        <button class="btn secondary" id="refreshBtn" type="button">Refresh</button>
+        <button class="btn" id="logoutBtn" type="button">Logout</button>
+      </div>
+    </div>
+    <p class="top-note">Manage reservations, track paid orders, and keep customer operations clean from one place.</p>
+
+    <div class="grid">
+      <div class="card">
+        <div class="stat-label">Users</div>
+        <div class="stat-value" id="usersCount">0</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Reservations</div>
+        <div class="stat-value" id="reservationsCount">0</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Paid Orders</div>
+        <div class="stat-value" id="ordersCount">0</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Reservations</h2>
+      <div id="reservationsEmpty" class="empty">Loading reservations...</div>
+      <table id="reservationsTable" hidden>
+        <thead>
+          <tr>
+            <th>Guest</th>
+            <th>Contact</th>
+            <th>Reservation</th>
+            <th>Request</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Paid Orders</h2>
+      <div id="ordersEmpty" class="empty">Loading orders...</div>
+      <table id="ordersTable" hidden>
+        <thead>
+          <tr>
+            <th>Provider</th>
+            <th>Customer</th>
+            <th>Amount</th>
+            <th>Items</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Users</h2>
+      <div id="usersEmpty" class="empty">Loading users...</div>
+      <table id="usersTable" hidden>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const usersCount = document.getElementById('usersCount');
+    const reservationsCount = document.getElementById('reservationsCount');
+    const ordersCount = document.getElementById('ordersCount');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const reservationsTable = document.getElementById('reservationsTable');
+    const ordersTable = document.getElementById('ordersTable');
+
+    function formatDate(value) {
+      if (!value) return 'Not available';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value);
+      return date.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function renderTable({ rows, tableId, emptyId, buildRow }) {
+      const table = document.getElementById(tableId);
+      const empty = document.getElementById(emptyId);
+      const body = table.querySelector('tbody');
+      body.innerHTML = '';
+      if (!rows.length) {
+        table.hidden = true;
+        empty.hidden = false;
+        empty.textContent = 'No records yet.';
+        return;
+      }
+      rows.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = buildRow(row);
+        body.appendChild(tr);
+      });
+      empty.hidden = true;
+      table.hidden = false;
+    }
+
+    async function apiRequest(url, options) {
+      const res = await fetch(url, {
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', ...(options?.headers || {}) },
+        ...options
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Request failed.');
+      return data;
+    }
+
+    async function updateReservationStatus(id, status) {
+      await apiRequest(`/api/admin/reservations/${encodeURIComponent(id)}/status`, {
+        method: 'POST',
+        body: JSON.stringify({ status })
+      });
+      await loadAdmin();
+    }
+
+    async function deleteReservation(id) {
+      if (!window.confirm('Delete this reservation record?')) return;
+      await apiRequest(`/api/admin/reservations/${encodeURIComponent(id)}`, { method: 'DELETE' });
+      await loadAdmin();
+    }
+
+    async function updateOrderStatus(id, status) {
+      await apiRequest(`/api/admin/orders/${encodeURIComponent(id)}/status`, {
+        method: 'POST',
+        body: JSON.stringify({ status })
+      });
+      await loadAdmin();
+    }
+
+    async function deleteOrder(id) {
+      if (!window.confirm('Delete this paid order record?')) return;
+      await apiRequest(`/api/admin/orders/${encodeURIComponent(id)}`, { method: 'DELETE' });
+      await loadAdmin();
+    }
+
+    async function loadAdmin() {
+      try {
+        const res = await fetch('/api/admin/overview', { credentials: 'include', cache: 'no-store' });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Unable to load admin dashboard.');
+
+        usersCount.textContent = data?.stats?.users || 0;
+        reservationsCount.textContent = data?.stats?.reservations || 0;
+        ordersCount.textContent = data?.stats?.paidOrders || 0;
+
+        renderTable({
+          rows: Array.isArray(data.reservations) ? data.reservations : [],
+          tableId: 'reservationsTable',
+          emptyId: 'reservationsEmpty',
+          buildRow: row => `
+            <td><strong>${escapeHtml(`${row.firstName || ''} ${row.lastName || ''}`.trim() || 'Guest')}</strong><div class="muted">${escapeHtml(row.diningOption || 'Standard')}</div></td>
+            <td>${escapeHtml(row.guestEmail || '')}<div class="muted">${escapeHtml(row.phone || 'No phone')}</div></td>
+            <td><span class="pill ${escapeHtml(row.status || 'pending')}">${escapeHtml(row.status || 'pending')}</span><div style="margin-top:8px">${escapeHtml(row.date || 'No date')}</div><div>${escapeHtml(row.time || 'No time')}</div><div class="muted">${escapeHtml(row.guests || 'Guests not set')}</div></td>
+            <td>${escapeHtml(row.notes || 'No special requests')}<div class="muted">${formatDate(row.createdAt)}</div></td>
+            <td>
+              <div class="actions">
+                <button class="mini-btn gold" type="button" data-action="approve-reservation" data-id="${escapeHtml(row.id || '')}">Approve</button>
+                <button class="mini-btn" type="button" data-action="reject-reservation" data-id="${escapeHtml(row.id || '')}">Reject</button>
+                <button class="mini-btn danger" type="button" data-action="delete-reservation" data-id="${escapeHtml(row.id || '')}">Delete</button>
+              </div>
+            </td>
+          `
+        });
+
+        renderTable({
+          rows: Array.isArray(data.orders) ? data.orders : [],
+          tableId: 'ordersTable',
+          emptyId: 'ordersEmpty',
+          buildRow: row => `
+            <td><span class="pill ${escapeHtml(row.status || 'paid')}">${escapeHtml(row.provider || 'Payment')}</span><div class="muted">${escapeHtml(row.orderId || row.sessionId || row.paymentId || '')}</div></td>
+            <td>${escapeHtml(row.customerEmail || 'Unknown')}</td>
+            <td class="ok">${escapeHtml(row.amountTotal)} ${escapeHtml(row.currency || 'INR')}</td>
+            <td>${escapeHtml(Array.isArray(row.items) ? row.items.map(item => `${item.name} x${item.qty}`).join(', ') : 'No items')}</td>
+            <td>${formatDate(row.createdAt)}<div class="muted">${escapeHtml(row.status || 'paid')}</div></td>
+            <td>
+              <div class="actions">
+                <button class="mini-btn" type="button" data-action="processing-order" data-id="${escapeHtml(row.id || '')}">Processing</button>
+                <button class="mini-btn gold" type="button" data-action="complete-order" data-id="${escapeHtml(row.id || '')}">Complete</button>
+                <button class="mini-btn danger" type="button" data-action="delete-order" data-id="${escapeHtml(row.id || '')}">Delete</button>
+              </div>
+            </td>
+          `
+        });
+
+        renderTable({
+          rows: Array.isArray(data.users) ? data.users : [],
+          tableId: 'usersTable',
+          emptyId: 'usersEmpty',
+          buildRow: row => `
+            <td>${escapeHtml(row.name || 'User')}</td>
+            <td>${escapeHtml(row.email || '')}</td>
+            <td>${escapeHtml(row.phone || 'No phone')}</td>
+            <td>${formatDate(row.createdAt)}</td>
+          `
+        });
+      } catch (err) {
+        const message = err?.message || 'Unable to load admin dashboard.';
+        ['reservationsEmpty', 'ordersEmpty', 'usersEmpty'].forEach(id => {
+          const node = document.getElementById(id);
+          node.hidden = false;
+          node.textContent = message;
+        });
+      }
+    }
+
+    refreshBtn.addEventListener('click', loadAdmin);
+    reservationsTable.addEventListener('click', async event => {
+      const button = event.target.closest('[data-action]');
+      if (!button) return;
+      const id = button.dataset.id;
+      const action = button.dataset.action;
+      try {
+        if (action === 'approve-reservation') await updateReservationStatus(id, 'approved');
+        if (action === 'reject-reservation') await updateReservationStatus(id, 'rejected');
+        if (action === 'delete-reservation') await deleteReservation(id);
+      } catch (err) {
+        window.alert(err?.message || 'Reservation action failed.');
+      }
+    });
+
+    ordersTable.addEventListener('click', async event => {
+      const button = event.target.closest('[data-action]');
+      if (!button) return;
+      const id = button.dataset.id;
+      const action = button.dataset.action;
+      try {
+        if (action === 'processing-order') await updateOrderStatus(id, 'processing');
+        if (action === 'complete-order') await updateOrderStatus(id, 'completed');
+        if (action === 'delete-order') await deleteOrder(id);
+      } catch (err) {
+        window.alert(err?.message || 'Order action failed.');
+      }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch (_) {}
+      window.location.href = '/login';
+    });
+
+    loadAdmin();
+  </script>
+</body>
+</html>

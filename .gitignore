@@ -2,6 +2,9 @@ node_modules/
 .env
 .DS_Store
 users.json
+sessions.json
+reservations.json
+paid-orders.json
 npm-debug.log*
 
 # Local Netlify folder

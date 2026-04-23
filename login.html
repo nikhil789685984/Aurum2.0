@@ -135,6 +135,23 @@ input:focus{border-color:rgba(201,168,76,.9);box-shadow:0 0 0 3px rgba(201,168,7
 .btn.secondary{background:transparent}
 .btn.secondary:hover{background:rgba(201,168,76,.08)}
 .btn:disabled{opacity:.55;cursor:not-allowed}
+.alt{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:18px 0 14px;
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--stone);
+}
+.alt::before,
+.alt::after{
+  content:'';
+  flex:1;
+  height:1px;
+  background:var(--line);
+}
 .otp-wrap{
   margin-top:16px;
   padding-top:0;
@@ -215,13 +232,20 @@ input:focus{border-color:rgba(201,168,76,.9);box-shadow:0 0 0 3px rgba(201,168,7
     <section class="right">
       <div class="kicker">Secure Login</div>
       <h1 class="title">Welcome<br>Back</h1>
-      <p class="desc">Enter your email to receive a 6-digit OTP. Code validity: 5 minutes.</p>
+      <p class="desc">Sign in with your password or request a 6-digit OTP. Code validity: 5 minutes.</p>
 
       <div class="field">
-        <label for="email">Email Address</label>
-        <input id="email" type="email" placeholder="yourname@gmail.com" autocomplete="email">
+        <label for="email">Email or Phone</label>
+        <input id="email" type="text" placeholder="yourname@gmail.com or +91XXXXXXXXXX" autocomplete="username">
       </div>
-      <button id="sendBtn" class="btn">Send OTP</button>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Your password" autocomplete="current-password">
+      </div>
+      <button id="loginBtn" class="btn">Login</button>
+
+      <div class="alt">Or continue with OTP</div>
+      <button id="sendBtn" class="btn secondary" type="button">Send OTP</button>
 
       <div id="otpWrap" class="otp-wrap">
         <div class="field">
@@ -241,8 +265,10 @@ input:focus{border-color:rgba(201,168,76,.9);box-shadow:0 0 0 3px rgba(201,168,7
   </main>
 
 <script>
-const emailEl=document.getElementById('email');
+const identifierEl=document.getElementById('email');
+const passwordEl=document.getElementById('password');
 const otpEl=document.getElementById('otp');
+const loginBtn=document.getElementById('loginBtn');
 const sendBtn=document.getElementById('sendBtn');
 const verifyBtn=document.getElementById('verifyBtn');
 const resendBtn=document.getElementById('resendBtn');
@@ -261,8 +287,8 @@ const API_BASE=(()=>{
       localStorage.setItem('aurum_api_base',fromUrl);
     }
   }catch(_){}
-  const inferred='https://aurum2-0-1-1.onrender.com';
-  return String(window.AURUM_API_BASE||fromUrl||saved||inferred).replace(/\/+$/,'');
+  const sameOrigin=location.protocol.startsWith('http')?location.origin:'';
+  return String(window.AURUM_API_BASE||fromUrl||sameOrigin||saved).replace(/\/+$/,'');
 })();
 const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
 
@@ -271,8 +297,10 @@ function showMsg(text,type){
   msg.className='msg'+(type?(' '+type):'');
 }
 
-function cleanEmail(v){
-  return String(v||'').replace(/\s+/g,'').trim().toLowerCase();
+function cleanIdentifier(v){
+  const raw=String(v||'').trim();
+  if(raw.includes('@')) return raw.replace(/\s+/g,'').toLowerCase();
+  return raw.replace(/[^\d+]/g,'');
 }
 
 function isApiUnavailableError(err){
@@ -310,9 +338,9 @@ function readDemoOtp(email){
 }
 
 async function sendOtp(){
-  const email=cleanEmail(emailEl.value);
-  emailEl.value=email;
-  if(!email){showMsg('Enter your email address.','err');return;}
+  const identifier=cleanIdentifier(identifierEl.value);
+  identifierEl.value=identifier;
+  if(!identifier){showMsg('Enter your email or phone number.','err');return;}
   sendBtn.disabled=true;
   sendBtn.textContent='Sending OTP...';
   try{
@@ -320,7 +348,7 @@ async function sendOtp(){
       method:'POST',
       credentials:'include',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email})
+      body:JSON.stringify({identifier})
     });
     if(res.status===404){
       throw new Error('Login API not found. Backend server is not running/deployed.');
@@ -328,26 +356,54 @@ async function sendOtp(){
     const data=await res.json().catch(()=>({}));
     if(!res.ok) throw new Error(data.error||'Failed to send OTP.');
     otpWrap.classList.add('on');
-    showMsg('OTP sent. Check your inbox.','ok');
+    const via=String(data?.via||'').toLowerCase();
+    const channel=via==='sms'?'phone':'inbox';
+    showMsg(`OTP sent. Check your ${channel}.`,'ok');
   }catch(err){
-    if(isApiUnavailableError(err)){
-      const demoOtp=String(Math.floor(100000+Math.random()*900000));
-      saveDemoOtp(email,demoOtp);
-      otpWrap.classList.add('on');
-      showMsg(`Demo mode OTP: ${demoOtp}`,'ok');
-    }else{
-      showMsg(err.message||'Failed to send OTP.','err');
-    }
+    showMsg(err.message||'Failed to send OTP.','err');
   }finally{
     sendBtn.disabled=false;
     sendBtn.textContent='Send OTP';
   }
 }
 
+async function loginWithPassword(){
+  const identifier=cleanIdentifier(identifierEl.value);
+  const password=String(passwordEl.value||'');
+  identifierEl.value=identifier;
+  if(!identifier||!password){
+    showMsg('Enter your email/phone and password.','err');
+    return;
+  }
+  loginBtn.disabled=true;
+  loginBtn.textContent='Logging In...';
+  try{
+    const res=await fetch(apiUrl('/api/auth/login-password'),{
+      method:'POST',
+      credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({identifier,password})
+    });
+    if(res.status===404){
+      throw new Error('Login API not found. Backend server is not running/deployed.');
+    }
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error(data.error||'Login failed.');
+    setLocalSession(String(data?.email||identifier));
+    showMsg('Login successful. Redirecting...','ok');
+    setTimeout(()=>{window.location.href='index.html'},900);
+  }catch(err){
+    showMsg(err.message||'Login failed.','err');
+  }finally{
+    loginBtn.disabled=false;
+    loginBtn.textContent='Login';
+  }
+}
+
 async function verifyOtp(){
-  const email=cleanEmail(emailEl.value);
+  const identifier=cleanIdentifier(identifierEl.value);
   const otp=String(otpEl.value||'').replace(/\s+/g,'').trim();
-  if(!email||!otp){showMsg('Enter email and OTP.','err');return;}
+  if(!identifier||!otp){showMsg('Enter email/phone and OTP.','err');return;}
   verifyBtn.disabled=true;
   verifyBtn.textContent='Verifying...';
   try{
@@ -355,40 +411,35 @@ async function verifyOtp(){
       method:'POST',
       credentials:'include',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email,otp})
+      body:JSON.stringify({identifier,otp})
     });
     if(res.status===404){
       throw new Error('Login API not found. Backend server is not running/deployed.');
     }
     const data=await res.json().catch(()=>({}));
     if(!res.ok) throw new Error(data.error||'OTP verification failed.');
-    setLocalSession(email);
+    setLocalSession(String(data?.email||identifier));
     showMsg('Login successful. Redirecting...','ok');
     setTimeout(()=>{window.location.href='index.html'},900);
   }catch(err){
-    if(isApiUnavailableError(err)){
-      const rec=readDemoOtp(email);
-      if(!rec||String(rec.otp)!==otp){
-        showMsg('Invalid or expired OTP. Please resend OTP.','err');
-      }else{
-        setLocalSession(email);
-        showMsg('Demo login successful. Redirecting...','ok');
-        setTimeout(()=>{window.location.href='index.html'},900);
-      }
-    }else{
-      showMsg(err.message||'OTP verification failed.','err');
-    }
+    showMsg(err.message||'OTP verification failed.','err');
   }finally{
     verifyBtn.disabled=false;
     verifyBtn.textContent='Verify OTP';
   }
 }
 
+loginBtn.addEventListener('click',loginWithPassword);
 sendBtn.addEventListener('click',sendOtp);
 resendBtn.addEventListener('click',sendOtp);
 verifyBtn.addEventListener('click',verifyOtp);
 otpEl.addEventListener('keydown',e=>{if(e.key==='Enter')verifyOtp();});
-emailEl.addEventListener('keydown',e=>{if(e.key==='Enter')sendOtp();});
+passwordEl.addEventListener('keydown',e=>{if(e.key==='Enter')loginWithPassword();});
+identifierEl.addEventListener('keydown',e=>{
+  if(e.key!=='Enter') return;
+  if(String(passwordEl.value||'')) loginWithPassword();
+  else sendOtp();
+});
 
 fetch(apiUrl('/api/auth/status'),{credentials:'include'})
   .then(res=>res.json())

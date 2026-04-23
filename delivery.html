@@ -432,8 +432,8 @@ const DEMO_SESSION_KEY = 'aurum_auth_email';
 const API_BASE = (() => {
   let saved = '';
   try { saved = String(localStorage.getItem('aurum_api_base') || '').trim(); } catch (_) { }
-  const inferred = 'https://aurum2-0-1-1.onrender.com';
-  return String(window.AURUM_API_BASE || saved || inferred).replace(/\/+$/, '');
+  const sameOrigin = location.protocol.startsWith('http') ? location.origin : '';
+  return String(window.AURUM_API_BASE || sameOrigin || saved).replace(/\/+$/, '');
 })();
 const apiUrl = path => API_BASE ? `${API_BASE}${path}` : path;
 

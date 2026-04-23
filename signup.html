@@ -140,6 +140,10 @@ input:focus{border-color:rgba(201,168,76,.9);box-shadow:0 0 0 3px rgba(201,168,7
         <input id="email" type="email" placeholder="yourname@gmail.com" autocomplete="email">
       </div>
       <div class="field">
+        <label for="phone">Phone Number</label>
+        <input id="phone" type="tel" placeholder="+91XXXXXXXXXX" autocomplete="tel">
+      </div>
+      <div class="field">
         <label for="password">Password</label>
         <input id="password" type="password" placeholder="Minimum 8 characters" autocomplete="new-password">
       </div>
@@ -160,6 +164,7 @@ input:focus{border-color:rgba(201,168,76,.9);box-shadow:0 0 0 3px rgba(201,168,7
 <script>
 const nameEl=document.getElementById('name');
 const emailEl=document.getElementById('email');
+const phoneEl=document.getElementById('phone');
 const passwordEl=document.getElementById('password');
 const confirmPasswordEl=document.getElementById('confirmPassword');
 const signupBtn=document.getElementById('signupBtn');
@@ -168,7 +173,7 @@ const DEMO_USERS_KEY='aurum_demo_users';
 const API_BASE=(()=>{
   let saved='';
   try{saved=String(localStorage.getItem('aurum_api_base')||'').trim();}catch(_){}
-  const inferred='https://aurum2-0-1-1.onrender.com';
+  const inferred='https://aurum2-final.onrender.com';
   return String(window.AURUM_API_BASE||saved||inferred).replace(/\/+$/,'');
 })();
 const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
@@ -180,6 +185,10 @@ function showMsg(text,type){
 
 function cleanEmail(v){
   return String(v||'').replace(/\s+/g,'').trim().toLowerCase();
+}
+
+function cleanPhone(v){
+  return String(v||'').replace(/[^\d+]/g,'').trim();
 }
 
 function isApiUnavailableError(err){
@@ -204,11 +213,13 @@ function saveDemoUsers(users){
 async function signup(){
   const name=String(nameEl.value||'').trim();
   const email=cleanEmail(emailEl.value);
+  const phone=cleanPhone(phoneEl.value);
   const password=String(passwordEl.value||'');
   const confirmPassword=String(confirmPasswordEl.value||'');
   emailEl.value=email;
+  phoneEl.value=phone;
 
-  if(!name||!email||!password||!confirmPassword){
+  if(!name||!email||!phone||!password||!confirmPassword){
     showMsg('Please fill all fields.','err');
     return;
   }
@@ -228,7 +239,7 @@ async function signup(){
       method:'POST',
       credentials:'include',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name,email,password,confirmPassword})
+      body:JSON.stringify({name,email,phone,password,confirmPassword})
     });
     if(res.status===404){
       throw new Error('Signup API not found. Backend server is not running/deployed.');
@@ -238,6 +249,7 @@ async function signup(){
     showMsg('Account created successfully. Redirecting to login...','ok');
     nameEl.value='';
     emailEl.value='';
+    phoneEl.value='';
     passwordEl.value='';
     confirmPasswordEl.value='';
     setTimeout(()=>{window.location.href='login.html';},1200);
@@ -252,6 +264,7 @@ async function signup(){
         showMsg('Account created in demo mode. Redirecting to login...','ok');
         nameEl.value='';
         emailEl.value='';
+        phoneEl.value='';
         passwordEl.value='';
         confirmPasswordEl.value='';
         setTimeout(()=>{window.location.href='login.html';},1200);
@@ -266,7 +279,7 @@ async function signup(){
 }
 
 signupBtn.addEventListener('click',signup);
-[nameEl,emailEl,passwordEl,confirmPasswordEl].forEach(el=>{
+[nameEl,emailEl,phoneEl,passwordEl,confirmPasswordEl].forEach(el=>{
   el.addEventListener('keydown',e=>{if(e.key==='Enter')signup();});
 });
 </script>
