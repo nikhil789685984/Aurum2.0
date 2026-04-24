@@ -1482,6 +1482,10 @@ const menus={
     {n:'Amritsari Fish',d:'Gram-flour battered fish, carom spice, lemon, and mint chutney',p:'₹449'},
     {n:'Murgh Malai Tikka',d:'Creamy chicken tikka with cheese, white pepper, and charcoal finish',p:'₹429'},
     {n:'Galouti Kebab',d:'Lucknow-style melt-in-mouth kebab with sheermal crumbs and onion lachha',p:'₹499'},
+    {n:'Tandoori Prawns',d:'Jumbo prawns marinated in ajwain, yogurt, and yellow chilli powder',p:'₹699'},
+    {n:'Mushroom Galouti',d:'Finely minced mushroom patties spiced with cardamom and clove',p:'₹399'},
+    {n:'Samosa Chaat',d:'Crispy pastry crushed with spiced chickpeas, yogurt, and chutneys',p:'₹299'},
+    {n:'Lamb Seekh Kebab',d:'Minced lamb skewered with fresh coriander, ginger, and robust spices',p:'₹499'}
   ],
   mains:[
     {n:'Butter Chicken',d:'Tandoor-roasted chicken in rich tomato-makhani gravy finished with butter and cream',p:'₹549'},
@@ -1490,6 +1494,14 @@ const menus={
     {n:'Rogan Josh',d:'Kashmiri-style lamb curry with fennel, dry ginger, and aromatic whole spices',p:'₹629'},
     {n:'Hyderabadi Dum Biryani',d:'Long-grain basmati layered with saffron, herbs, and spiced chicken, sealed on dum',p:'₹599'},
     {n:'Goan Fish Curry',d:'Coastal curry with coconut, kokum, and curry leaf, served with steamed rice',p:'₹579'},
+    {n:'Nalli Nihari',d:'Slow-braised lamb shanks in an aromatic, rich saffron gravy',p:'₹749'},
+    {n:'Palak Paneer',d:'Fresh cottage cheese cooked in a smooth, spiced spinach purée',p:'₹429'},
+    {n:'Malai Kofta',d:'Cottage cheese and potato dumplings in a rich cashew and cream gravy',p:'₹449'},
+    {n:'Tandoori Raan',d:'Whole leg of lamb braised for 12 hours and roasted in the tandoor',p:'₹1299'},
+    {n:'Kadhai Gosht',d:'Tender lamb chunks cooked with bell peppers and freshly ground spices',p:'₹649'},
+    {n:'Meen Moilee',d:'Gentle Kerala-style fish stew with coconut milk, ginger, and turmeric',p:'₹599'},
+    {n:'Chana Masala',d:'Punjabi-style chickpea curry with roasted cumin and dried pomegranate',p:'₹349'},
+    {n:'Baingan Bharta',d:'Smoky roasted eggplant mashed with onions, tomatoes, and green chillies',p:'₹349'}
   ],
   desserts:[
     {n:'Gulab Jamun Cheesecake',d:'Baked cheesecake with reduced rabri swirl and warm mini gulab jamun',p:'₹299'},
@@ -1498,6 +1510,10 @@ const menus={
     {n:'Kulfi Falooda',d:'Traditional kulfi with vermicelli, basil seeds, rose syrup, and nuts',p:'₹269'},
     {n:'Shahi Tukda',d:'Crisp fried bread with rabri, saffron, cardamom, and silver leaf',p:'₹279'},
     {n:'Kesar Phirni',d:'Slow-cooked rice pudding set in clay pot with saffron and pistachio',p:'₹249'},
+    {n:'Jalebi Caviar',d:'Crisp micro jalebis served on a bed of chilled saffron rabri',p:'₹349'},
+    {n:'Chocolate Samosa',d:'Crispy pastry filled with melted dark chocolate and toasted almonds',p:'₹299'},
+    {n:'Mango Malai',d:'Fresh Alphonso mango purée layered with rich sweetened cream',p:'₹299'},
+    {n:'Pistachio Rabri',d:'Thickened milk dessert studded with roasted Iranian pistachios',p:'₹279'}
   ],
   tasting:[
     {n:'Welcome: Chaat Trio',d:'Three rotating chaat bites inspired by Delhi, Mumbai, and Lucknow',p:'₹399'},
@@ -1507,7 +1523,7 @@ const menus={
     {n:'IV. Interlude: Kokum Shikanji',d:'Kokum, lime, and roasted cumin cooler for palate refresh',p:'₹199'},
     {n:'V. Signature: Butter Chicken',d:'Classic makhani gravy, saffron rice, and roomali roti crisps',p:'₹549'},
     {n:'VI. Sweet: Rasmalai Duo',d:'Saffron rasmalai with pistachio kulfi and rose rabri',p:'₹299'},
-    {n:'VII. Mithai Finale',d:'Seasonal mithai selection and digestif tea service',p:'₹3,499 p.p.'},
+    {n:'VII. Mithai Finale',d:'Seasonal mithai selection and digestif tea service',p:'₹3499'}
   ],
   brunch:[
     {n:'Aloo Paratha Platter',d:'Stuffed paratha with curd, pickle, white butter, and masala chai',p:'₹299'},
@@ -1516,8 +1532,60 @@ const menus={
     {n:'Kanda Poha Bowl',d:'Flattened rice with peanuts, curry leaves, lemon, and sev topping',p:'₹219'},
     {n:'Idli Sambar Combo',d:'Soft idli with hot sambar, coconut chutney, and podi ghee',p:'₹239'},
     {n:'Paneer Kathi Roll',d:'Roomali roll stuffed with smoky paneer, onion, and mint mayo',p:'₹279'},
+    {n:'Keema Pav',d:'Spiced minced lamb served with butter-toasted buns and red onions',p:'₹349'},
+    {n:'Masala Dosa',d:'Crisp fermented rice crepe filled with spiced potato mash',p:'₹249'},
+    {n:'Akuri on Toast',d:'Parsi-style spiced scrambled eggs on sourdough toast',p:'₹279'},
+    {n:'Appam & Veg Stew',d:'Laced rice hoppers served with a mild coconut vegetable stew',p:'₹299'}
   ]
 };
+
+const winesData = [
+  {n: "Dom Pérignon Vintage 2012", r: "Champagne, France", p: "₹28,500"},
+  {n: "Moët & Chandon Impérial", r: "Champagne, France", p: "₹8,500"},
+  {n: "Veuve Clicquot Rosé", r: "Champagne, France", p: "₹9,200"},
+  {n: "Krug Grande Cuvée", r: "Champagne, France", p: "₹22,000"},
+  {n: "Louis Roederer Brut", r: "Champagne, France", p: "₹11,500"},
+  {n: "Grover Zampa Soirée Brut", r: "Nashik, India", p: "₹2,500"},
+  {n: "Sula Brut Tropicale", r: "Nashik, India", p: "₹2,100"},
+  {n: "Billecart-Salmon Brut", r: "Champagne, France", p: "₹10,500"},
+  {n: "Laurent-Perrier Cristal", r: "Champagne, France", p: "₹35,000"},
+  {n: "Chablis Grand Cru 2018", r: "Burgundy, France", p: "₹14,500"},
+  {n: "Cloudy Bay Sauvignon Blanc", r: "Marlborough, NZ", p: "₹4,800"},
+  {n: "Penfolds Chardonnay", r: "South Australia", p: "₹3,500"},
+  {n: "Fratelli Sauvignon Blanc", r: "Akluj, India", p: "₹2,200"},
+  {n: "Sula Chenin Blanc", r: "Nashik, India", p: "₹1,800"},
+  {n: "Pouilly-Fumé 'Baron de L'", r: "Loire Valley, France", p: "₹18,000"},
+  {n: "Gaja Rossj-Bass", r: "Piedmont, Italy", p: "₹16,500"},
+  {n: "Santa Margherita Pinot Grigio", r: "Trentino, Italy", p: "₹5,200"},
+  {n: "Villa Maria Sauvignon Blanc", r: "Marlborough, NZ", p: "₹4,500"},
+  {n: "Château Margaux 2010", r: "Bordeaux, France", p: "₹95,000"},
+  {n: "Opus One 2016", r: "Napa Valley, USA", p: "₹48,000"},
+  {n: "Sassicaia 2015", r: "Tuscany, Italy", p: "₹42,000"},
+  {n: "Penfolds Grange 2014", r: "South Australia", p: "₹85,000"},
+  {n: "Sula Rasa Shiraz", r: "Nashik, India", p: "₹2,800"},
+  {n: "KRSMA Estates Syrah", r: "Hampi Hills, India", p: "₹3,200"},
+  {n: "Fratelli Sette", r: "Akluj, India", p: "₹2,900"},
+  {n: "Grover Zampa La Réserve", r: "Nandi Hills, India", p: "₹2,400"},
+  {n: "Châteauneuf-du-Pape", r: "Rhône, France", p: "₹12,500"},
+  {n: "Tignanello 2017", r: "Tuscany, Italy", p: "₹24,000"},
+  {n: "Antinori Chianti Classico", r: "Tuscany, Italy", p: "₹8,500"},
+  {n: "Duckhorn Cabernet", r: "Napa Valley, USA", p: "₹15,000"},
+  {n: "Catena Zapata Brunello", r: "Mendoza, Argentina", p: "₹14,500"},
+  {n: "Cheval des Andes", r: "Mendoza, Argentina", p: "₹19,000"},
+  {n: "Don Melchor", r: "Maipo Valley, Chile", p: "₹16,000"},
+  {n: "Jacob's Creek Double Barrel", r: "Barossa Valley", p: "₹3,800"},
+  {n: "Yellow Tail Shiraz", r: "Australia", p: "₹2,200"},
+  {n: "Whispering Angel", r: "Provence, France", p: "₹6,500"},
+  {n: "Miraval Rosé", r: "Provence, France", p: "₹7,200"},
+  {n: "Sula Zinfandel Rosé", r: "Nashik, India", p: "₹1,900"},
+  {n: "Mateus Rosé", r: "Australia", p: "₹2,100"},
+  {n: "Château d'Yquem 2005", r: "Bordeaux, France", p: "₹88,000"},
+  {n: "Beringer Merlot", r: "Knights Valley, USA", p: "₹11,000"},
+  {n: "Gaja Barbaresco", r: "Piedmont, Italy", p: "₹32,000"},
+  {n: "Louis Jadot Pinot Noir", r: "Burgundy, France", p: "₹6,800"},
+  {n: "Albert Bichot Chablis", r: "Burgundy, France", p: "₹7,500"},
+  {n: "Rupert & Rothschild", r: "Franschhoek, SA", p: "₹5,800"}
+];
 
 function switchTab(btn,key){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
@@ -1537,6 +1605,88 @@ function renderMenu(key){
   });
 }
 renderMenu('starters');
+
+function renderWines() {
+  const wg = document.getElementById('wineGrid');
+  if(!wg) return;
+  wg.innerHTML = '';
+  winesData.forEach((w,i) => {
+    const d = document.createElement('div');
+    d.className = 'wg-item';
+    d.innerHTML = `<div><h4>${w.n}</h4><p>${w.r}</p></div><span>${w.p}</span>`;
+    wg.appendChild(d);
+  });
+}
+renderWines();
+
+/* ── CUSTOM TABLE LOGIC ── */
+let customCart = [];
+function switchCTab(type) {
+  const tabs = document.querySelectorAll('.ctab');
+  tabs[0].classList.toggle('on', type === 'food');
+  tabs[1].classList.toggle('on', type === 'wine');
+  
+  const list = document.getElementById('coList');
+  list.innerHTML = '';
+  
+  if (type === 'food') {
+    const allFood = [...menus.starters, ...menus.mains, ...menus.desserts];
+    allFood.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'co-item';
+      div.innerHTML = `<div class="co-info"><h4>${item.n}</h4><p>${item.d}</p></div><div class="co-action"><span class="co-price">${item.p}</span><button class="btn-add" onclick="addToCustom('${item.n}', '${item.p}')">+</button></div>`;
+      list.appendChild(div);
+    });
+  } else {
+    winesData.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'co-item';
+      div.innerHTML = `<div class="co-info"><h4>${item.n}</h4><p>${item.r}</p></div><div class="co-action"><span class="co-price">${item.p}</span><button class="btn-add" onclick="addToCustom('${item.n}', '${item.p}')">+</button></div>`;
+      list.appendChild(div);
+    });
+  }
+}
+switchCTab('food');
+
+function addToCustom(name, price) {
+  customCart.push({ n: name, p: price });
+  updateCustomUI();
+}
+
+function remFromCustom(index) {
+  customCart.splice(index, 1);
+  updateCustomUI();
+}
+
+function updateCustomUI() {
+  const list = document.getElementById('csList');
+  const totEl = document.getElementById('csTotal');
+  list.innerHTML = '';
+  let total = 0;
+  
+  if (customCart.length === 0) {
+    list.innerHTML = '<div style="font-size:14px;color:var(--stone);text-align:center;padding:20px 0">No items selected</div>';
+  } else {
+    customCart.forEach((item, i) => {
+      const numPrice = parseInt(item.p.replace(/[^\d]/g, '')) || 0;
+      total += numPrice;
+      list.innerHTML += `<div class="cs-item"><h4>${item.n}</h4><div style="display:flex;align-items:center;gap:12px"><span>${item.p}</span><button class="btn-rem" onclick="remFromCustom(${i})">-</button></div></div>`;
+    });
+  }
+  totEl.textContent = `₹${total.toLocaleString('en-IN')}`;
+}
+
+function bookCustomTable() {
+  if (customCart.length === 0) {
+    showMailPopup('Please select at least one item.');
+    return;
+  }
+  let sum = "CUSTOM TABLE REQUEST:\n";
+  customCart.forEach(i => sum += `• ${i.n}\n`);
+  document.querySelector('.rform textarea').value = sum;
+  document.getElementById('reservations').scrollIntoView({ behavior: 'smooth' });
+  showMailPopup('Custom selection added to reservation form!');
+}
 
 function getReservationMinDateValue(){
   const date=new Date();
