@@ -1916,6 +1916,31 @@ app.get('/api/admin/overview', requireAdmin, (req, res) => {
   });
 });
 
+app.get('/api/user/profile', requireAuth, (req, res) => {
+  const email = req.authEmail;
+  const user = usersStore.get(email) || { name: 'Guest', email: email, phone: '' };
+
+  const myReservations = reservationsStore
+    .filter(r => String(r.guestEmail).toLowerCase() === email)
+    .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+
+  const myOrders = paidOrdersStore
+    .filter(o => String(o.customerEmail).toLowerCase() === email)
+    .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+
+  const myEvents = eventRegistrationsStore
+    .filter(e => String(e.authEmail).toLowerCase() === email)
+    .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+
+  return res.json({
+    ok: true,
+    user: { name: user.name, email: user.email, phone: user.phone },
+    reservations: myReservations,
+    orders: myOrders,
+    events: myEvents
+  });
+});
+
 app.post('/api/admin/reservations/:id/status', requireAdmin, createRateLimit({ key: 'admin-reservation-status', windowMs: 60 * 1000, max: 60 }), async (req, res) => {
   try {
     const id = String(req.params?.id || '').trim();
@@ -2129,6 +2154,16 @@ app.get('/admin', requireAdmin, (req, res) => {
 app.get('/admin.html', requireAdmin, (req, res) => {
   setNoStore(res);
   res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+app.get('/profile', requireAuth, (req, res) => {
+  setNoStore(res);
+  res.sendFile(path.join(__dirname, 'profile.html'));
+});
+
+app.get('/profile.html', requireAuth, (req, res) => {
+  setNoStore(res);
+  res.sendFile(path.join(__dirname, 'profile.html'));
 });
 
 app.get('/gym-chatbot', requireAuth, (req, res) => {

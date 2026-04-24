@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Account — AURUM</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF7F2;--warm:#F0E8DA;--gold:#C9A84C;--gold2:#E8C97A;
+  --charcoal:#1A1612;--stone:#7A6F62;--white:#FFFFFF;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Manrope',sans-serif;background:var(--cream);color:var(--charcoal);overflow-x:hidden}
+
+.topbar{position:sticky;top:0;z-index:1000;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(201,168,76,.2)}
+.topbar-inner{max-width:1200px;margin:0 auto;padding:20px 34px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--charcoal)}
+.brand-word{font-family:'Playfair Display',serif;font-size:28px;letter-spacing:6px;font-weight:300}
+.link-btn{font-size:10px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 18px;border:1px solid rgba(26,22,18,.18);color:var(--stone);transition:all .3s}
+.link-btn:hover{border-color:var(--gold);color:var(--gold)}
+.link-btn.gold{border-color:rgba(201,168,76,.75);color:var(--gold)}
+
+.hero{background:var(--charcoal);color:var(--white);padding:90px 34px 70px;text-align:center}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(40px,6vw,60px);font-weight:300;margin-bottom:12px}
+.hero p{color:rgba(255,255,255,.6);font-size:14px;letter-spacing:2px;text-transform:uppercase}
+
+.wrap{max-width:1200px;margin:0 auto;padding:60px 34px 100px;display:grid;grid-template-columns:1fr;gap:40px}
+.panel{background:var(--white);border:1px solid rgba(201,168,76,.2);box-shadow:0 14px 30px rgba(26,22,18,.05)}
+.panel-head{padding:24px 30px;border-bottom:1px solid rgba(201,168,76,.15);background:var(--warm)}
+.panel-head h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;color:var(--charcoal)}
+.list{display:flex;flex-direction:column}
+.item{padding:24px 30px;border-bottom:1px solid rgba(26,22,18,.06);display:flex;justify-content:space-between;align-items:center;gap:20px;transition:background .3s}
+.item:last-child{border-bottom:none}
+.item:hover{background:#fdfcf9}
+.info h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--charcoal);margin-bottom:6px}
+.info p{font-size:13px;color:var(--stone);line-height:1.6}
+.status{text-align:right}
+.pill{display:inline-block;padding:6px 12px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:4px;background:#F0EBE1;color:var(--stone)}
+.pill.ok{background:#EBF7EE;color:#2D8A4D}
+.pill.pending{background:#FFF4D9;color:#9E7014}
+.pill.err{background:#FDECEB;color:#D64545}
+.status-date{display:block;font-size:11px;color:var(--stone);margin-top:8px}
+
+.empty{padding:50px 30px;text-align:center;color:var(--stone);font-size:14px}
+
+@media(max-width:760px){
+  .item{flex-direction:column;align-items:flex-start;gap:12px}
+  .status{text-align:left}
+}
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="index.html" class="brand">
+        <span class="brand-word">AURUM</span>
+      </a>
+      <div style="display:flex;gap:10px">
+        <a class="link-btn" href="index.html">Website</a>
+        <button class="link-btn gold" id="logoutBtn" type="button">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1 id="userName">Welcome</h1>
+    <p id="userEmail">Loading your profile...</p>
+  </section>
+
+  <main class="wrap">
+    <!-- Reservations -->
+    <div class="panel">
+      <div class="panel-head"><h2>My Table Reservations</h2></div>
+      <div class="list" id="resList">
+        <div class="empty">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Event Tickets -->
+    <div class="panel">
+      <div class="panel-head"><h2>My Event Tickets</h2></div>
+      <div class="list" id="eventList">
+        <div class="empty">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Delivery Orders -->
+    <div class="panel">
+      <div class="panel-head"><h2>My Delivery Orders</h2></div>
+      <div class="list" id="orderList">
+        <div class="empty">Loading...</div>
+      </div>
+    </div>
+  </main>
+
+<script>
+const API_BASE=(()=>{
+  let saved='';
+  try{saved=String(localStorage.getItem('aurum_api_base')||'').trim();}catch(_){}
+  const sameOrigin=location.protocol.startsWith('http')?location.origin:'';
+  return String(window.AURUM_API_BASE||sameOrigin||saved).replace(/\/+$/,'');
+})();
+const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
+
+function formatDate(val) {
+  const date = new Date(val);
+  return Number.isNaN(date.getTime()) ? val : date.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+}
+
+function getPillClass(status) {
+  const s = String(status).toLowerCase();
+  if(s==='approved' || s==='paid' || s==='delivered' || s==='ticket_sent' || s==='fully_paid') return 'ok';
+  if(s==='rejected') return 'err';
+  return 'pending';
+}
+
+async function loadProfile() {
+  try {
+    const res = await fetch(apiUrl('/api/user/profile'), { credentials: 'include' });
+    if (!res.ok) throw new Error('Not logged in');
+    const data = await res.json();
+    
+    document.getElementById('userName').textContent = `Welcome, ${data.user.name || 'Guest'}`;
+    document.getElementById('userEmail').textContent = data.user.email;
+
+    // Reservations
+    const rList = document.getElementById('resList');
+    rList.innerHTML = '';
+    if(data.reservations.length === 0) {
+      rList.innerHTML = '<div class="empty">No table reservations found.</div>';
+    } else {
+      data.reservations.forEach(r => {
+        rList.innerHTML += `
+          <div class="item">
+            <div class="info">
+              <h3>${r.date} at ${r.time}</h3>
+              <p>${r.guests} · Option: ${r.diningOption || 'Standard'}</p>
+            </div>
+            <div class="status">
+              <span class="pill ${getPillClass(r.status)}">${r.status || 'Pending'}</span>
+              <span class="status-date">Requested: ${formatDate(r.createdAt)}</span>
+            </div>
+          </div>`;
+      });
+    }
+
+    // Events
+    const eList = document.getElementById('eventList');
+    eList.innerHTML = '';
+    if(data.events.length === 0) {
+      eList.innerHTML = '<div class="empty">No event tickets found.</div>';
+    } else {
+      data.events.forEach(e => {
+        eList.innerHTML += `
+          <div class="item">
+            <div class="info">
+              <h3>${e.eventName}</h3>
+              <p>${e.venue} · ${e.date}</p>
+              <p style="margin-top:6px;font-weight:600">Total: ₹${e.totalFee} | Paid: ₹${e.advancePaid}</p>
+            </div>
+            <div class="status">
+              <span class="pill ${getPillClass(e.status)}">${e.status === 'fully_paid' ? 'Fully Paid' : 'Ticket Sent'}</span>
+              <span class="status-date">Purchased: ${formatDate(e.createdAt)}</span>
+            </div>
+          </div>`;
+      });
+    }
+
+    // Orders
+    const oList = document.getElementById('orderList');
+    oList.innerHTML = '';
+    if(data.orders.length === 0) {
+      oList.innerHTML = '<div class="empty">No delivery orders found.</div>';
+    } else {
+      data.orders.forEach(o => {
+        const items = o.items ? o.items.map(i => `${i.name} x${i.qty}`).join(', ') : 'Items hidden';
+        oList.innerHTML += `
+          <div class="item">
+            <div class="info">
+              <h3>Order ${o.orderRef || o.orderId || o.sessionId || ''}</h3>
+              <p>${items}</p>
+              <p style="margin-top:6px;font-weight:600">Total: ₹${o.amountTotal}</p>
+            </div>
+            <div class="status">
+              <span class="pill ${getPillClass(o.status)}">${o.status || 'Paid'}</span>
+              <span class="status-date">Ordered: ${formatDate(o.createdAt)}</span>
+            </div>
+          </div>`;
+      });
+    }
+
+  } catch (err) {
+    window.location.replace('login.html');
+  }
+}
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  try { await fetch(apiUrl('/api/auth/logout'), { method: 'POST', credentials: 'include' }); } catch (_) {}
+  try {
+    localStorage.removeItem('aurum_auth_email');
+    sessionStorage.removeItem('aurum_auth_email');
+  } catch (_) {}
+  window.location.replace('login.html');
+});
+
+loadProfile();
+</script>
+</body>
+</html>

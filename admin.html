@@ -179,6 +179,21 @@
     }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
     
+    .db-badge {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 14px;
+      border:1px solid rgba(45,138,77,.3);
+      background:#ebf7ee;
+      color:var(--ok);
+      font-size:10px;
+      font-weight:700;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      border-radius:20px;
+    }
+
     @media(max-width:768px){
       .topbar{flex-direction:column;gap:16px;padding:16px}
       .wrap{padding:16px}
@@ -191,6 +206,7 @@
   <header class="topbar">
     <div class="brand">AURUM <span>Admin Portal</span></div>
       <div class="top-actions">
+        <div class="db-badge" title="MongoDB Cloud Database Connected">🟢 DB: Active</div>
         <div class="live-badge" id="liveBadge" title="Real-time updates active">Live</div>
         <a class="btn secondary" href="index.html">Website</a>
         <button class="btn secondary" id="refreshBtn" type="button">Refresh</button>
