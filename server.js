@@ -745,6 +745,41 @@ async function processPaidRazorpayOrder(orderId, paymentId, signature) {
     `
   });
 
+  try {
+    await sendEmail({
+      to: customerEmail,
+      subject: 'Payment Successful - AURUM',
+      text: 'Dear Guest,\n\nThank you for choosing AURUM. Your payment has been successfully processed.\nYour order will be delivered within 5 days.\n\nFor any enquiries, please contact our concierge at +91 79883 79826.\n\nTeam AURUM',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #FAF7F2; color: #1A1612; border: 1px solid #E8D8C0; border-radius: 8px; overflow: hidden;">
+          <div style="background-color: #1A1612; padding: 30px; text-align: center;">
+            <h1 style="color: #C9A84C; margin: 0; font-size: 28px; letter-spacing: 4px; text-transform: uppercase;">AURUM</h1>
+            <p style="color: #A09080; margin: 5px 0 0 0; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">Fine Dining Delivery</p>
+          </div>
+          <div style="padding: 40px 30px;">
+            <h2 style="margin-top: 0; color: #1A1612; font-size: 24px; font-weight: normal;">Payment Successful</h2>
+            <p style="font-size: 16px; line-height: 1.6; color: #555;">Dear Guest,</p>
+            <p style="font-size: 16px; line-height: 1.6; color: #555;">Thank you for choosing AURUM. We are pleased to confirm that your payment of <strong>₹${amountTotal.toFixed(2)}</strong> has been successfully processed.</p>
+            <div style="background-color: #fff; border-left: 4px solid #C9A84C; padding: 15px 20px; margin: 25px 0;">
+              <p style="margin: 0; font-size: 15px; color: #333;"><strong>Order ID:</strong> ${orderId}</p>
+              <p style="margin: 8px 0 0 0; font-size: 15px; color: #333;"><strong>Estimated Delivery:</strong> Within 5 Days</p>
+            </div>
+            <p style="font-size: 16px; line-height: 1.6; color: #555;">Our culinary team is preparing your selection with the utmost care. It will be delivered in premium temperature-controlled packaging.</p>
+            <hr style="border: none; border-top: 1px solid #E8D8C0; margin: 30px 0;">
+            <h3 style="font-size: 18px; color: #1A1612; margin-top: 0; font-weight: normal;">Need Assistance?</h3>
+            <p style="font-size: 15px; color: #555; margin-bottom: 0;">If you have any questions regarding your order, please contact our concierge:</p>
+            <p style="font-size: 16px; margin-top: 5px;"><strong>📞 +91 79883 79826</strong></p>
+          </div>
+          <div style="background-color: #2A221A; color: #A09080; text-align: center; padding: 20px; font-size: 12px;">
+            <p style="margin: 0;">&copy; ${new Date().getFullYear()} AURUM Fine Dining Ltd. All rights reserved.</p>
+          </div>
+        </div>
+      `
+    });
+  } catch (_) {
+    // Mail fail hone par bhi order place ho jayega
+  }
+
   recordPaidOrder({
     provider: 'razorpay',
     orderId,
@@ -837,6 +872,41 @@ async function processPaidCheckoutSession(sessionId) {
       <pre style="font-family:Arial,sans-serif;white-space:pre-wrap">${itemsText}</pre>
     `
   });
+
+  try {
+    await sendEmail({
+      to: customerEmail,
+      subject: 'Payment Successful - AURUM',
+      text: 'Dear Guest,\n\nThank you for choosing AURUM. Your payment has been successfully processed.\nYour order will be delivered within 5 days.\n\nFor any enquiries, please contact our concierge at +91 79883 79826.\n\nTeam AURUM',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #FAF7F2; color: #1A1612; border: 1px solid #E8D8C0; border-radius: 8px; overflow: hidden;">
+          <div style="background-color: #1A1612; padding: 30px; text-align: center;">
+            <h1 style="color: #C9A84C; margin: 0; font-size: 28px; letter-spacing: 4px; text-transform: uppercase;">AURUM</h1>
+            <p style="color: #A09080; margin: 5px 0 0 0; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">Fine Dining Delivery</p>
+          </div>
+          <div style="padding: 40px 30px;">
+            <h2 style="margin-top: 0; color: #1A1612; font-size: 24px; font-weight: normal;">Payment Successful</h2>
+            <p style="font-size: 16px; line-height: 1.6; color: #555;">Dear Guest,</p>
+            <p style="font-size: 16px; line-height: 1.6; color: #555;">Thank you for choosing AURUM. We are pleased to confirm that your payment of <strong>${amountTotal.toFixed(2)} ${currency.toUpperCase()}</strong> has been successfully processed.</p>
+            <div style="background-color: #fff; border-left: 4px solid #C9A84C; padding: 15px 20px; margin: 25px 0;">
+              <p style="margin: 0; font-size: 15px; color: #333;"><strong>Order ID:</strong> ${sessionId}</p>
+              <p style="margin: 8px 0 0 0; font-size: 15px; color: #333;"><strong>Estimated Delivery:</strong> Within 5 Days</p>
+            </div>
+            <p style="font-size: 16px; line-height: 1.6; color: #555;">Our culinary team is preparing your selection with the utmost care. It will be delivered in premium temperature-controlled packaging.</p>
+            <hr style="border: none; border-top: 1px solid #E8D8C0; margin: 30px 0;">
+            <h3 style="font-size: 18px; color: #1A1612; margin-top: 0; font-weight: normal;">Need Assistance?</h3>
+            <p style="font-size: 15px; color: #555; margin-bottom: 0;">If you have any questions regarding your order, please contact our concierge:</p>
+            <p style="font-size: 16px; margin-top: 5px;"><strong>📞 +91 79883 79826</strong></p>
+          </div>
+          <div style="background-color: #2A221A; color: #A09080; text-align: center; padding: 20px; font-size: 12px;">
+            <p style="margin: 0;">&copy; ${new Date().getFullYear()} AURUM Fine Dining Ltd. All rights reserved.</p>
+          </div>
+        </div>
+      `
+    });
+  } catch (_) {
+    // Mail fail hone par bhi order place ho jayega
+  }
 
   recordPaidOrder({
     provider: 'stripe',
