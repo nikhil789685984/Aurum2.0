@@ -1916,6 +1916,7 @@ app.get('/api/admin/overview', requireAdmin, (req, res) => {
     .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
 
   const eventsRevenue = eventRegistrationsStore.reduce((sum, reg) => sum + (Number(reg.totalFee) || 0), 0);
+  const ordersRevenue = paidOrdersStore.reduce((sum, ord) => sum + (Number(ord.amountTotal) || 0), 0);
 
   return res.json({
     ok: true,
@@ -1924,7 +1925,8 @@ app.get('/api/admin/overview', requireAdmin, (req, res) => {
       reservations: reservationsStore.length,
       paidOrders: paidOrdersStore.length,
       events: eventRegistrationsStore.length,
-      eventsRevenue
+      eventsRevenue,
+      ordersRevenue
     },
     users,
     reservations,

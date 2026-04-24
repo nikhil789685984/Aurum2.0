@@ -225,6 +225,10 @@
         <div class="stat-label">Events Revenue</div>
         <div class="stat-value" id="eventsRevenue">₹0</div>
       </div>
+      <div class="card">
+        <div class="stat-label">Delivery Revenue</div>
+        <div class="stat-value" id="ordersRevenue">₹0</div>
+      </div>
     </div>
 
     <div class="panel">
@@ -330,6 +334,7 @@
     const ordersCount = document.getElementById('ordersCount');
     const eventsCount = document.getElementById('eventsCount');
     const eventsRevenue = document.getElementById('eventsRevenue');
+    const ordersRevenue = document.getElementById('ordersRevenue');
     const refreshBtn = document.getElementById('refreshBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const reservationsTable = document.getElementById('reservationsTable');
@@ -443,6 +448,7 @@
         ordersCount.textContent = data?.stats?.paidOrders || 0;
         eventsCount.textContent = data?.stats?.events || 0;
         eventsRevenue.textContent = `₹${(data?.stats?.eventsRevenue || 0).toLocaleString('en-IN')}`;
+        ordersRevenue.textContent = `₹${(data?.stats?.ordersRevenue || 0).toLocaleString('en-IN')}`;
 
         renderTable({
           rows: Array.isArray(data.reservations) ? data.reservations : [],
