@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AURUM — Indian Dining · India</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -298,12 +299,15 @@ nav.scrolled .nav-ham span{background:var(--charcoal)}
 .events-list{display:flex;flex-direction:column;gap:2px}
 .event{background:var(--white);display:grid;grid-template-columns:130px 1fr auto;gap:40px;align-items:center;padding:32px 40px;transition:transform .3s,box-shadow .3s}
 .event:hover{transform:translateX(6px);box-shadow:4px 0 0 var(--gold)}
-.event-date{text-align:center}
+.event-date{text-align:center;flex-shrink:0}
 .event-date .day{font-family:'Playfair Display',serif;font-size:44px;font-weight:300;color:var(--gold);line-height:1}
 .event-date .month{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--stone)}
 .event-info h3{font-family:'Playfair Display',serif;font-size:24px;font-weight:400;color:var(--charcoal);margin-bottom:6px}
 .event-info p{font-size:13px;color:var(--stone);line-height:1.6}
-.event-tag{font-size:9px;letter-spacing:3px;text-transform:uppercase;border:1px solid rgba(201,168,76,.4);color:var(--gold);padding:7px 14px;white-space:nowrap}
+.event-action{text-align:right;flex-shrink:0}
+.ev-price{font-family:'Playfair Display',serif;font-size:24px;color:var(--charcoal);margin-bottom:8px}
+.ev-price span{font-size:12px;color:var(--stone);font-family:'Manrope',sans-serif;letter-spacing:0}
+.ev-reg-btn{padding:12px 20px;font-size:9px}
 
 /* ─── RESERVATION ─────────────────────────── */
 .res-sec{background:var(--charcoal);padding:160px 0;position:relative;overflow:hidden}
@@ -403,6 +407,19 @@ footer{background:var(--char2);padding:90px 70px 44px}
 .mail-popup-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold2);margin-bottom:8px}
 .mail-popup-msg{font-size:13px;line-height:1.45;color:rgba(255,255,255,.9)}
 
+/* ─── EVENT MODAL ─────────────────────────── */
+.ev-modal{position:fixed;inset:0;background:rgba(26,22,18,.75);backdrop-filter:blur(8px);z-index:99999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.ev-modal.on{opacity:1;pointer-events:auto}
+.ev-modal-card{background:var(--white);padding:40px;width:min(480px,90vw);position:relative;transform:translateY(20px) scale(.98);transition:all .3s ease;border:1px solid rgba(201,168,76,.3);box-shadow:0 24px 60px rgba(0,0,0,.2)}
+.ev-modal.on .ev-modal-card{transform:none}
+.ev-close{position:absolute;top:16px;right:20px;font-size:32px;background:none;border:none;cursor:pointer;color:var(--stone);line-height:1;transition:color .2s}
+.ev-close:hover{color:var(--gold)}
+.ev-cost-box{margin:24px 0;padding:18px;background:var(--cream);border:1px solid rgba(201,168,76,.2);border-radius:4px}
+.ev-cost-row{display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;color:var(--stone)}
+.ev-cost-row.total{color:var(--gold);font-weight:700;font-size:16px;margin-bottom:0;margin-top:12px;padding-top:12px;border-top:1px dashed rgba(201,168,76,.3)}
+.ev-modal input,.ev-modal select{width:100%;padding:14px 16px;border:1px solid rgba(26,22,18,.15);margin-bottom:12px;font-family:inherit;font-size:15px;outline:none}
+.ev-modal input:focus,.ev-modal select:focus{border-color:var(--gold)}
+
 /* ─── ANIMATIONS ──────────────────────────── */
 @keyframes revealUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
 @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
@@ -447,8 +464,8 @@ footer{background:var(--char2);padding:90px 70px 44px}
   .foot-bottom{flex-direction:column;text-align:center}
   .hero-awards{display:none}
   .review-score{flex-wrap:wrap;justify-content:center;gap:30px;padding:36px 28px}
-  .events-list .event{grid-template-columns:80px 1fr;gap:20px}
-  .event-tag{display:none}
+  .events-list .event{grid-template-columns:1fr;gap:20px}
+  .event-action{text-align:left;display:flex;align-items:center;justify-content:space-between}
 }
 
 @media(max-width:640px){
@@ -1098,7 +1115,10 @@ footer{background:var(--char2);padding:90px 70px 44px}
           <h3>Summer Solstice Dinner</h3>
           <p>A special eight-course celebration of the longest day — foraged ingredients, natural wines, and a live string quartet.</p>
         </div>
-        <div class="event-tag">Limited Seats</div>
+        <div class="event-action">
+          <div class="ev-price">₹5,000 <span>p.p.</span></div>
+          <button class="btn-gold ev-reg-btn" data-id="evt_summer" data-name="Summer Solstice Dinner" data-price="5000">Register Now</button>
+        </div>
       </div>
       <div class="event reveal" style="transition-delay:.1s">
         <div class="event-date"><div class="day">22</div><div class="month">June 2025</div></div>
@@ -1106,7 +1126,10 @@ footer{background:var(--char2);padding:90px 70px 44px}
           <h3>Regional Pairing Dinner</h3>
           <p>A six-course menu pairing regional Indian dishes with curated beverages designed for aroma, spice, and texture balance.</p>
         </div>
-        <div class="event-tag">Nearly Full</div>
+        <div class="event-action">
+          <div class="ev-price">₹4,000 <span>p.p.</span></div>
+          <button class="btn-gold ev-reg-btn" data-id="evt_pairing" data-name="Regional Pairing Dinner" data-price="4000">Register Now</button>
+        </div>
       </div>
       <div class="event reveal" style="transition-delay:.2s">
         <div class="event-date"><div class="day">05</div><div class="month">July 2025</div></div>
@@ -1114,7 +1137,10 @@ footer{background:var(--char2);padding:90px 70px 44px}
           <h3>Cookery Masterclass: Indian Gravies</h3>
           <p>An intimate four-hour morning in our kitchen with Nikhil, learning core Indian gravies and tandoor techniques. Lunch included.</p>
         </div>
-        <div class="event-tag">8 Places Only</div>
+        <div class="event-action">
+          <div class="ev-price">₹8,000 <span>p.p.</span></div>
+          <button class="btn-gold ev-reg-btn" data-id="evt_masterclass" data-name="Cookery Masterclass" data-price="8000">Register Now</button>
+        </div>
       </div>
       <div class="event reveal" style="transition-delay:.3s">
         <div class="event-date"><div class="day">19</div><div class="month">July 2025</div></div>
@@ -1122,7 +1148,10 @@ footer{background:var(--char2);padding:90px 70px 44px}
           <h3>Monsoon Festival Menu</h3>
           <p>A five-course seasonal menu inspired by Indian monsoon comfort dishes, with live acoustic music and welcome drinks.</p>
         </div>
-        <div class="event-tag">Booking Open</div>
+        <div class="event-action">
+          <div class="ev-price">₹3,500 <span>p.p.</span></div>
+          <button class="btn-gold ev-reg-btn" data-id="evt_monsoon" data-name="Monsoon Festival Menu" data-price="3500">Register Now</button>
+        </div>
       </div>
       <div class="event reveal" style="transition-delay:.4s">
         <div class="event-date"><div class="day">02</div><div class="month">Aug 2025</div></div>
@@ -1130,7 +1159,10 @@ footer{background:var(--char2);padding:90px 70px 44px}
           <h3>Truffle Season Preview Dinner</h3>
           <p>The first truffles of the season arrive in August. An exclusive dinner for 24 guests to celebrate bold Indian winter flavours.</p>
         </div>
-        <div class="event-tag">Join Waitlist</div>
+        <div class="event-action">
+          <div class="ev-price">₹10,000 <span>p.p.</span></div>
+          <button class="btn-gold ev-reg-btn" data-id="evt_truffle" data-name="Truffle Season Preview" data-price="10000">Register Now</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1380,6 +1412,30 @@ footer{background:var(--char2);padding:90px 70px 44px}
     </div>
   </div>
 </footer>
+
+<!-- EVENT MODAL -->
+<div id="evModal" class="ev-modal">
+  <div class="ev-modal-card">
+    <button class="ev-close" id="evClose">&times;</button>
+    <h3 id="evTitle" style="font-family:'Playfair Display',serif;font-size:28px;margin-bottom:8px;color:var(--charcoal)">Event Name</h3>
+    <p style="font-size:14px;color:var(--stone);margin-bottom:20px;line-height:1.6">Reserve your spot instantly by paying a 10% advance fee securely via Razorpay.</p>
+    <input type="text" id="evName" placeholder="Full Name">
+    <input type="tel" id="evPhone" placeholder="Phone Number (+91...)">
+    <select id="evGuests">
+      <option value="1">1 Guest</option>
+      <option value="2">2 Guests</option>
+      <option value="3">3 Guests</option>
+      <option value="4">4 Guests</option>
+      <option value="5">5 Guests</option>
+      <option value="6">6 Guests</option>
+    </select>
+    <div class="ev-cost-box">
+      <div class="ev-cost-row"><span>Total Event Fee</span><strong id="evTotalFee">₹0</strong></div>
+      <div class="ev-cost-row total"><span>Advance Payable (10%)</span><strong id="evAdvanceFee">₹0</strong></div>
+    </div>
+    <button id="evPayBtn" class="btn-gold" style="width:100%">Pay Advance & Register</button>
+  </div>
+</div>
 
 <script>
 const DEMO_SESSION_KEY='aurum_auth_email';
@@ -1670,6 +1726,95 @@ if(logoutLink){
     window.location.replace('login.html');
   });
 }
+
+/* ── EVENT REGISTRATION LOGIC ── */
+const evModal = document.getElementById('evModal');
+const evClose = document.getElementById('evClose');
+const evTitle = document.getElementById('evTitle');
+const evName = document.getElementById('evName');
+const evPhone = document.getElementById('evPhone');
+const evGuests = document.getElementById('evGuests');
+const evTotalFee = document.getElementById('evTotalFee');
+const evAdvanceFee = document.getElementById('evAdvanceFee');
+const evPayBtn = document.getElementById('evPayBtn');
+
+let currentEvent = null;
+
+function updateEvCalc() {
+  if(!currentEvent) return;
+  const g = Number(evGuests.value) || 1;
+  const total = currentEvent.price * g;
+  const advance = Math.round(total * 0.1);
+  evTotalFee.textContent = `₹${total.toLocaleString('en-IN')}`;
+  evAdvanceFee.textContent = `₹${advance.toLocaleString('en-IN')}`;
+}
+
+document.querySelectorAll('.ev-reg-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentEvent = {
+      id: btn.dataset.id,
+      name: btn.dataset.name,
+      price: Number(btn.dataset.price)
+    };
+    evTitle.textContent = currentEvent.name;
+    evGuests.value = '1';
+    updateEvCalc();
+    evModal.classList.add('on');
+  });
+});
+
+evClose.addEventListener('click', () => evModal.classList.remove('on'));
+evGuests.addEventListener('change', updateEvCalc);
+
+evPayBtn.addEventListener('click', async () => {
+  const name = evName.value.trim();
+  const phone = evPhone.value.trim();
+  const guests = evGuests.value;
+  if(!name || !phone) {
+    alert('Please enter your full name and phone number.');
+    return;
+  }
+  evPayBtn.disabled = true;
+  evPayBtn.textContent = 'Processing...';
+  
+  try {
+    const res = await fetch(apiUrl('/api/events/create-razorpay-order'), {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ eventId: currentEvent.id, guests, name, phone })
+    });
+    const data = await res.json().catch(() => ({}));
+    if(!res.ok) throw new Error(data.error || 'Failed to start payment');
+
+    const options = {
+      key: data.keyId,
+      amount: data.amount,
+      currency: data.currency,
+      name: 'AURUM Events',
+      description: `Advance for ${currentEvent.name}`,
+      order_id: data.orderId,
+      prefill: data.prefill,
+      theme: { color: '#C9A84C' },
+      handler: async function(response) {
+        await fetch(apiUrl('/api/events/verify-razorpay-payment'), {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(response)
+        });
+        evModal.classList.remove('on');
+        showMailPopup('Event Registration Successful! Check your email.');
+      }
+    };
+    new window.Razorpay(options).open();
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    evPayBtn.disabled = false;
+    evPayBtn.textContent = 'Pay Advance & Register';
+  }
+});
 </script>
 </body>
 </html>

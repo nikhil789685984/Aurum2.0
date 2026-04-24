@@ -88,7 +88,7 @@
     
     .grid{
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
       gap:24px;
       margin-bottom:36px;
     }
@@ -217,6 +217,10 @@
         <div class="stat-label">Paid Orders</div>
         <div class="stat-value" id="ordersCount">0</div>
       </div>
+      <div class="card">
+        <div class="stat-label">Event Signups</div>
+        <div class="stat-value" id="eventsCount">0</div>
+      </div>
     </div>
 
     <div class="panel">
@@ -278,6 +282,25 @@
     </div>
 
     <div class="panel">
+      <div class="panel-head"><h2>Event Registrations</h2></div>
+      <div class="table-responsive">
+        <div id="eventsEmpty" class="empty">No event registrations yet.</div>
+        <table id="eventsTable" hidden>
+          <thead>
+            <tr>
+              <th>Event Name</th>
+              <th>Guest Info</th>
+              <th>Seats</th>
+              <th>Payment Status</th>
+              <th>Date Registered</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
       <div class="panel-head"><h2>Registered Users</h2></div>
       <div class="table-responsive">
         <div id="usersEmpty" class="empty">Loading users...</div>
@@ -300,6 +323,7 @@
     const usersCount = document.getElementById('usersCount');
     const reservationsCount = document.getElementById('reservationsCount');
     const ordersCount = document.getElementById('ordersCount');
+    const eventsCount = document.getElementById('eventsCount');
     const refreshBtn = document.getElementById('refreshBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const reservationsTable = document.getElementById('reservationsTable');
@@ -411,6 +435,7 @@
         usersCount.textContent = data?.stats?.users || 0;
         reservationsCount.textContent = data?.stats?.reservations || 0;
         ordersCount.textContent = data?.stats?.paidOrders || 0;
+        eventsCount.textContent = data?.stats?.events || 0;
 
         renderTable({
           rows: Array.isArray(data.reservations) ? data.reservations : [],
@@ -472,6 +497,19 @@
               <td>${formatDate(row.createdAt)}</td>
             `;
           }
+        });
+
+        renderTable({
+          rows: Array.isArray(data.eventRegistrations) ? data.eventRegistrations : [],
+          tableId: 'eventsTable',
+          emptyId: 'eventsEmpty',
+          buildRow: row => `
+            <td><strong>${escapeHtml(row.eventName || 'Event')}</strong><div class="muted" style="margin-top:6px;font-family:monospace">${escapeHtml(row.paymentId || row.id || '')}</div></td>
+            <td><strong>${escapeHtml(row.name || 'Guest')}</strong><div class="muted">${escapeHtml(row.phone || '')}</div><div class="muted">${escapeHtml(row.authEmail || '')}</div></td>
+            <td><strong class="ok" style="font-size:18px">${escapeHtml(row.guests || 1)}</strong></td>
+            <td><span class="pill paid">Advance Paid</span><div class="muted" style="margin-top:6px">Paid: ₹${escapeHtml(row.advancePaid)}<br>Total: ₹${escapeHtml(row.totalFee)}</div></td>
+            <td>${formatDate(row.createdAt)}</td>
+          `
         });
 
         renderTable({

@@ -25,6 +25,7 @@ const USERS_DB_PATH = path.join(__dirname, 'users.json');
 const SESSIONS_DB_PATH = path.join(__dirname, 'sessions.json');
 const RESERVATIONS_DB_PATH = path.join(__dirname, 'reservations.json');
 const ORDERS_DB_PATH = path.join(__dirname, 'paid-orders.json');
+const EVENT_REGS_DB_PATH = path.join(__dirname, 'event-registrations.json');
 const OTP_TTL_MS = 5 * 60 * 1000;
 const OTP_RESEND_GAP_MS = 60 * 1000;
 const OTP_MAX_ATTEMPTS = 5;
@@ -37,6 +38,8 @@ const razorpayOrderStore = new Map();
 const notifiedRazorpayOrders = new Set();
 const reservationsStore = [];
 const paidOrdersStore = [];
+const eventRegistrationsStore = [];
+const razorpayEventOrderStore = new Map();
 const rateLimitStore = new Map();
 let stripeClient = null;
 let razorpayClient = null;
@@ -52,6 +55,14 @@ setInterval(() => {
     try { client.write(`:\n\n`); } catch(e){}
   });
 }, 25000);
+
+const EVENT_PRICES = {
+  'evt_summer': { name: 'Summer Solstice Dinner', price: 5000 },
+  'evt_pairing': { name: 'Regional Pairing Dinner', price: 4000 },
+  'evt_masterclass': { name: 'Cookery Masterclass', price: 8000 },
+  'evt_monsoon': { name: 'Monsoon Festival Menu', price: 3500 },
+  'evt_truffle': { name: 'Truffle Season Preview', price: 10000 }
+};
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
@@ -292,6 +303,18 @@ function persistPaidOrdersToDisk() {
   writeJsonFile(ORDERS_DB_PATH, paidOrdersStore);
 }
 
+function loadEventRegistrationsFromDisk() {
+  const records = readJsonFile(EVENT_REGS_DB_PATH, []);
+  if (!Array.isArray(records)) return;
+  records.forEach(record => {
+    if (record && record.id) eventRegistrationsStore.push(record);
+  });
+}
+
+function persistEventRegistrationsToDisk() {
+  writeJsonFile(EVENT_REGS_DB_PATH, eventRegistrationsStore);
+}
+
 function createId(prefix) {
   return `${prefix}_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
 }
@@ -429,6 +452,7 @@ loadUsersFromDisk();
 loadSessionsFromDisk();
 loadReservationsFromDisk();
 loadPaidOrdersFromDisk();
+loadEventRegistrationsFromDisk();
 
 function createTransporter() {
   const smtpHost = process.env.SMTP_HOST;
@@ -1462,6 +1486,92 @@ app.post('/api/orders/verify-razorpay-payment', requireAuth, createRateLimit({ k
   }
 });
 
+app.post('/api/events/create-razorpay-order', requireAuth, createRateLimit({ key: 'event-order', windowMs: 5 * 60 * 1000, max: 20 }), async (req, res) => {
+  try {
+    const eventId = String(req.body?.eventId || '').trim();
+    const guests = Number(req.body?.guests) || 1;
+    const name = String(req.body?.name || '').trim().slice(0, 100);
+    const phone = normalizePhone(req.body?.phone || '');
+
+    if (!eventId || !EVENT_PRICES[eventId]) return res.status(400).json({ error: 'Invalid event selected.' });
+    if (guests < 1 || guests > 20) return res.status(400).json({ error: 'Invalid number of guests.' });
+    if (!name || !phone) return res.status(400).json({ error: 'Name and valid phone number are required.' });
+
+    const eventDetails = EVENT_PRICES[eventId];
+    const totalFee = eventDetails.price * guests;
+    const advanceAmount = Math.round(totalFee * 0.1); // 10% advance
+    const amountPaise = advanceAmount * 100;
+
+    const razorpay = getRazorpayClient();
+    const order = await razorpay.orders.create({
+      amount: amountPaise,
+      currency: 'INR',
+      receipt: `evt_${Date.now()}`
+    });
+
+    if (!order?.id) return res.status(500).json({ error: 'Failed to create Razorpay order.' });
+
+    razorpayEventOrderStore.set(order.id, {
+      eventId,
+      eventName: eventDetails.name,
+      guests,
+      name,
+      phone,
+      authEmail: req.authEmail,
+      advancePaid: advanceAmount,
+      totalFee,
+      createdAt: Date.now()
+    });
+
+    return res.json({ ok: true, keyId: process.env.RAZORPAY_KEY_ID, orderId: order.id, amount: amountPaise, currency: 'INR', prefill: { email: req.authEmail, contact: phone, name } });
+  } catch (err) {
+    return res.status(500).json({ error: err?.message || 'Order creation failed.' });
+  }
+});
+
+app.post('/api/events/verify-razorpay-payment', requireAuth, createRateLimit({ key: 'event-verify', windowMs: 5 * 60 * 1000, max: 20 }), async (req, res) => {
+  try {
+    const orderId = String(req.body?.razorpay_order_id || '').trim();
+    const paymentId = String(req.body?.razorpay_payment_id || '').trim();
+    const signature = String(req.body?.razorpay_signature || '').trim();
+
+    if (!orderId || !paymentId || !signature) return res.status(400).json({ error: 'Missing payment fields.' });
+
+    const secret = process.env.RAZORPAY_KEY_SECRET;
+    const expected = crypto.createHmac('sha256', secret).update(`${orderId}|${paymentId}`).digest('hex');
+    if (expected !== signature) return res.status(400).json({ error: 'Signature verification failed.' });
+
+    const pending = razorpayEventOrderStore.get(orderId);
+    if (!pending) return res.status(400).json({ error: 'Order not found or expired.' });
+
+    const regRecord = { id: createId('evr'), ...pending, paymentId, status: 'confirmed', createdAt: new Date().toISOString() };
+    eventRegistrationsStore.unshift(regRecord);
+    persistEventRegistrationsToDisk();
+    notifyAdminDash();
+    razorpayEventOrderStore.delete(orderId);
+
+    try {
+      await sendEmail({
+        to: pending.authEmail,
+        subject: `Event Registration Confirmed - ${pending.eventName}`,
+        text: `Your registration for ${pending.eventName} is confirmed.\nAdvance Paid: ₹${pending.advancePaid}\nRemaining Balance: ₹${pending.totalFee - pending.advancePaid} (Payable at venue)\n\nThank you for choosing AURUM.`,
+        html: `
+          <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#FAF7F2;color:#1A1612;border:1px solid #E8D8C0;border-radius:8px;">
+            <div style="background:#1A1612;padding:30px;text-align:center;"><h1 style="color:#C9A84C;margin:0;font-size:28px;letter-spacing:4px;">AURUM</h1><p style="color:#A09080;margin:5px 0 0;font-size:12px;letter-spacing:2px;text-transform:uppercase;">Event Registration</p></div>
+            <div style="padding:40px 30px;"><h2 style="margin-top:0;font-size:22px;">Dear ${pending.name},</h2><p>Your registration for <strong>${pending.eventName}</strong> is confirmed.</p>
+            <div style="background:#fff;border-left:4px solid #C9A84C;padding:15px;margin:25px 0;"><p style="margin:0 0 8px;"><strong>Guests:</strong> ${pending.guests}</p><p style="margin:0 0 8px;"><strong>Advance Paid:</strong> ₹${pending.advancePaid}</p><p style="margin:0;"><strong>Remaining Balance:</strong> ₹${pending.totalFee - pending.advancePaid} (Payable at venue)</p></div>
+            <p>We look forward to hosting you. For any enquiries, please contact +91 79883 79826.</p></div>
+          </div>
+        `
+      });
+    } catch (e) {}
+
+    return res.json({ ok: true, registration: regRecord });
+  } catch (err) {
+    return res.status(500).json({ error: err?.message || 'Verification failed.' });
+  }
+});
+
 app.post('/api/orders/create-checkout-session', requireAuth, createRateLimit({ key: 'create-checkout-session', windowMs: 5 * 60 * 1000, max: 10 }), async (req, res) => {
   try {
     const items = normalizeCart(req.body?.items);
@@ -1696,16 +1806,22 @@ app.get('/api/admin/overview', requireAdmin, (req, res) => {
     .slice()
     .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
 
+  const eventRegistrations = eventRegistrationsStore
+    .slice()
+    .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+
   return res.json({
     ok: true,
     stats: {
       users: users.length,
       reservations: reservationsStore.length,
-      paidOrders: paidOrdersStore.length
+      paidOrders: paidOrdersStore.length,
+      events: eventRegistrationsStore.length
     },
     users,
     reservations,
-    orders
+    orders,
+    eventRegistrations
   });
 });
 
