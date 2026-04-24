@@ -1248,36 +1248,40 @@ app.post('/api/auth/send-otp', createRateLimit({ key: 'send-otp', windowMs: 10 *
 });
 
 app.post('/api/auth/login-password', createRateLimit({ key: 'login-password', windowMs: 10 * 60 * 1000, max: 12 }), (req, res) => {
-  const rawIdentifier = String(req.body?.identifier || req.body?.phone || req.body?.email || '').trim();
-  const email = String(rawIdentifier || '').replace(/\s+/g, '').trim().toLowerCase();
-  const phone = normalizePhone(rawIdentifier);
-  const password = String(req.body?.password || '');
+  try {
+    const rawIdentifier = String(req.body?.identifier || req.body?.phone || req.body?.email || '').trim();
+    const email = String(rawIdentifier || '').replace(/\s+/g, '').trim().toLowerCase();
+    const phone = normalizePhone(rawIdentifier);
+    const password = String(req.body?.password || '');
 
-  if (!password) {
-    return res.status(400).json({ error: 'Password is required.' });
-  }
+    if (!password) {
+      return res.status(400).json({ error: 'Password is required.' });
+    }
 
-  if (email === 'nikhilsheoran093@gmail.com' && password === 'nikhil093') {
-    const token = createSession(email);
+    if (email === 'nikhilsheoran093@gmail.com' && password === 'nikhil093') {
+      const token = createSession(email);
+      setSessionCookie(res, token);
+      return res.json({ ok: true, email });
+    }
+
+    const userByEmail = isValidEmail(email) ? usersStore.get(email) : null;
+    const userByPhone = phone ? getUserByPhone(phone) : null;
+    const user = userByPhone || userByEmail;
+    if (!user) {
+      return res.status(404).json({ error: 'No account found. Please sign up first.' });
+    }
+
+    const expectedHash = hashPassword(password, user.salt || '');
+    if (expectedHash !== user.passwordHash) {
+      return res.status(401).json({ error: 'Incorrect password.' });
+    }
+
+    const token = createSession(user.email);
     setSessionCookie(res, token);
-    return res.json({ ok: true, email });
+    return res.json({ ok: true, email: user.email });
+  } catch (err) {
+    return res.status(500).json({ error: 'Internal server error during login.' });
   }
-
-  const userByEmail = isValidEmail(email) ? usersStore.get(email) : null;
-  const userByPhone = phone ? getUserByPhone(phone) : null;
-  const user = userByPhone || userByEmail;
-  if (!user) {
-    return res.status(404).json({ error: 'No account found. Please sign up first.' });
-  }
-
-  const expectedHash = hashPassword(password, user.salt);
-  if (expectedHash !== user.passwordHash) {
-    return res.status(401).json({ error: 'Incorrect password.' });
-  }
-
-  const token = createSession(user.email);
-  setSessionCookie(res, token);
-  return res.json({ ok: true, email: user.email });
 });
 
 app.post('/api/gym-chatbot', requireAuth, createRateLimit({ key: 'gym-chatbot', windowMs: 60 * 1000, max: 20 }), async (req, res) => {
