@@ -91,7 +91,7 @@ for (let i = 0; i < 60; i++) {
   eventDate.setDate(eventDate.getDate() + Math.floor(Math.random() * 4) + 2);
 }
 const EVENT_PRICES = {};
-premiumEventsList.forEach(e => { EVENT_PRICES[e.id] = { name: e.name, price: e.price }; });
+premiumEventsList.forEach(e => { EVENT_PRICES[e.id] = { name: e.name, price: e.price, venue: e.venue, celeb: e.celeb, date: `${e.day} ${e.month}` }; });
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
@@ -510,7 +510,7 @@ function createTransporter() {
   return { transporter, fromEmail };
 }
 
-async function sendViaResend({ fromEmail, to, subject, text, html, replyTo }) {
+async function sendViaResend({ fromEmail, to, subject, text, html, replyTo, attachments }) {
   const apiKey = String(process.env.RESEND_API_KEY || '').trim();
   if (!apiKey) {
     throw new Error('RESEND_API_KEY is missing.');
@@ -524,6 +524,12 @@ async function sendViaResend({ fromEmail, to, subject, text, html, replyTo }) {
   if (text) payload.text = text;
   if (html) payload.html = html;
   if (replyTo) payload.reply_to = replyTo;
+  if (attachments) {
+    payload.attachments = attachments.map(a => ({
+      filename: a.filename,
+      content: Buffer.isBuffer(a.content) ? a.content.toString('base64') : a.content
+    }));
+  }
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -539,7 +545,7 @@ async function sendViaResend({ fromEmail, to, subject, text, html, replyTo }) {
   }
 }
 
-async function sendEmail({ to, subject, text, html, replyTo }) {
+async function sendEmail({ to, subject, text, html, replyTo, attachments }) {
   const resendKey = String(process.env.RESEND_API_KEY || '').trim();
   const smtpUser = String(process.env.SMTP_USER || '').trim();
   const fromEmail = String(process.env.FROM_EMAIL || smtpUser || '').trim();
@@ -549,7 +555,7 @@ async function sendEmail({ to, subject, text, html, replyTo }) {
   }
 
   if (resendKey) {
-    return sendViaResend({ fromEmail, to, subject, text, html, replyTo });
+    return sendViaResend({ fromEmail, to, subject, text, html, replyTo, attachments });
   }
 
   const { transporter } = createTransporter();
@@ -559,7 +565,43 @@ async function sendEmail({ to, subject, text, html, replyTo }) {
     replyTo,
     subject,
     text,
-    html
+    html,
+    attachments
+  });
+}
+
+async function createPremiumTicketPDF(reg) {
+  return new Promise((resolve) => {
+    try {
+      const PDFDocument = require('pdfkit');
+      const doc = new PDFDocument({ size: 'A4', margin: 0 });
+      const buffers = [];
+      doc.on('data', buffers.push.bind(buffers));
+      doc.on('end', () => resolve(Buffer.concat(buffers)));
+      doc.rect(0, 0, 595, 842).fill('#1A1612');
+      doc.rect(20, 20, 555, 802).lineWidth(2).stroke('#C9A84C');
+      doc.rect(28, 28, 539, 786).lineWidth(1).stroke('#A09080');
+      doc.fillColor('#C9A84C').font('Helvetica-Bold').fontSize(46).text('AURUM', 0, 90, { align: 'center', characterSpacing: 10 });
+      doc.fillColor('#A09080').font('Helvetica').fontSize(12).text('SUPER PREMIUM EVENT TICKET', 0, 145, { align: 'center', characterSpacing: 6 });
+      doc.moveTo(150, 190).lineTo(445, 190).lineWidth(1).stroke('#C9A84C');
+      doc.fillColor('#C9A84C').fontSize(14).text('GUEST OF HONOUR', 80, 240);
+      doc.fillColor('#FFFFFF').fontSize(24).text(String(reg.name).toUpperCase(), 80, 260);
+      doc.fillColor('#C9A84C').fontSize(14).text('EVENT', 80, 330);
+      doc.fillColor('#FFFFFF').fontSize(18).text(String(reg.eventName || 'Premium Event'), 80, 350);
+      doc.fillColor('#C9A84C').fontSize(14).text('VENUE', 80, 420);
+      doc.fillColor('#FFFFFF').fontSize(16).text(String(reg.venue || 'AURUM Exclusive Venue'), 80, 440);
+      doc.fillColor('#C9A84C').fontSize(14).text('DATE', 80, 510);
+      doc.fillColor('#FFFFFF').fontSize(18).text(String(reg.date || 'TBA'), 80, 530);
+      doc.fillColor('#C9A84C').fontSize(14).text('ADMIT', 400, 510);
+      doc.fillColor('#FFFFFF').fontSize(18).text(String(reg.guests || '1'), 400, 530);
+      doc.moveTo(150, 660).lineTo(445, 660).lineWidth(1).stroke('#C9A84C');
+      doc.fillColor('#A09080').font('Helvetica-Oblique').fontSize(12).text('Please present this ticket upon arrival. Dress code is strictly formal.', 0, 690, { align: 'center' });
+      doc.fillColor('#A09080').font('Helvetica').fontSize(10).text(`REF: ${reg.id} | STATUS: FULLY PAID`, 0, 715, { align: 'center', characterSpacing: 2 });
+      doc.end();
+    } catch (err) {
+      const html = `<html><head><title>AURUM Ticket</title></head><body style="background:#1A1612;color:#fff;text-align:center;padding:50px;font-family:sans-serif;border:5px solid #C9A84C;"><h1 style="color:#C9A84C;font-size:50px;letter-spacing:10px;">AURUM</h1><p style="color:#A09080;letter-spacing:5px;">SUPER PREMIUM TICKET</p><hr style="border-color:#C9A84C;margin:40px 0;"><h2 style="font-size:30px;">${String(reg.name).toUpperCase()}</h2><p style="font-size:20px;color:#C9A84C;">${reg.eventName}</p><p style="font-size:18px;">${reg.venue || 'Premium Venue'} | ${reg.date || 'TBA'}</p><p style="font-size:18px;color:#2D8A4D;">ADMIT: ${reg.guests} | FULLY PAID</p><p style="color:#A09080;margin-top:50px;">REF: ${reg.id}</p></body></html>`;
+      resolve({ buffer: Buffer.from(html), fallback: true });
+    }
   });
 }
 
@@ -1558,6 +1600,8 @@ app.delete('/api/admin/events/:id', requireAdmin, createRateLimit({ key: 'admin-
     razorpayEventOrderStore.set(order.id, {
       eventId,
       eventName: eventDetails.name,
+      venue: eventDetails.venue,
+      date: eventDetails.date,
       guests,
       name,
       phone,
@@ -1595,16 +1639,31 @@ app.post('/api/events/verify-razorpay-payment', requireAuth, createRateLimit({ k
     razorpayEventOrderStore.delete(orderId);
 
     try {
+      const balance = pending.totalFee - pending.advancePaid;
+      const upiString = `upi://pay?pa=nikhilsheoran093@okicici&pn=AURUM&am=${balance}&cu=INR&tn=Event_Balance`;
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiString)}`;
       await sendEmail({
         to: pending.authEmail,
-        subject: `Event Registration Confirmed - ${pending.eventName}`,
-        text: `Your registration for ${pending.eventName} is confirmed.\nAdvance Paid: ₹${pending.advancePaid}\nRemaining Balance: ₹${pending.totalFee - pending.advancePaid} (Payable at venue)\n\nThank you for choosing AURUM.`,
+        subject: `Action Required: Complete Payment for ${pending.eventName}`,
+        text: `Dear ${pending.name},\nWe have received your advance of ₹${pending.advancePaid}.\nPlease pay the remaining balance of ₹${balance} via the QR code to receive your Super Premium Ticket.\n\nTeam AURUM`,
         html: `
-          <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#FAF7F2;color:#1A1612;border:1px solid #E8D8C0;border-radius:8px;">
-            <div style="background:#1A1612;padding:30px;text-align:center;"><h1 style="color:#C9A84C;margin:0;font-size:28px;letter-spacing:4px;">AURUM</h1><p style="color:#A09080;margin:5px 0 0;font-size:12px;letter-spacing:2px;text-transform:uppercase;">Event Registration</p></div>
-            <div style="padding:40px 30px;"><h2 style="margin-top:0;font-size:22px;">Dear ${pending.name},</h2><p>Your registration for <strong>${pending.eventName}</strong> is confirmed.</p>
-            <div style="background:#fff;border-left:4px solid #C9A84C;padding:15px;margin:25px 0;"><p style="margin:0 0 8px;"><strong>Guests:</strong> ${pending.guests}</p><p style="margin:0 0 8px;"><strong>Advance Paid:</strong> ₹${pending.advancePaid}</p><p style="margin:0;"><strong>Remaining Balance:</strong> ₹${pending.totalFee - pending.advancePaid} (Payable at venue)</p></div>
-            <p>We look forward to hosting you. For any enquiries, please contact +91 79883 79826.</p></div>
+          <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#1A1612;color:#FAF7F2;border:1px solid #C9A84C;border-radius:12px;overflow:hidden;">
+            <div style="padding:40px;text-align:center;border-bottom:1px solid rgba(201,168,76,0.3);">
+              <h1 style="color:#C9A84C;margin:0;font-size:32px;letter-spacing:6px;text-transform:uppercase;">AURUM</h1>
+              <p style="color:#A09080;margin:10px 0 0;font-size:12px;letter-spacing:3px;text-transform:uppercase;">Exclusive Events</p>
+            </div>
+            <div style="padding:40px;">
+              <h2 style="margin-top:0;font-size:24px;font-weight:normal;color:#fff;">Action Required: Complete Payment</h2>
+              <p style="font-size:16px;line-height:1.6;color:#ccc;">Dear ${pending.name},</p>
+              <p style="font-size:16px;line-height:1.6;color:#ccc;">Thank you! We have successfully received your 10% advance payment of <strong>₹${pending.advancePaid}</strong>.</p>
+              <div style="background:#2A221A;border:1px solid #C9A84C;padding:30px;margin:30px 0;text-align:center;border-radius:8px;">
+                <p style="margin:0 0 15px;font-size:14px;color:#A09080;text-transform:uppercase;letter-spacing:2px;">Scan To Pay Remaining Balance</p>
+                <img src="${qrUrl}" alt="QR Code" style="width:200px;height:200px;border-radius:8px;border:4px solid #fff;">
+                <p style="margin:15px 0 0;font-size:24px;color:#C9A84C;">Balance: <strong>₹${balance}</strong></p>
+              </div>
+              <p style="font-size:16px;line-height:1.6;color:#ccc;">Please pay the remaining balance using the QR code above to secure your ticket for <strong>${pending.eventName}</strong>.</p>
+              <p style="font-size:16px;line-height:1.6;color:#C9A84C;margin-top:20px;">Once the payment is received, we will email your Super Premium Ticket in PDF format.</p>
+            </div>
           </div>
         `
       });
@@ -1948,6 +2007,49 @@ app.delete('/api/admin/reservations/:id', requireAdmin, createRateLimit({ key: '
     return res.status(404).json({ error: 'Reservation not found.' });
   }
   return res.json({ ok: true });
+});
+
+app.post('/api/admin/events/:id/send-ticket', requireAdmin, createRateLimit({ key: 'admin-send-ticket', windowMs: 60 * 1000, max: 20 }), async (req, res) => {
+  const id = String(req.params?.id || '').trim();
+  const reg = eventRegistrationsStore.find(r => String(r.id) === id);
+  if (!reg) return res.status(404).json({ error: 'Event registration not found.' });
+  if (reg.status === 'fully_paid') return res.status(400).json({ error: 'Ticket already sent / fully paid.' });
+
+  try {
+    const ticketData = await createPremiumTicketPDF(reg);
+    const isPdf = !ticketData.fallback;
+    const filename = isPdf ? `AURUM_Ticket_${reg.id}.pdf` : `AURUM_Ticket_${reg.id}.html`;
+    const content = isPdf ? ticketData : ticketData.buffer;
+
+    await sendEmail({
+      to: reg.authEmail,
+      subject: `Your Ultra-Premium Ticket: ${reg.eventName}`,
+      text: `Dear ${reg.name}, Your full payment is confirmed. Please find your exclusive event ticket attached.`,
+      html: `
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#1A1612;color:#FAF7F2;border:1px solid #C9A84C;border-radius:12px;overflow:hidden;">
+          <div style="padding:40px;text-align:center;border-bottom:1px solid rgba(201,168,76,0.3);">
+            <h1 style="color:#C9A84C;margin:0;font-size:32px;letter-spacing:6px;text-transform:uppercase;">AURUM</h1>
+            <p style="color:#A09080;margin:10px 0 0;font-size:12px;letter-spacing:3px;text-transform:uppercase;">Super Premium Access</p>
+          </div>
+          <div style="padding:40px;">
+            <h2 style="margin-top:0;font-size:24px;font-weight:normal;color:#fff;">Payment Complete</h2>
+            <p style="font-size:16px;line-height:1.6;color:#ccc;">Dear ${reg.name},</p>
+            <p style="font-size:16px;line-height:1.6;color:#ccc;">We have successfully received your full payment. Your exclusive access is now confirmed.</p>
+            <div style="background:#2A221A;border:1px solid #2D8A4D;padding:20px;margin:30px 0;text-align:center;border-radius:8px;"><p style="margin:0;font-size:18px;color:#2D8A4D;letter-spacing:2px;">STATUS: FULLY PAID</p></div>
+            <p style="font-size:16px;line-height:1.6;color:#C9A84C;">Please find your Super Premium Ticket attached to this email. Present it upon arrival.</p>
+          </div>
+        </div>
+      `,
+      attachments: [{ filename, content }]
+    });
+
+    reg.status = 'fully_paid';
+    persistEventRegistrationsToDisk();
+    notifyAdminDash();
+    return res.json({ ok: true });
+  } catch (err) {
+    return res.status(500).json({ error: err?.message || 'Failed to send ticket.' });
+  }
 });
 
 app.post('/api/admin/orders/:id/status', requireAdmin, createRateLimit({ key: 'admin-order-status', windowMs: 60 * 1000, max: 60 }), (req, res) => {
