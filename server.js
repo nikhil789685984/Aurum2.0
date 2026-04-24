@@ -776,8 +776,8 @@ async function processPaidRazorpayOrder(orderId, paymentId, signature) {
         </div>
       `
     });
-  } catch (_) {
-    // Mail fail hone par bhi order place ho jayega
+  } catch (err) {
+    console.error('Customer email send failed (Razorpay):', err);
   }
 
   recordPaidOrder({
@@ -904,8 +904,8 @@ async function processPaidCheckoutSession(sessionId) {
         </div>
       `
     });
-  } catch (_) {
-    // Mail fail hone par bhi order place ho jayega
+  } catch (err) {
+    console.error('Customer email send failed (Stripe):', err);
   }
 
   recordPaidOrder({
