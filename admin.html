@@ -426,7 +426,7 @@
     }
 
     async function updateReservationStatus(id, status) {
-      await apiRequest(`/api/admin/reservations/${encodeURIComponent(id)}/status`, {
+      await apiRequest(apiUrl(`/api/admin/reservations/${encodeURIComponent(id)}/status`), {
         method: 'POST',
         body: JSON.stringify({ status })
       });
@@ -435,12 +435,12 @@
 
     async function deleteReservation(id) {
       if (!window.confirm('Delete this reservation record?')) return;
-      await apiRequest(`/api/admin/reservations/${encodeURIComponent(id)}`, { method: 'DELETE' });
+      await apiRequest(apiUrl(`/api/admin/reservations/${encodeURIComponent(id)}`), { method: 'DELETE' });
       await loadAdmin();
     }
 
     async function updateOrderStatus(id, status) {
-      await apiRequest(`/api/admin/orders/${encodeURIComponent(id)}/status`, {
+      await apiRequest(apiUrl(`/api/admin/orders/${encodeURIComponent(id)}/status`), {
         method: 'POST',
         body: JSON.stringify({ status })
       });
@@ -449,13 +449,13 @@
 
     async function deleteOrder(id) {
       if (!window.confirm('Delete this paid order record?')) return;
-      await apiRequest(`/api/admin/orders/${encodeURIComponent(id)}`, { method: 'DELETE' });
+      await apiRequest(apiUrl(`/api/admin/orders/${encodeURIComponent(id)}`), { method: 'DELETE' });
       await loadAdmin();
     }
 
     async function loadAdmin() {
       try {
-        const res = await fetch('/api/admin/overview', { credentials: 'include', cache: 'no-store' });
+        const res = await fetch(apiUrl('/api/admin/overview'), { credentials: 'include', cache: 'no-store' });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data.error || 'Unable to load admin dashboard.');
 
@@ -601,7 +601,7 @@
 
     async function deleteEventRegistration(id) {
       if (!window.confirm('Delete this event registration?')) return;
-      await apiRequest(`/api/admin/events/${encodeURIComponent(id)}`, { method: 'DELETE' });
+      await apiRequest(apiUrl(`/api/admin/events/${encodeURIComponent(id)}`), { method: 'DELETE' });
       await loadAdmin();
     }
 
@@ -617,7 +617,7 @@
     });
 
     logoutBtn.addEventListener('click', async () => {
-      try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch (_) {}
+      try { await fetch(apiUrl('/api/auth/logout'), { method: 'POST', credentials: 'include' }); } catch (_) {}
       clearAuthStorage();
       window.location.replace('login.html');
     });
@@ -625,7 +625,7 @@
     loadAdmin();
 
     function setupLiveStream() {
-      const source = new EventSource('/api/admin/stream', { withCredentials: true });
+      const source = new EventSource(apiUrl('/api/admin/stream'), { withCredentials: true });
       const liveBadge = document.getElementById('liveBadge');
       
       source.onmessage = (event) => {
