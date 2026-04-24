@@ -703,6 +703,8 @@ async function processPaidRazorpayOrder(orderId, paymentId, signature) {
   const customerEmail = storedOrder?.authEmail || 'Unknown';
   const amountTotal = Number(storedOrder?.amountPaise || 0) / 100;
   const itemsText = buildCartItemsText(orderItems);
+  const totalQty = orderItems.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+  const estTimeMins = totalQty > 0 ? totalQty * 10 : 30;
   const locationText = [
     `Name: ${deliveryLocation.fullName || 'Not provided'}`,
     `Phone: ${deliveryLocation.phone || 'Not provided'}`,
@@ -749,7 +751,7 @@ async function processPaidRazorpayOrder(orderId, paymentId, signature) {
     await sendEmail({
       to: customerEmail,
       subject: 'Payment Successful - AURUM',
-      text: 'Dear Guest,\n\nThank you for choosing AURUM. Your payment has been successfully processed.\nYour order will be delivered within 5 days.\n\nFor any enquiries, please contact our concierge at +91 79883 79826.\n\nTeam AURUM',
+      text: `Dear Guest,\n\nThank you for choosing AURUM. Your payment has been successfully processed.\nYour order will be delivered within ${estTimeMins} minutes.\n\nFor any enquiries, please contact our concierge at +91 79883 79826.\n\nTeam AURUM`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #FAF7F2; color: #1A1612; border: 1px solid #E8D8C0; border-radius: 8px; overflow: hidden;">
           <div style="background-color: #1A1612; padding: 30px; text-align: center;">
@@ -762,7 +764,7 @@ async function processPaidRazorpayOrder(orderId, paymentId, signature) {
             <p style="font-size: 16px; line-height: 1.6; color: #555;">Thank you for choosing AURUM. We are pleased to confirm that your payment of <strong>₹${amountTotal.toFixed(2)}</strong> has been successfully processed.</p>
             <div style="background-color: #fff; border-left: 4px solid #C9A84C; padding: 15px 20px; margin: 25px 0;">
               <p style="margin: 0; font-size: 15px; color: #333;"><strong>Order ID:</strong> ${orderId}</p>
-              <p style="margin: 8px 0 0 0; font-size: 15px; color: #333;"><strong>Estimated Delivery:</strong> Within 5 Days</p>
+              <p style="margin: 8px 0 0 0; font-size: 15px; color: #333;"><strong>Estimated Delivery:</strong> Within ${estTimeMins} Minutes</p>
             </div>
             <p style="font-size: 16px; line-height: 1.6; color: #555;">Our culinary team is preparing your selection with the utmost care. It will be delivered in premium temperature-controlled packaging.</p>
             <hr style="border: none; border-top: 1px solid #E8D8C0; margin: 30px 0;">
@@ -848,6 +850,8 @@ async function processPaidCheckoutSession(sessionId) {
   const currency = String(session.currency || 'inr').toUpperCase();
   const amountTotal = Number(session.amount_total || 0) / 100;
   const itemsText = buildItemsText(lineItems, orderItems);
+  const totalQty = orderItems.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+  const estTimeMins = totalQty > 0 ? totalQty * 10 : 30;
 
   const toEmail = process.env.ORDER_NOTIFICATION_EMAIL || 'nikhilsheoran093@gmail.com';
   await sendEmail({
@@ -877,7 +881,7 @@ async function processPaidCheckoutSession(sessionId) {
     await sendEmail({
       to: customerEmail,
       subject: 'Payment Successful - AURUM',
-      text: 'Dear Guest,\n\nThank you for choosing AURUM. Your payment has been successfully processed.\nYour order will be delivered within 5 days.\n\nFor any enquiries, please contact our concierge at +91 79883 79826.\n\nTeam AURUM',
+      text: `Dear Guest,\n\nThank you for choosing AURUM. Your payment has been successfully processed.\nYour order will be delivered within ${estTimeMins} minutes.\n\nFor any enquiries, please contact our concierge at +91 79883 79826.\n\nTeam AURUM`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #FAF7F2; color: #1A1612; border: 1px solid #E8D8C0; border-radius: 8px; overflow: hidden;">
           <div style="background-color: #1A1612; padding: 30px; text-align: center;">
@@ -890,7 +894,7 @@ async function processPaidCheckoutSession(sessionId) {
             <p style="font-size: 16px; line-height: 1.6; color: #555;">Thank you for choosing AURUM. We are pleased to confirm that your payment of <strong>${amountTotal.toFixed(2)} ${currency.toUpperCase()}</strong> has been successfully processed.</p>
             <div style="background-color: #fff; border-left: 4px solid #C9A84C; padding: 15px 20px; margin: 25px 0;">
               <p style="margin: 0; font-size: 15px; color: #333;"><strong>Order ID:</strong> ${sessionId}</p>
-              <p style="margin: 8px 0 0 0; font-size: 15px; color: #333;"><strong>Estimated Delivery:</strong> Within 5 Days</p>
+              <p style="margin: 8px 0 0 0; font-size: 15px; color: #333;"><strong>Estimated Delivery:</strong> Within ${estTimeMins} Minutes</p>
             </div>
             <p style="font-size: 16px; line-height: 1.6; color: #555;">Our culinary team is preparing your selection with the utmost care. It will be delivered in premium temperature-controlled packaging.</p>
             <hr style="border: none; border-top: 1px solid #E8D8C0; margin: 30px 0;">
@@ -1326,6 +1330,8 @@ app.post('/api/orders/place-cod-order', requireAuth, createRateLimit({ key: 'pla
 
     const amountTotal = amountPaise / 100;
     const itemsText = buildCartItemsText(items);
+    const totalQty = items.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+    const estTimeMins = totalQty > 0 ? totalQty * 10 : 30;
     const locationText = [
       `Name: ${deliveryLocation.fullName || 'Not provided'}`,
       `Phone: ${deliveryLocation.phone || 'Not provided'}`,
@@ -1378,6 +1384,7 @@ app.post('/api/orders/place-cod-order', requireAuth, createRateLimit({ key: 'pla
           '',
           `Order Ref: ${orderRef}`,
           `Amount payable on delivery: ₹${amountTotal.toFixed(2)}`,
+          `Estimated Delivery: Within ${estTimeMins} Minutes`,
           '',
           'For help with your order, contact us on 7988379826.',
           '',
@@ -1389,6 +1396,7 @@ app.post('/api/orders/place-cod-order', requireAuth, createRateLimit({ key: 'pla
           <p>We have received your cash on delivery order and our team will contact you if needed before dispatch.</p>
           <p><strong>Order Ref:</strong> ${orderRef}</p>
           <p><strong>Amount payable on delivery:</strong> ₹${amountTotal.toFixed(2)}</p>
+          <p><strong>Estimated Delivery:</strong> Within ${estTimeMins} Minutes</p>
           <p>For help with your order, contact us on <strong>7988379826</strong>.</p>
           <p>Team AURUM</p>
         `
