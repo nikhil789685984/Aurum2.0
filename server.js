@@ -41,6 +41,18 @@ const rateLimitStore = new Map();
 let stripeClient = null;
 let razorpayClient = null;
 
+let adminStreamClients = [];
+function notifyAdminDash() {
+  adminStreamClients.forEach(client => {
+    try { client.write(`data: update\n\n`); } catch(e){}
+  });
+}
+setInterval(() => {
+  adminStreamClients.forEach(client => {
+    try { client.write(`:\n\n`); } catch(e){}
+  });
+}, 25000);
+
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
 
@@ -623,6 +635,7 @@ function recordReservation(details) {
   });
   if (reservationsStore.length > 1000) reservationsStore.length = 1000;
   persistReservationsToDisk();
+  notifyAdminDash();
 }
 
 function recordPaidOrder(details) {
@@ -634,6 +647,7 @@ function recordPaidOrder(details) {
   });
   if (paidOrdersStore.length > 1000) paidOrdersStore.length = 1000;
   persistPaidOrdersToDisk();
+  notifyAdminDash();
 }
 
 function findReservationById(id) {
@@ -649,6 +663,7 @@ function deleteReservationById(id) {
   if (index < 0) return false;
   reservationsStore.splice(index, 1);
   persistReservationsToDisk();
+  notifyAdminDash();
   return true;
 }
 
@@ -657,6 +672,7 @@ function deletePaidOrderById(id) {
   if (index < 0) return false;
   paidOrdersStore.splice(index, 1);
   persistPaidOrdersToDisk();
+  notifyAdminDash();
   return true;
 }
 
@@ -1419,6 +1435,7 @@ app.post('/api/orders/place-cod-order', requireAuth, createRateLimit({ key: 'pla
     });
     if (paidOrdersStore.length > 1000) paidOrdersStore.length = 1000;
     persistPaidOrdersToDisk();
+    notifyAdminDash();
 
     return res.json({ ok: true, orderRef });
   } catch (err) {
@@ -1611,6 +1628,7 @@ app.post('/api/auth/signup', createRateLimit({ key: 'signup', windowMs: 10 * 60 
       createdAt: Date.now()
     });
     persistUsersToDisk();
+    notifyAdminDash();
 
     try {
       await sendEmail({
@@ -1636,6 +1654,21 @@ app.get('/api/auth/status', (req, res) => {
     authenticated: Boolean(email),
     email: email || null,
     isAdmin: isAdminEmail(email)
+  });
+});
+
+app.get('/api/admin/stream', requireAdmin, (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders();
+  
+  res.write(`data: connected\n\n`);
+  adminStreamClients.push(res);
+  
+  req.on('close', () => {
+    adminStreamClients = adminStreamClients.filter(c => c !== res);
   });
 });
 
@@ -1688,6 +1721,7 @@ app.post('/api/admin/reservations/:id/status', requireAdmin, createRateLimit({ k
     reservation.status = status;
     reservation.updatedAt = new Date().toISOString();
     persistReservationsToDisk();
+    notifyAdminDash();
 
     const guestEmail = String(reservation.guestEmail || '').trim();
     if (guestEmail) {
@@ -1765,6 +1799,7 @@ app.post('/api/admin/orders/:id/status', requireAdmin, createRateLimit({ key: 'a
   order.status = status;
   order.updatedAt = new Date().toISOString();
   persistPaidOrdersToDisk();
+  notifyAdminDash();
   return res.json({ ok: true, order });
 });
 

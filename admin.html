@@ -97,6 +97,28 @@
     .mini-btn.gold{border-color:var(--gold);background:#fbf2d7}
     .mini-btn.danger{border-color:#d6aaa4;background:#fff1ef}
     .top-note{margin:0 0 18px;color:var(--muted);line-height:1.6}
+    .live-badge {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 12px;
+      border:1px solid rgba(36,91,51,.3);
+      background:#ebf7ee;
+      color:var(--ok);
+      font-size:10px;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      border-radius:4px;
+      transition:opacity 0.3s;
+    }
+    .live-badge::before {
+      content:'';
+      width:6px;height:6px;
+      border-radius:50%;
+      background:var(--ok);
+      animation:blink 1.5s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
     @media(max-width:900px){
       .grid{grid-template-columns:1fr}
       h1{font-size:34px}
@@ -140,6 +162,7 @@
         <h1>AURUM Admin Dashboard</h1>
       </div>
       <div class="top-actions">
+        <div class="live-badge" id="liveBadge" title="Real-time updates active">Live</div>
         <a class="btn secondary" href="index.html">Website</a>
         <button class="btn secondary" id="refreshBtn" type="button">Refresh</button>
         <button class="btn" id="logoutBtn" type="button">Logout</button>
@@ -434,6 +457,20 @@
     });
 
     loadAdmin();
+
+    function setupLiveStream() {
+      const source = new EventSource('/api/admin/stream', { withCredentials: true });
+      const liveBadge = document.getElementById('liveBadge');
+      
+      source.onmessage = (event) => {
+        if (event.data === 'update') loadAdmin();
+      };
+      source.onopen = () => { liveBadge.style.opacity = '1'; };
+      source.onerror = () => { 
+        liveBadge.style.opacity = '0.5'; 
+      };
+    }
+    setupLiveStream();
   </script>
 </body>
 </html>
