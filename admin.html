@@ -259,6 +259,25 @@
     </div>
 
     <div class="panel">
+      <div class="panel-head"><h2>Delivered Orders History</h2></div>
+      <div class="table-responsive">
+        <div id="historyOrdersEmpty" class="empty">No past orders.</div>
+        <table id="historyOrdersTable" hidden>
+          <thead>
+            <tr>
+              <th>Status & ID</th>
+              <th>Customer Info</th>
+              <th>Delivery Address</th>
+              <th>Order Summary</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
       <div class="panel-head"><h2>Registered Users</h2></div>
       <div class="table-responsive">
         <div id="usersEmpty" class="empty">Loading users...</div>
@@ -413,6 +432,7 @@
         });
 
         const activeOrders = Array.isArray(data.orders) ? data.orders.filter(o => o.status !== 'delivered') : [];
+        const historyOrders = Array.isArray(data.orders) ? data.orders.filter(o => o.status === 'delivered') : [];
 
         renderTable({
           rows: activeOrders,
@@ -433,6 +453,23 @@
                   <button class="mini-btn danger" type="button" data-action="delete-order" data-id="${escapeHtml(row.id || '')}">Delete</button>
                 </div>
               </td>
+            `;
+          }
+        });
+
+        renderTable({
+          rows: historyOrders,
+          tableId: 'historyOrdersTable',
+          emptyId: 'historyOrdersEmpty',
+          buildRow: row => {
+            const loc = row.deliveryLocation || {};
+            const address = [loc.addressLine1, loc.addressLine2, loc.landmark, loc.city, loc.pincode].filter(Boolean).join(', ');
+            return `
+              <td><span class="pill ${escapeHtml(row.status || 'paid')}">${escapeHtml(row.provider || 'Payment')}</span><div class="muted" style="margin-top:6px;font-family:monospace">${escapeHtml(row.orderRef || row.orderId || row.sessionId || row.paymentId || '')}</div></td>
+              <td><strong>${escapeHtml(loc.fullName || row.customerEmail || 'Guest')}</strong><div class="muted">${escapeHtml(loc.phone || 'No phone')}</div><div class="muted">${escapeHtml(row.customerEmail || '')}</div></td>
+              <td><div style="max-width:280px">${escapeHtml(address || 'No Address Provided')}</div></td>
+              <td><strong class="ok" style="font-size:16px">₹${escapeHtml(row.amountTotal)}</strong><div class="muted" style="margin-top:6px;line-height:1.5">${escapeHtml(Array.isArray(row.items) ? row.items.map(item => `${item.name} x${item.qty}`).join(', ') : 'No items')}</div></td>
+              <td>${formatDate(row.createdAt)}</td>
             `;
           }
         });

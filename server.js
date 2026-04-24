@@ -633,7 +633,6 @@ function recordReservation(details) {
     ...details,
     createdAt: new Date().toISOString()
   });
-  if (reservationsStore.length > 1000) reservationsStore.length = 1000;
   persistReservationsToDisk();
   notifyAdminDash();
 }
@@ -645,7 +644,6 @@ function recordPaidOrder(details) {
     ...details,
     createdAt: new Date().toISOString()
   });
-  if (paidOrdersStore.length > 1000) paidOrdersStore.length = 1000;
   persistPaidOrdersToDisk();
   notifyAdminDash();
 }
@@ -1439,7 +1437,6 @@ app.post('/api/orders/place-cod-order', requireAuth, createRateLimit({ key: 'pla
       deliveryLocation,
       createdAt: new Date().toISOString()
     });
-    if (paidOrdersStore.length > 1000) paidOrdersStore.length = 1000;
     persistPaidOrdersToDisk();
     notifyAdminDash();
 
@@ -1693,13 +1690,11 @@ app.get('/api/admin/overview', requireAdmin, (req, res) => {
 
   const reservations = reservationsStore
     .slice()
-    .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')))
-    .slice(0, 100);
+    .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
 
   const orders = paidOrdersStore
     .slice()
-    .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')))
-    .slice(0, 100);
+    .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
 
   return res.json({
     ok: true,
