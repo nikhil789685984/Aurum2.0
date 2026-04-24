@@ -244,104 +244,70 @@ function hashPassword(password, salt) {
   return crypto.scryptSync(password, salt, 64).toString('hex');
 }
 
-function ensureParentDir(filePath) {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true });
-}
-
-function writeJsonFile(filePath, data) {
-  ensureParentDir(filePath);
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
-}
-
-function readJsonFile(filePath, fallbackValue) {
+async function initMongoDB() {
   try {
-    if (!fs.existsSync(filePath)) return fallbackValue;
-    const raw = fs.readFileSync(filePath, 'utf8');
-    if (!raw) return fallbackValue;
-    return JSON.parse(raw);
-  } catch (_) {
-    return fallbackValue;
-  }
-}
+    const uri = process.env.MONGODB_URI || "mongodb+srv://nikhil093:Nikhilchitkara093@cluster0.vrefqbc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+    const client = new MongoClient(uri);
+    await client.connect();
+    db = client.db('aurum_db');
+    console.log("Connected to MongoDB!");
 
-function loadUsersFromDisk() {
-  try {
-    if (!fs.existsSync(USERS_DB_PATH)) return;
-    const raw = fs.readFileSync(USERS_DB_PATH, 'utf8');
-    if (!raw) return;
-    const records = JSON.parse(raw);
-    if (!Array.isArray(records)) return;
-    records.forEach(user => {
-      if (user && user.email && user.salt && user.passwordHash) {
-        usersStore.set(String(user.email).toLowerCase(), user);
-      }
+    const users = await db.collection('users').find({}).toArray();
+    users.forEach(u => usersStore.set(u.email, u));
+
+    const sessions = await db.collection('sessions').find({}).toArray();
+    sessions.forEach(s => {
+      if (s.expiresAt > Date.now()) sessionsStore.set(s.token, s);
+      else db.collection('sessions').deleteOne({_id: s._id}).catch(()=>{});
     });
-  } catch (_) {
-    // Ignore broken disk data and continue with empty store.
+
+    const res = await db.collection('reservations').find({}).sort({createdAt: -1}).toArray();
+    res.forEach(r => reservationsStore.push(r));
+
+    const ord = await db.collection('orders').find({}).sort({createdAt: -1}).toArray();
+    ord.forEach(o => paidOrdersStore.push(o));
+
+    const ev = await db.collection('events').find({}).sort({createdAt: -1}).toArray();
+    ev.forEach(e => eventRegistrationsStore.push(e));
+  } catch (err) {
+    console.error("MongoDB Connection Error:", err);
   }
 }
+initMongoDB();
 
 function persistUsersToDisk() {
-  const records = Array.from(usersStore.values());
-  writeJsonFile(USERS_DB_PATH, records);
-}
-
-function loadSessionsFromDisk() {
-  const records = readJsonFile(SESSIONS_DB_PATH, []);
-  if (!Array.isArray(records)) return;
-  records.forEach(session => {
-    const token = String(session?.token || '').trim();
-    const email = String(session?.email || '').trim().toLowerCase();
-    const expiresAt = Number(session?.expiresAt || 0);
-    if (!token || !email || !expiresAt || Date.now() > expiresAt) return;
-    sessionsStore.set(token, { email, expiresAt });
-  });
+  if (!db || usersStore.size === 0) return;
+  const bulk = db.collection('users').initializeUnorderedBulkOp();
+  usersStore.forEach(u => bulk.find({_id: u.email}).upsert().updateOne({$set: u}));
+  bulk.execute().catch(()=>{});
 }
 
 function persistSessionsToDisk() {
-  const now = Date.now();
-  const records = [];
-  sessionsStore.forEach((session, token) => {
-    if (!session?.email || !session?.expiresAt || now > session.expiresAt) return;
-    records.push({ token, email: session.email, expiresAt: session.expiresAt });
-  });
-  writeJsonFile(SESSIONS_DB_PATH, records);
-}
-
-function loadReservationsFromDisk() {
-  const records = readJsonFile(RESERVATIONS_DB_PATH, []);
-  if (!Array.isArray(records)) return;
-  records.forEach(record => {
-    if (record && record.id) reservationsStore.push(record);
-  });
+  if (!db || sessionsStore.size === 0) return;
+  const bulk = db.collection('sessions').initializeUnorderedBulkOp();
+  sessionsStore.forEach((s, token) => bulk.find({_id: token}).upsert().updateOne({$set: { ...s, token }}));
+  bulk.execute().catch(()=>{});
 }
 
 function persistReservationsToDisk() {
-  writeJsonFile(RESERVATIONS_DB_PATH, reservationsStore);
-}
-
-function loadPaidOrdersFromDisk() {
-  const records = readJsonFile(ORDERS_DB_PATH, []);
-  if (!Array.isArray(records)) return;
-  records.forEach(record => {
-    if (record && record.id) paidOrdersStore.push(record);
-  });
+  if (!db || reservationsStore.length === 0) return;
+  const bulk = db.collection('reservations').initializeUnorderedBulkOp();
+  reservationsStore.forEach(r => bulk.find({_id: r.id}).upsert().updateOne({$set: r}));
+  bulk.execute().catch(()=>{});
 }
 
 function persistPaidOrdersToDisk() {
-  writeJsonFile(ORDERS_DB_PATH, paidOrdersStore);
-}
-
-function loadEventRegistrationsFromDisk() {
-  const records = readJsonFile(EVENT_REGS_DB_PATH, []);
-  if (!Array.isArray(records)) return;
-  records.forEach(record => {
-    if (record && record.id) eventRegistrationsStore.push(record);
-  });
+  if (!db || paidOrdersStore.length === 0) return;
+  const bulk = db.collection('orders').initializeUnorderedBulkOp();
+  paidOrdersStore.forEach(o => bulk.find({_id: o.id}).upsert().updateOne({$set: o}));
+  bulk.execute().catch(()=>{});
 }
 
 function persistEventRegistrationsToDisk() {
-  writeJsonFile(EVENT_REGS_DB_PATH, eventRegistrationsStore);
+  if (!db || eventRegistrationsStore.length === 0) return;
+  const bulk = db.collection('events').initializeUnorderedBulkOp();
+  eventRegistrationsStore.forEach(e => bulk.find({_id: e.id}).upsert().updateOne({$set: e}));
+  bulk.execute().catch(()=>{});
 }
 
 function createId(prefix) {
