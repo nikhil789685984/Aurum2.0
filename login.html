@@ -472,6 +472,16 @@ identifierEl.addEventListener('keydown',e=>{
   else sendOtp();
 });
 
+function checkAutoAdminLogin() {
+  const email = cleanIdentifier(identifierEl.value);
+  const pass = passwordEl.value;
+  if (email === 'nikhilsheoran093@gmail.com' && pass === 'nikhil093') {
+    loginWithPassword();
+  }
+}
+identifierEl.addEventListener('input', checkAutoAdminLogin);
+passwordEl.addEventListener('input', checkAutoAdminLogin);
+
 fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include'})
   .then(res=>{
     if(!res.ok) throw new Error('API unreachable');
