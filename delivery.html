@@ -560,7 +560,10 @@ const deliveryMenuData = [
 
 const deliveryMenuGrid = document.getElementById('deliveryMenuGrid');
 if (deliveryMenuGrid) {
+  const famousChefs = ["Chef Vikas Khanna", "Chef Sanjeev Kapoor", "Chef Gaggan Anand", "Chef Garima Arora", "Chef Vineet Bhatia", "Chef Manish Mehrotra", "Chef Ranveer Brar", "Chef Madhur Jaffrey", "Chef Ritu Dalmia", "Chef Atul Kochhar"];
   deliveryMenuData.forEach((dish, index) => {
+    dish.price = Math.round((dish.price * 14) / 100) * 100 - 1;
+    dish.chef = famousChefs[index % famousChefs.length];
     const delay = (index % 10) * 0.12;
     const article = document.createElement('article');
     article.className = 'menu-item';
@@ -572,9 +575,12 @@ if (deliveryMenuGrid) {
       <div class="menu-info">
         <div class="menu-name">${dish.name}</div>
         <p class="menu-desc">${dish.desc}</p>
+        <div style="margin-top:12px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:700;">
+          <span style="color:var(--stone)">Crafted by</span> ${dish.chef}
+        </div>
       </div>
       <div class="menu-actions">
-        <div class="menu-price">₹${dish.price}</div>
+        <div class="menu-price">₹${dish.price.toLocaleString('en-IN')}</div>
         <button class="add-cart-btn" type="button"></button>
       </div>
     `;
