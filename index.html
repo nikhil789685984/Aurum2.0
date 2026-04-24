@@ -608,6 +608,7 @@ footer{background:var(--char2);padding:90px 70px 44px}
     <li><a href="#events">Events</a></li>
     <li><a href="delivery.html">Delivery</a></li>
     <li><a href="#contact">Contact</a></li>
+    <li id="adminNavLi" style="display:none"><a href="/admin" style="color:var(--gold2)">Admin Dashboard</a></li>
     <li><a href="#" id="logoutLink">Logout</a></li>
   </ul>
   <a href="#reservations" class="nav-cta">Reserve a Table</a>
@@ -1647,7 +1648,13 @@ function setGuestNavState(){
 fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include'})
   .then(res=>res.ok?res.json():null)
   .then(data=>{
-    if(data&&data.authenticated) return;
+    if(data&&data.authenticated) {
+      if(data.isAdmin) {
+        const adminLi = document.getElementById('adminNavLi');
+        if(adminLi) adminLi.style.display = '';
+      }
+      return;
+    }
     setGuestNavState();
   })
   .catch(()=>setGuestNavState());
