@@ -278,36 +278,51 @@ initMongoDB();
 function persistUsersToDisk() {
   if (!db || usersStore.size === 0) return;
   const bulk = db.collection('users').initializeUnorderedBulkOp();
-  usersStore.forEach(u => bulk.find({_id: u.email}).upsert().updateOne({$set: u}));
-  bulk.execute().catch(()=>{});
+  usersStore.forEach(u => {
+    const doc = { ...u }; delete doc._id;
+    bulk.find({_id: u.email}).upsert().updateOne({$set: doc});
+  });
+  bulk.execute().catch(err => console.error("DB Users Error:", err));
 }
 
 function persistSessionsToDisk() {
   if (!db || sessionsStore.size === 0) return;
   const bulk = db.collection('sessions').initializeUnorderedBulkOp();
-  sessionsStore.forEach((s, token) => bulk.find({_id: token}).upsert().updateOne({$set: { ...s, token }}));
-  bulk.execute().catch(()=>{});
+  sessionsStore.forEach((s, token) => {
+    const doc = { ...s, token }; delete doc._id;
+    bulk.find({_id: token}).upsert().updateOne({$set: doc});
+  });
+  bulk.execute().catch(err => console.error("DB Sessions Error:", err));
 }
 
 function persistReservationsToDisk() {
   if (!db || reservationsStore.length === 0) return;
   const bulk = db.collection('reservations').initializeUnorderedBulkOp();
-  reservationsStore.forEach(r => bulk.find({_id: r.id}).upsert().updateOne({$set: r}));
-  bulk.execute().catch(()=>{});
+  reservationsStore.forEach(r => {
+    const doc = { ...r }; delete doc._id;
+    bulk.find({_id: r.id}).upsert().updateOne({$set: doc});
+  });
+  bulk.execute().catch(err => console.error("DB Reservations Error:", err));
 }
 
 function persistPaidOrdersToDisk() {
   if (!db || paidOrdersStore.length === 0) return;
   const bulk = db.collection('orders').initializeUnorderedBulkOp();
-  paidOrdersStore.forEach(o => bulk.find({_id: o.id}).upsert().updateOne({$set: o}));
-  bulk.execute().catch(()=>{});
+  paidOrdersStore.forEach(o => {
+    const doc = { ...o }; delete doc._id;
+    bulk.find({_id: o.id}).upsert().updateOne({$set: doc});
+  });
+  bulk.execute().catch(err => console.error("DB Orders Error:", err));
 }
 
 function persistEventRegistrationsToDisk() {
   if (!db || eventRegistrationsStore.length === 0) return;
   const bulk = db.collection('events').initializeUnorderedBulkOp();
-  eventRegistrationsStore.forEach(e => bulk.find({_id: e.id}).upsert().updateOne({$set: e}));
-  bulk.execute().catch(()=>{});
+  eventRegistrationsStore.forEach(e => {
+    const doc = { ...e }; delete doc._id;
+    bulk.find({_id: e.id}).upsert().updateOne({$set: doc});
+  });
+  bulk.execute().catch(err => console.error("DB Events Error:", err));
 }
 
 function createId(prefix) {
