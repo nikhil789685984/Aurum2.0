@@ -58,22 +58,17 @@ body::after{width:470px;height:470px;left:-190px;bottom:-120px;background:radial
 .head h2{font-family:'Playfair Display',serif;font-size:clamp(56px,7vw,96px);font-weight:300;line-height:.95}
 .head p{max-width:760px;font-size:20px;line-height:1.86;color:var(--stone)}
 .menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-.menu-item{background:var(--white);border:1px solid rgba(201,168,76,.2);padding:30px;display:flex;justify-content:space-between;gap:22px;align-items:flex-start;box-shadow:0 10px 24px rgba(26,22,18,.06);transform:translateY(0);transition:transform .45s,box-shadow .45s,border-color .45s;animation:riseCard .8s ease both}
-.menu-item:nth-child(2){animation-delay:.12s}
-.menu-item:nth-child(3){animation-delay:.24s}
-.menu-item:nth-child(4){animation-delay:.36s}
-.menu-item:nth-child(5){animation-delay:.48s}
-.menu-item:nth-child(6){animation-delay:.6s}
-.menu-item:nth-child(7){animation-delay:.72s}
-.menu-item:nth-child(8){animation-delay:.84s}
-.menu-item:nth-child(9){animation-delay:.96s}
-.menu-item:nth-child(10){animation-delay:1.08s}
+.menu-item{background:var(--white);border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:20px;display:flex;gap:22px;align-items:flex-start;box-shadow:0 10px 24px rgba(26,22,18,.06);transform:translateY(0);transition:transform .45s,box-shadow .45s,border-color .45s;animation:riseCard .8s ease both}
 .menu-item:hover{transform:translateY(-8px);box-shadow:0 20px 38px rgba(26,22,18,.12);border-color:rgba(201,168,76,.55)}
-.menu-name{font-family:'Playfair Display',serif;font-size:38px;font-weight:400;color:var(--charcoal);margin-bottom:9px}
-.menu-desc{font-size:18px;color:var(--stone);line-height:1.76;max-width:520px}
-.menu-actions{display:flex;flex-direction:column;gap:14px;align-items:flex-end}
-.menu-price{font-family:'Playfair Display',serif;color:var(--gold);font-size:42px;line-height:1;white-space:nowrap}
-.add-cart-btn{position:relative;overflow:hidden;border:1px solid rgba(201,168,76,.9);background:linear-gradient(135deg,#dec17b 0%,#c9a84c 40%,#b9953a 100%);color:#1f1912;font-size:10px;letter-spacing:2.2px;text-transform:uppercase;font-weight:700;padding:12px 16px;cursor:pointer;transition:transform .28s,box-shadow .28s,filter .28s}
+.menu-img-wrap{flex-shrink:0;width:120px;height:120px;border-radius:8px;overflow:hidden;border:1px solid rgba(201,168,76,.15)}
+.menu-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.menu-item:hover .menu-img-wrap img{transform:scale(1.08)}
+.menu-info{flex:1}
+.menu-name{font-family:'Playfair Display',serif;font-size:28px;font-weight:400;color:var(--charcoal);margin-bottom:8px;line-height:1.15}
+.menu-desc{font-size:15px;color:var(--stone);line-height:1.6;max-width:520px}
+.menu-actions{display:flex;flex-direction:column;gap:14px;align-items:flex-end;flex-shrink:0}
+.menu-price{font-family:'Playfair Display',serif;color:var(--gold);font-size:32px;line-height:1;white-space:nowrap}
+.add-cart-btn{position:relative;overflow:hidden;border:1px solid rgba(201,168,76,.9);background:linear-gradient(135deg,#dec17b 0%,#c9a84c 40%,#b9953a 100%);color:#1f1912;font-size:10px;letter-spacing:2.2px;text-transform:uppercase;font-weight:700;padding:10px 16px;border-radius:6px;cursor:pointer;transition:transform .28s,box-shadow .28s,filter .28s;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
 .add-cart-btn::before{content:"";position:absolute;left:-140%;top:0;width:120%;height:100%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.45),rgba(255,255,255,0));transform:skewX(-22deg)}
 .add-cart-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 10px 22px rgba(94,67,19,.35);filter:saturate(1.08)}
 .add-cart-btn:hover::before{animation:btnShine .8s ease}
@@ -193,8 +188,6 @@ footer p{font-size:14px;color:var(--stone);text-align:center}
   .card h3{font-size:34px}
   .card p,.head p,.menu-desc,.cta p,.whatsapp-strip p{font-size:16px}
   .head h2{font-size:clamp(42px,12vw,72px)}
-  .menu-name{font-size:30px}
-  .menu-price{font-size:34px}
   .menu-actions{align-items:flex-start}
   .add-cart-btn{font-size:9px;letter-spacing:2px}
   .whatsapp-strip{padding:20px}
@@ -214,9 +207,10 @@ footer p{font-size:14px;color:var(--stone);text-align:center}
   .hero{padding:76px 14px 56px}
   .hero p{font-size:15px;line-height:1.75}
   .head{flex-direction:column;align-items:flex-start;margin-bottom:28px}
-  .menu-item{padding:20px;flex-direction:column}
-  .menu-actions{width:100%;align-items:stretch}
-  .menu-price{font-size:30px}
+      .menu-item{padding:18px;flex-direction:column;gap:16px}
+      .menu-img-wrap{width:100%;height:180px}
+      .menu-actions{width:100%;flex-direction:row;align-items:center;justify-content:space-between}
+      .menu-price{font-size:28px}
   .add-cart-btn{width:100%}
   .cta{padding:24px}
   .cta a{width:100%;text-align:center}
@@ -241,8 +235,6 @@ footer p{font-size:14px;color:var(--stone);text-align:center}
   .hero p,.card p,.head p,.menu-desc,.cta p,.whatsapp-strip p{font-size:14px}
   .card{padding:20px}
   .card h3{font-size:28px}
-  .menu-name{font-size:24px}
-  .menu-price{font-size:26px}
   .cart-fab-label{letter-spacing:1.6px}
   .cart-total{font-size:20px}
 }
@@ -305,108 +297,7 @@ footer p{font-size:14px;color:var(--stone);text-align:center}
         <h2>Delivery Menu</h2>
         <p>Daily curated selection. Items may rotate based on seasonal ingredients and market availability.</p>
       </div>
-      <div class="menu-grid">
-        <article class="menu-item">
-          <div>
-            <div class="menu-name">Wagyu Beef Fillet A5</div>
-            <p class="menu-desc">Celeriac puree, truffle jus, crispy marrow shard, charred greens.</p>
-          </div>
-          <div class="menu-actions">
-            <div class="menu-price">₹7,099</div>
-            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
-          </div>
-        </article>
-        <article class="menu-item">
-          <div>
-            <div class="menu-name">Pan-Roasted Turbot</div>
-            <p class="menu-desc">Champagne beurre blanc, leek fondue, lemon finish.</p>
-          </div>
-          <div class="menu-actions">
-            <div class="menu-price">₹7,599</div>
-            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
-          </div>
-        </article>
-        <article class="menu-item">
-          <div>
-            <div class="menu-name">Garden Tasting Box</div>
-            <p class="menu-desc">Seasonal vegetarian course set for two guests, with plating card.</p>
-          </div>
-          <div class="menu-actions">
-            <div class="menu-price">₹9,199</div>
-            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
-          </div>
-        </article>
-        <article class="menu-item">
-          <div>
-            <div class="menu-name">Valrhona Chocolate Sphere</div>
-            <p class="menu-desc">Salted caramel core, hazelnut praline, edible gold accent.</p>
-          </div>
-          <div class="menu-actions">
-            <div class="menu-price">₹1,949</div>
-            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
-          </div>
-        </article>
-        <article class="menu-item">
-          <div>
-            <div class="menu-name">Lobster Thermidor Gratin</div>
-            <p class="menu-desc">Butter-poached lobster, mustard cream glaze, herb crumb, citrus leaf oil.</p>
-          </div>
-          <div class="menu-actions">
-            <div class="menu-price">₹6,699</div>
-            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
-          </div>
-        </article>
-        <article class="menu-item">
-          <div>
-            <div class="menu-name">Truffle Mushroom Risotto</div>
-            <p class="menu-desc">Aged parmesan, black truffle shavings, roasted shallot, chive butter.</p>
-          </div>
-          <div class="menu-actions">
-            <div class="menu-price">₹3,799</div>
-            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
-          </div>
-        </article>
-        <article class="menu-item">
-          <div>
-            <div class="menu-name">Herb-Crusted Lamb Rack</div>
-            <p class="menu-desc">Potato fondant, rosemary jus, glazed root vegetables.</p>
-          </div>
-          <div class="menu-actions">
-            <div class="menu-price">₹6,099</div>
-            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
-          </div>
-        </article>
-        <article class="menu-item">
-          <div>
-            <div class="menu-name">Burrata & Heirloom Tomato</div>
-            <p class="menu-desc">Basil pearls, balsamic reduction, toasted sourdough crisps.</p>
-          </div>
-          <div class="menu-actions">
-            <div class="menu-price">₹2,299</div>
-            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
-          </div>
-        </article>
-        <article class="menu-item">
-          <div>
-            <div class="menu-name">Charred Asparagus Spears</div>
-            <p class="menu-desc">Lemon zest, smoked sea salt, whipped ricotta, pine nut crumble.</p>
-          </div>
-          <div class="menu-actions">
-            <div class="menu-price">₹1,749</div>
-            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
-          </div>
-        </article>
-        <article class="menu-item">
-          <div>
-            <div class="menu-name">Pistachio Tiramisu Royale</div>
-            <p class="menu-desc">Espresso sponge, mascarpone mousse, pistachio praline and cocoa veil.</p>
-          </div>
-          <div class="menu-actions">
-            <div class="menu-price">₹2,099</div>
-            <button class="add-cart-btn" type="button">🛒 Add to Cart</button>
-          </div>
-        </article>
-      </div>
+      <div class="menu-grid" id="deliveryMenuGrid"></div>
 
       <div class="cta" id="order">
         <p>To place an order, message us on WhatsApp with your name, address, preferred slot, and selected items.</p>
@@ -446,6 +337,7 @@ footer p{font-size:14px;color:var(--stone);text-align:center}
       <div class="cart-summary">
         <div>
           <small id="cartSummaryCount">0 items</small>
+          <div id="cartEstTime" style="font-size:12px;color:var(--gold);margin-top:6px;font-weight:600;display:none;letter-spacing:1px;">Estimated: 0 mins</div>
         </div>
         <strong id="cartSummaryTotal">₹0</strong>
       </div>
@@ -512,7 +404,6 @@ window.addEventListener('pageshow', event => {
   if (event.persisted) location.reload();
 });
 
-const addCartButtons = Array.from(document.querySelectorAll('.add-cart-btn'));
 const cartTopBtn = document.getElementById('cartTopBtn');
 const cartCount = document.getElementById('cartCount');
 const cartFab = document.getElementById('cartFab');
@@ -551,10 +442,71 @@ function formatPrice(value) {
 }
 
 function setAddButtonText(button, isAdded) {
-  button.textContent = isAdded ? '✓ Added' : '🛒 Add to Cart';
+  if (isAdded) {
+    button.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:-2px;margin-right:4px;"><polyline points="20 6 9 17 4 12"></polyline></svg> Added';
+  } else {
+    button.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:-2px;margin-right:4px;"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg> Add';
+  }
 }
 
-addCartButtons.forEach(button => setAddButtonText(button, false));
+const deliveryMenuData = [
+  { name: "Signature Butter Chicken", desc: "Tandoor-roasted chicken in velvety tomato-makhani gravy.", price: 849, img: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&q=80" },
+  { name: "Malabar Prawn Curry", desc: "Coastal curry with coconut, kokum, and curry leaf.", price: 1099, img: "https://images.unsplash.com/photo-1559742811-822873691df8?w=400&q=80" },
+  { name: "Dal Makhani 24-Hour", desc: "Slow-cooked black lentils finished overnight with white butter.", price: 549, img: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&q=80" },
+  { name: "Truffle Galouti Kebab", desc: "Lucknow-style melt-in-mouth lamb kebab with truffle dust.", price: 1199, img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=400&q=80" },
+  { name: "Smoked Paneer Tikka", desc: "Charred paneer in hung-curd marinade with kasundi glaze.", price: 649, img: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=400&q=80" },
+  { name: "Lobster Ghee Roast", desc: "Mangalorean style spicy ghee roast with butter-poached lobster.", price: 2299, img: "https://images.unsplash.com/photo-1559715541-5daf8a0296d0?w=400&q=80" },
+  { name: "Hyderabadi Lamb Biryani", desc: "Long-grain basmati layered with saffron, herbs, and lamb.", price: 949, img: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400&q=80" },
+  { name: "Kashmiri Rogan Josh", desc: "Lamb curry with fennel, dry ginger, and aromatic whole spices.", price: 899, img: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&q=80" },
+  { name: "Goan Fish Curry", desc: "Pan-seared sea bass in a tangy coconut and tamarind broth.", price: 1149, img: "https://images.unsplash.com/photo-1518291344630-4857135fd581?w=400&q=80" },
+  { name: "Avocado & Edamame Chaat", desc: "Crispy wheat puffs, spiced avocado mash, and tamarind gel.", price: 599, img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80" },
+  { name: "Wagyu Beef Boti Kebab", desc: "A5 Wagyu skewers marinated in raw papaya and royal spices.", price: 3499, img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&q=80" },
+  { name: "Saffron Chicken Dum Biryani", desc: "Aromatic basmati rice cooked on dum with tender chicken.", price: 849, img: "https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=400&q=80" },
+  { name: "Black Dairy Dal", desc: "Our signature creamy dal served with a dollop of churned butter.", price: 549, img: "https://images.unsplash.com/photo-1546833998-877b37c2e5c6?w=400&q=80" },
+  { name: "Tandoori Broccoli Almond", desc: "Smoky broccoli florets with malai marinade and toasted almonds.", price: 649, img: "https://images.unsplash.com/photo-1528825871115-3581a5387919?w=400&q=80" },
+  { name: "Paneer Lababdar", desc: "Cottage cheese in mildly spiced onion-tomato gravy with bell peppers.", price: 699, img: "https://images.unsplash.com/photo-1551881192-002d027bffc8?w=400&q=80" },
+  { name: "Wild Mushroom Khichdi", desc: "Truffle-scented slow-cooked rice and lentils with wild mushrooms.", price: 799, img: "https://images.unsplash.com/photo-1594998893017-36147cbcae05?w=400&q=80" },
+  { name: "Truffle & Cheese Naan", desc: "Refined flour bread stuffed with cheddar and drizzled with truffle oil.", price: 349, img: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=400&q=80" },
+  { name: "Garlic & Chive Butter Naan", desc: "Classic tandoor-baked bread with roasted garlic and chives.", price: 149, img: "https://images.unsplash.com/photo-1565557612662-7e04b407b8b7?w=400&q=80" },
+  { name: "Saffron Sheermal", desc: "Slightly sweet, saffron-infused flatbread baked in the tandoor.", price: 199, img: "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?w=400&q=80" },
+  { name: "Pulled Duck Samosa", desc: "Crispy pastry filled with spiced confit duck, served with plum chutney.", price: 899, img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=80" },
+  { name: "24k Gold Rasmalai", desc: "Saffron milk dumplings topped with edible 24k gold leaf.", price: 749, img: "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400&q=80" },
+  { name: "Pistachio & Rose Kulfi", desc: "Traditional Indian ice cream with roasted pistachios and rose petals.", price: 449, img: "https://images.unsplash.com/photo-1563805042-7684c8e9e533?w=400&q=80" },
+  { name: "Filter Coffee Tiramisu", desc: "Italian classic reinvented with South Indian filter coffee.", price: 649, img: "https://images.unsplash.com/photo-1571115177098-24ec42ed204d?w=400&q=80" },
+  { name: "Valrhona Chocolate Tart", desc: "Dark chocolate tart with cardamom caramel and sea salt.", price: 799, img: "https://images.unsplash.com/photo-1587314168485-3236d6710814?w=400&q=80" },
+  { name: "Saffron Milk Tres Leches", desc: "Sponge cake soaked in three kinds of saffron-infused milk.", price: 699, img: "https://images.unsplash.com/photo-1542326237-94b1c5a538d4?w=400&q=80" },
+  { name: "Mango & Coconut Ghevar", desc: "Rajasthani sweet with fresh mango cream and toasted coconut.", price: 549, img: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=400&q=80" },
+  { name: "Slow-cooked Raan", desc: "Whole leg of lamb braised for 12 hours with Indian spices.", price: 2999, img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=400&q=80" },
+  { name: "Amritsari Kulcha", desc: "Spiced potato stuffed bread, served with chole and tamarind chutney.", price: 349, img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=80" },
+  { name: "Beetroot Tikki", desc: "Pan-seared beetroot patties with peanut butter core.", price: 449, img: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=400&q=80" },
+  { name: "Chettinad Chicken", desc: "Peppery South Indian chicken curry with roasted coconut.", price: 799, img: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&q=80" },
+  { name: "Jackfruit Haleem", desc: "Slow-cooked savory porridge with young jackfruit and broken wheat.", price: 649, img: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&q=80" }
+];
+
+const deliveryMenuGrid = document.getElementById('deliveryMenuGrid');
+if (deliveryMenuGrid) {
+  deliveryMenuData.forEach((dish, index) => {
+    const delay = (index % 10) * 0.12;
+    const article = document.createElement('article');
+    article.className = 'menu-item';
+    article.style.animationDelay = `${delay}s`;
+    article.innerHTML = `
+      <div class="menu-img-wrap">
+        <img src="${dish.img}" alt="${dish.name}" loading="lazy">
+      </div>
+      <div class="menu-info">
+        <div class="menu-name">${dish.name}</div>
+        <p class="menu-desc">${dish.desc}</p>
+      </div>
+      <div class="menu-actions">
+        <div class="menu-price">₹${dish.price}</div>
+        <button class="add-cart-btn" type="button"></button>
+      </div>
+    `;
+    setAddButtonText(article.querySelector('.add-cart-btn'), false);
+    deliveryMenuGrid.appendChild(article);
+  });
+}
 
 function getCartTotals() {
   let count = 0;
@@ -744,6 +696,16 @@ function updateCartUI() {
   cartFabTotal.textContent = totalText;
   cartSummaryCount.textContent = `${count} item${count === 1 ? '' : 's'}`;
   cartSummaryTotal.textContent = totalText;
+
+  const estTimeEl = document.getElementById('cartEstTime');
+  if (estTimeEl) {
+    if (count > 0) {
+      estTimeEl.textContent = `Estimated Delivery: ${count * 10} mins`;
+      estTimeEl.style.display = 'block';
+    } else {
+      estTimeEl.style.display = 'none';
+    }
+  }
   if (count > 0) {
     cartTopBtn.title = `${count} item(s) · ${totalText}`;
     cartFab.title = `${count} item(s) · ${totalText}`;
@@ -882,24 +844,24 @@ async function confirmPaymentFromUrl() {
   }
 }
 
-addCartButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    const item = button.closest('.menu-item');
-    if (!item) return;
-    const name = item.querySelector('.menu-name')?.textContent?.trim() || 'Item';
-    const price = parsePrice(item.querySelector('.menu-price')?.textContent);
-    addItemToCart(name, price);
-    updateCartUI();
-    bumpCart();
-    flyToCart(button);
-    showToast(`${name} added to cart`);
-    button.classList.add('added');
-    setAddButtonText(button, true);
-    setTimeout(() => {
-      button.classList.remove('added');
-      setAddButtonText(button, false);
-    }, 820);
-  });
+deliveryMenuGrid?.addEventListener('click', event => {
+  const button = event.target.closest('.add-cart-btn');
+  if (!button) return;
+  const item = button.closest('.menu-item');
+  if (!item) return;
+  const name = item.querySelector('.menu-name')?.textContent?.trim() || 'Item';
+  const price = parsePrice(item.querySelector('.menu-price')?.textContent);
+  addItemToCart(name, price);
+  updateCartUI();
+  bumpCart();
+  flyToCart(button);
+  showToast(`${name} added to cart`);
+  button.classList.add('added');
+  setAddButtonText(button, true);
+  setTimeout(() => {
+    button.classList.remove('added');
+    setAddButtonText(button, false);
+  }, 820);
 });
 
 cartItems.addEventListener('click', event => {
