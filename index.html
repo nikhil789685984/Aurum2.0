@@ -1097,6 +1097,33 @@ footer{background:var(--char2);padding:90px 70px 44px}
   </div>
 </section>
 
+<!-- ══════════════ CUSTOM TABLE ══════════════ -->
+<section class="custom-sec" id="custom">
+  <div class="custom-inner">
+    <div class="events-head reveal">
+      <div class="label center light">Curate Your Experience</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(44px,5vw,68px);font-weight:300;color:var(--white);text-align:center;margin-top:18px">Build Your <em>Custom Table</em></h2>
+    </div>
+    <div class="custom-grid">
+      <div class="custom-options reveal from-left">
+        <div class="co-tabs">
+          <button class="ctab on" onclick="switchCTab('food')">Food Menu</button>
+          <button class="ctab" onclick="switchCTab('wine')">Wine Cellar</button>
+        </div>
+        <div class="co-list" id="coList"></div>
+      </div>
+      <div class="custom-summary reveal from-right">
+        <h3>Your Selection</h3>
+        <div id="csList" class="cs-list">
+          <div style="font-size:14px;color:var(--stone);text-align:center;padding:20px 0">No items selected</div>
+        </div>
+        <div class="cs-total">Total: <span id="csTotal">₹0</span></div>
+        <button class="btn-gold" style="width:100%" onclick="bookCustomTable()">Request This Table</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ══════════════ VALUES ══════════════ -->
 <section class="values-sec">
   <div class="values-inner">
