@@ -19,8 +19,8 @@ html{scroll-behavior:smooth}
 body{background:var(--cream);color:var(--charcoal);font-family:'Manrope',sans-serif;overflow-x:hidden;cursor:auto;width:100%;max-width:100%}
 
 /* ─── CURSOR ─────────────────────────────── */
-#cur{display:none}
-#fol{display:none}
+#cur{display:none;position:fixed;pointer-events:none;z-index:9999}
+#fol{display:none;position:fixed;pointer-events:none;z-index:9998}
 .cur-big #cur{width:18px;height:18px}
 .cur-big #fol{width:64px;height:64px;border-color:var(--gold)}
 
@@ -151,7 +151,7 @@ nav.scrolled .nav-ham span{background:var(--charcoal)}
 .gallery-head{text-align:center;padding:0 70px;margin-bottom:64px}
 .gallery-head h2{font-family:'Playfair Display',serif;font-size:clamp(46px,5vw,72px);font-weight:300;color:var(--charcoal);margin-top:18px}
 .gallery-head h2 em{font-style:italic;color:var(--bronze)}
-.gallery-strip{display:flex;gap:18px;padding:0 70px;overflow-x:auto;scrollbar-width:none;cursor:grab;padding-bottom:30px}
+.gallery-strip{display:flex;gap:18px;padding:0 70px;overflow-x:auto;scrollbar-width:none;cursor:grab;padding-bottom:30px;-webkit-overflow-scrolling:touch}
 .gallery-strip:active{cursor:grabbing}
 .gallery-strip::-webkit-scrollbar{display:none}
 .gi{flex:0 0 auto;position:relative;overflow:hidden}
@@ -313,12 +313,12 @@ nav.scrolled .nav-ham span{background:var(--charcoal)}
 .res-inner h2 em{font-style:italic;color:var(--gold2)}
 .res-inner .sub{font-size:14px;line-height:1.8;color:rgba(255,255,255,.4);margin-bottom:52px}
 .rform{display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:left}
-.rform input,.rform select{width:100%;padding:16px 20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--white);font-family:'Manrope',sans-serif;font-size:14px;outline:none;transition:border-color .3s;-webkit-appearance:none;appearance:none;border-radius:0}
+.rform input,.rform select{width:100%;padding:16px 20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--white);font-family:'Manrope',sans-serif;font-size:16px;outline:none;transition:border-color .3s;-webkit-appearance:none;appearance:none;border-radius:0}
 .rform input::placeholder{color:rgba(255,255,255,.25)}
 .rform input:focus,.rform select:focus{border-color:rgba(201,168,76,.6)}
 .rform select option{background:#2A221A;color:var(--white)}
 .rform .span2{grid-column:1/-1}
-.rform textarea{width:100%;padding:16px 20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--white);font-family:'Manrope',sans-serif;font-size:14px;outline:none;transition:border-color .3s;resize:none;border-radius:0}
+.rform textarea{width:100%;padding:16px 20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--white);font-family:'Manrope',sans-serif;font-size:16px;outline:none;transition:border-color .3s;resize:none;border-radius:0}
 .rform textarea::placeholder{color:rgba(255,255,255,.25)}
 .rform textarea:focus{border-color:rgba(201,168,76,.6)}
 .rform .btn-submit{background:var(--gold);color:var(--charcoal);padding:18px;font-size:10px;letter-spacing:4px;text-transform:uppercase;border:none;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:500;width:100%;transition:all .35s;border:1px solid var(--gold)}
@@ -434,7 +434,9 @@ footer{background:var(--char2);padding:90px 70px 44px}
   .tab{padding:12px 16px;letter-spacing:2px;white-space:nowrap;flex:0 0 auto}
   .mi{padding:22px 14px}
   .mi-name,.mi-price{font-size:19px}
-  .menu-grid,.reviews-grid,.rooms,.press-quotes,.values-grid{grid-template-columns:1fr;gap:16px}
+  .menu-grid,.reviews-grid,.rooms,.press-quotes,.values-grid,.features,.story-stats{grid-template-columns:1fr;gap:16px}
+  .pquote-bg{background-attachment:scroll}
+  .hero-h1{font-size:clamp(52px,8vw,90px)}
   .rform{grid-template-columns:1fr}
   .course{grid-template-columns:60px 1fr;gap:20px}
   .course-img{display:none}
@@ -461,8 +463,19 @@ footer{background:var(--char2);padding:90px 70px 44px}
   .hero-scroll{display:none}
   .hero-tagline{font-size:11px;letter-spacing:2.4px}
   .hero-actions{flex-direction:column;gap:12px}
+  .hero-h1{font-size:clamp(42px,12vw,60px)}
   .btn-gold,.btn-ghost{display:block;width:100%;text-align:center;padding:14px 18px}
   .story-inner,.chef-inner,.wine-inner,.tasting-head,.events-head,.contact-inner{padding:0 16px;gap:30px}
+  .story-text .story-h2,
+  .gallery-head h2,
+  .chef-text h2,
+  .wine-text h2,
+  .tasting-head h2,
+  .private-head h2,
+  .reviews-head h2,
+  .events-head h2,
+  .values-head h2,
+  .res-inner h2{font-size:clamp(36px,9vw,50px)}
   .features,.gallery-head,.gallery-grid2,.tasting-inner,.private-inner,.reviews-inner,.values-inner{padding:0 16px 70px}
   .menu-inner,.press-inner,.res-inner,.foot-top,.values-inner,.contact-inner{padding-left:16px;padding-right:16px}
   .gallery-strip{padding:0 16px 24px}

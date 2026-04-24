@@ -12,5 +12,21 @@
     "salt": "4485e37d68fd13eff55c642fccdde209",
     "passwordHash": "bcdb2800aabc7b148c45dc89676f538bbc2974e365410cd6a2f49b92568c1812c824b875f13c3e4466b16c8ee39376770dbc613cc9be88f363c40ac9f942eef3",
     "createdAt": 1775939784094
+  },
+  {
+    "name": "Codex Test",
+    "email": "codex.test.1776089948@example.com",
+    "phone": "+919876589948",
+    "salt": "3c8f41a3747921cf8800b033f62b5eb2",
+    "passwordHash": "aced513167f181fe853a34d200b047446328834ea51b0583301304d64051572069f63da98b41c8c89847433c6e2a72e8a62c33b100ea1c5f48fe5ac1de331ec7",
+    "createdAt": 1776089955862
+  },
+  {
+    "name": "OTP Test User",
+    "email": "otp-test@example.com",
+    "phone": "+919876543210",
+    "salt": "8f97d04862e09262882332ca8e35713e",
+    "passwordHash": "c8a4e0b3322549b20926c2e519ecad4281563339afcb192e6d0c2373905fad63f0418306397fb2f5810c8ddec5fc6fce86e5a142d85b3042ac1887fd915f15ec",
+    "createdAt": 1776966342175
   }
 ]
