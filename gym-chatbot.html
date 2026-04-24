@@ -139,7 +139,7 @@ form.addEventListener('submit',async e=>{
   addMessage(message,'user');
   input.value='';
   sendBtn.disabled=true;
-  botStatus.textContent='Thinking...';
+  botStatus.textContent='Typing...';
   try{
     const reply=await askGymBot(message);
     addMessage(reply,'bot');
