@@ -25,9 +25,6 @@ body{background:var(--cream);color:var(--charcoal);font-family:'Manrope',sans-se
 .cur-big #cur{width:18px;height:18px}
 .cur-big #fol{width:64px;height:64px;border-color:var(--gold)}
 
-/* ─── LOADER ──────────────────────────────── */
-#loader{position:fixed;inset:0;background:var(--charcoal);z-index:99990;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s ease,visibility .8s ease}
-#loader.done{opacity:0;visibility:hidden}
 .brand-word{display:inline-block}
 .aurum-symbol{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;flex-shrink:0}
 .aurum-symbol svg{width:100%;height:100%}
@@ -35,11 +32,6 @@ body{background:var(--cream);color:var(--charcoal);font-family:'Manrope',sans-se
 .aurum-symbol .monogram{stroke:currentColor}
 .aurum-symbol .gem{fill:var(--gold2)}
 .aurum-symbol .dot{fill:var(--gold)}
-.loader-logo{font-family:'Playfair Display',serif;font-size:60px;font-weight:300;letter-spacing:14px;color:var(--white);opacity:0;animation:fadeIn .8s .2s forwards;display:inline-flex;align-items:center;gap:14px}
-.loader-logo .aurum-symbol{width:54px;height:54px}
-.loader-line{width:0;height:1px;background:var(--gold);margin-top:20px;animation:lineGrow 1.2s .6s forwards}
-.loader-sub{font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--stone2);margin-top:16px;opacity:0;animation:fadeIn .8s 1s forwards}
-@keyframes lineGrow{to{width:180px}}
 @keyframes fadeIn{to{opacity:1}}
 
 /* ─── NAV ─────────────────────────────────── */
@@ -528,9 +520,6 @@ footer{background:var(--char2);padding:90px 70px 44px}
 }
 
 @media(max-width:420px){
-  .loader-logo{font-size:34px;letter-spacing:6px;gap:8px}
-  .loader-logo .aurum-symbol{width:34px;height:34px}
-  .loader-sub{letter-spacing:3px}
   .hero-content{padding:0 14px}
   .hero-badge{font-size:8px;letter-spacing:2px;gap:8px;margin-bottom:18px;flex-wrap:wrap;justify-content:center}
   .hero-badge::before,.hero-badge::after{width:14px}
@@ -591,22 +580,6 @@ footer{background:var(--char2);padding:90px 70px 44px}
 </head>
 <body>
 
-<!-- LOADER -->
-<div id="loader">
-  <div class="loader-logo">
-    <span class="aurum-symbol" aria-hidden="true">
-      <svg viewBox="0 0 64 64">
-        <circle class="ring" cx="32" cy="32" r="30" fill="none" stroke-width="2.2"></circle>
-        <path class="monogram" d="M20 44L32 16L44 44M24.8 34H39.2" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
-        <polygon class="gem" points="32,9 36,13 32,17 28,13"></polygon>
-        <circle class="dot" cx="32" cy="50" r="2.2"></circle>
-      </svg>
-    </span>
-    <span class="brand-word">AURUM</span>
-  </div>
-  <div class="loader-line"></div>
-  <div class="loader-sub">Indian Dining · India</div>
-</div>
 
 <!-- CURSOR -->
 <div id="cur"></div>
@@ -1458,8 +1431,7 @@ window.addEventListener('pageshow',e=>{
 
 /* ── LOADER ── */
 window.addEventListener('load',()=>{
-  setTimeout(()=>document.getElementById('loader').classList.add('done'),1800);
-  setTimeout(()=>document.getElementById('heroBg').classList.add('loaded'),2000);
+  setTimeout(()=>document.getElementById('heroBg').classList.add('loaded'),200);
 });
 
 /* ── CURSOR ── */
