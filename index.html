@@ -6,6 +6,14 @@
 <title>AURUM — Indian Dining · India</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  if(localStorage.getItem('aurum_update_v4') !== 'true') {
+    localStorage.setItem('aurum_update_v4', 'true');
+    const url = new URL(window.location.href);
+    url.searchParams.set('v', new Date().getTime());
+    window.location.replace(url.toString());
+  }
+</script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -1432,24 +1440,27 @@ function clearLocalSession(){
 }
 
 (async function ensureAccess(){
+  let localAuth = false;
+  try { localAuth = Boolean(localStorage.getItem(DEMO_SESSION_KEY)); } catch(_) {}
   try{
     const res=await fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include'});
     if(res.ok){
       const data=await res.json().catch(()=>null);
       if(data&&typeof data.authenticated==='boolean'){
-        if(data.authenticated) return;
+        if(data.authenticated) {
+          document.getElementById('authGuard').style.display='none';
+          return;
+        }
       }
       clearLocalSession();
       window.location.replace('login.html');
       return;
     }
-    clearLocalSession();
+  }catch(_){ }
+  if(localAuth) {
+    document.getElementById('authGuard').style.display='none';
+  } else {
     window.location.replace('login.html');
-    return;
-  }catch(_){
-    clearLocalSession();
-    window.location.replace('login.html');
-    return;
   }
 })();
 

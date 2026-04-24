@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AURUM Delivery · London</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+  if(localStorage.getItem('aurum_update_v4') !== 'true') {
+    localStorage.setItem('aurum_update_v4', 'true');
+    const url = new URL(window.location.href);
+    url.searchParams.set('v', new Date().getTime());
+    window.location.replace(url.toString());
+  }
+</script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -238,9 +246,16 @@ footer p{font-size:14px;color:var(--stone);text-align:center}
   .cart-fab-label{letter-spacing:1.6px}
   .cart-total{font-size:20px}
 }
+
+#authGuard{position:fixed;inset:0;background:var(--cream);z-index:9999999;display:flex;align-items:center;justify-content:center}
+.auth-spinner{width:36px;height:36px;border:3px solid rgba(201,168,76,.2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
+<!-- AUTH GUARD -->
+<div id="authGuard"><div class="auth-spinner"></div></div>
+
   <header class="topbar">
     <div class="topbar-inner">
       <a href="index.html" class="brand">
@@ -391,6 +406,7 @@ function clearLocalSession() {
                     }
                     const profileLink = document.getElementById('profileLink');
                     if (profileLink) profileLink.style.display = '';
+                    document.getElementById('authGuard').style.display='none';
                     return;
                   }
               else {
@@ -407,6 +423,7 @@ function clearLocalSession() {
   let localAuth = false;
   try { localAuth = Boolean(localStorage.getItem(DEMO_SESSION_KEY)); } catch (_) { }
   if (!localAuth) window.location.href = 'login.html';
+            else document.getElementById('authGuard').style.display='none';
 })();
 
 window.addEventListener('pageshow', event => {
