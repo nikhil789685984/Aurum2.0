@@ -1915,13 +1915,16 @@ app.get('/api/admin/overview', requireAdmin, (req, res) => {
     .slice()
     .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
 
+  const eventsRevenue = eventRegistrationsStore.reduce((sum, reg) => sum + (Number(reg.totalFee) || 0), 0);
+
   return res.json({
     ok: true,
     stats: {
       users: users.length,
       reservations: reservationsStore.length,
       paidOrders: paidOrdersStore.length,
-      events: eventRegistrationsStore.length
+      events: eventRegistrationsStore.length,
+      eventsRevenue
     },
     users,
     reservations,
