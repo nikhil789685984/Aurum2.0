@@ -4,112 +4,171 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AURUM Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#f4ede2;
-      --card:#fffaf2;
-      --ink:#1d1711;
-      --muted:#6f6254;
-      --gold:#c9a84c;
-      --line:rgba(29,23,17,.12);
-      --ok:#245b33;
+      --bg: #F7F4ED;
+      --surface: #FFFFFF;
+      --ink: #1A1612;
+      --muted: #7A6F62;
+      --gold: #C9A84C;
+      --gold-hover: #B8973B;
+      --line: rgba(201,168,76,0.25);
+      --line-light: rgba(26,22,18,0.06);
+      --ok: #2D8A4D;
+      --ok-bg: #EBF7EE;
+      --danger: #D64545;
+      --danger-bg: #FDECEB;
+      --radius: 12px;
+      --shadow: 0 8px 30px rgba(26,22,18,0.03);
+      --shadow-hover: 0 12px 40px rgba(26,22,18,0.07);
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:Georgia,serif;
+      font-family:'Manrope',sans-serif;
       color:var(--ink);
-      background:
-        radial-gradient(900px 500px at 0% 0%, rgba(255,255,255,.55), transparent 60%),
-        linear-gradient(145deg,#f5efe5,#ecddc1);
+      background:var(--bg);
+      -webkit-font-smoothing:antialiased;
     }
-    .wrap{max-width:1280px;margin:0 auto;padding:28px 18px 56px}
-    .top{
+    .topbar{
+      background:var(--surface);
+      border-bottom:1px solid var(--line);
+      padding:16px 36px;
       display:flex;
-      gap:16px;
       justify-content:space-between;
-      align-items:flex-end;
-      margin-bottom:20px;
-      flex-wrap:wrap;
+      align-items:center;
+      position:sticky;
+      top:0;
+      z-index:100;
     }
-    .eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
-    h1{margin:8px 0 0;font-size:42px;font-weight:600}
-    .top-actions{display:flex;gap:12px;flex-wrap:wrap}
+    .brand{
+      font-family:'Playfair Display',serif;
+      font-size:24px;
+      font-weight:600;
+      letter-spacing:2px;
+      color:var(--ink);
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .brand span{
+      font-family:'Manrope',sans-serif;
+      font-size:10px;
+      font-weight:700;
+      letter-spacing:3px;
+      text-transform:uppercase;
+      color:var(--gold);
+      border-left:1px solid var(--line);
+      padding-left:12px;
+    }
+    .top-actions{display:flex;gap:12px;align-items:center}
+    .wrap{max-width:1440px;margin:0 auto;padding:36px}
+    .page-head{margin-bottom:32px}
+    .page-head h1{font-family:'Playfair Display',serif;font-size:38px;font-weight:500;margin:0 0 8px;line-height:1}
+    .page-head p{color:var(--muted);font-size:15px;margin:0;line-height:1.6}
+    
     .btn{
       border:1px solid var(--gold);
       background:var(--gold);
-      color:#1d1711;
-      padding:12px 16px;
+      color:#1A1612;
+      padding:10px 20px;
       font-size:11px;
-      letter-spacing:2px;
-      text-transform:uppercase;
-      cursor:pointer;
-      text-decoration:none;
-    }
-    .btn.secondary{background:transparent}
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:16px;
-      margin-bottom:16px;
-    }
-    .card,.panel{
-      background:rgba(255,250,242,.92);
-      border:1px solid var(--line);
-      box-shadow:0 22px 40px rgba(29,23,17,.08);
-    }
-    .card{padding:20px}
-    .stat-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
-    .stat-value{font-size:36px;margin-top:8px}
-    .panel{padding:18px;margin-bottom:16px;overflow:auto}
-    .panel h2{margin:0 0 14px;font-size:26px}
-    table{width:100%;border-collapse:collapse;min-width:760px}
-    th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-    th{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
-    td{font-size:14px;line-height:1.5}
-    .muted{color:var(--muted)}
-    .ok{color:var(--ok)}
-    .empty{padding:10px 0;color:var(--muted)}
-    .pill{
-      display:inline-block;
-      padding:4px 8px;
-      border:1px solid var(--line);
-      background:#fff;
-      font-size:11px;
-      letter-spacing:1px;
-      text-transform:uppercase;
-    }
-    .pill.pending{background:#fff7e1}
-    .pill.approved,.pill.completed{background:#ebf7ee}
-    .pill.rejected{background:#fdeceb}
-    .pill.processing{background:#eef3fb}
-    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-    .mini-btn{
-      border:1px solid var(--line);
-      background:#fff;
-      color:var(--ink);
-      padding:7px 10px;
-      font-size:10px;
+      font-weight:700;
       letter-spacing:1.5px;
       text-transform:uppercase;
+      border-radius:6px;
       cursor:pointer;
+      text-decoration:none;
+      transition:all .25s;
     }
-    .mini-btn.gold{border-color:var(--gold);background:#fbf2d7}
-    .mini-btn.danger{border-color:#d6aaa4;background:#fff1ef}
-    .top-note{margin:0 0 18px;color:var(--muted);line-height:1.6}
+    .btn.secondary{background:transparent;color:var(--ink);border-color:var(--line)}
+    .btn.secondary:hover{border-color:var(--gold);color:var(--gold)}
+    .btn:hover{background:var(--gold-hover);border-color:var(--gold-hover);transform:translateY(-1px)}
+    
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+      gap:24px;
+      margin-bottom:36px;
+    }
+    .card,.panel{
+      background:var(--surface);
+      border:1px solid var(--line-light);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      transition:transform .3s,box-shadow .3s;
+    }
+    .card{padding:28px;display:flex;flex-direction:column;justify-content:center}
+    .card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover)}
+    .stat-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+    .stat-value{font-family:'Playfair Display',serif;font-size:48px;font-weight:400;color:var(--gold);line-height:1}
+    
+    .panel{padding:0;overflow:hidden;margin-bottom:32px}
+    .panel-head{padding:20px 28px;border-bottom:1px solid var(--line-light);background:#FCFAF5;display:flex;justify-content:space-between;align-items:center}
+    .panel-head h2{margin:0;font-family:'Playfair Display',serif;font-size:22px;font-weight:500}
+    
+    .table-responsive{width:100%;overflow-x:auto}
+    table{width:100%;border-collapse:collapse;text-align:left;min-width:900px}
+    th{padding:14px 28px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line-light);background:#FCFAF5}
+    td{padding:18px 28px;font-size:14px;line-height:1.6;border-bottom:1px solid var(--line-light);vertical-align:top}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#FCFAF5}
+    
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding:5px 12px;
+      border-radius:20px;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      background:#F0EBE1;
+      color:var(--muted);
+    }
+    .pill.pending{background:#FFF4D9;color:#9E7014}
+    .pill.approved,.pill.completed,.pill.delivered{background:var(--ok-bg);color:var(--ok)}
+    .pill.rejected{background:var(--danger-bg);color:var(--danger)}
+    .pill.paid{background:#E6F0FD;color:#2D5B9E}
+    
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .mini-btn{
+      border:1px solid var(--line-light);
+      background:var(--surface);
+      color:var(--ink);
+      padding:6px 12px;
+      font-size:10px;
+      font-weight:700;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      border-radius:4px;
+      cursor:pointer;
+      transition:all .2s;
+    }
+    .mini-btn:hover{border-color:var(--gold);color:var(--gold)}
+    .mini-btn.gold{background:var(--gold);border-color:var(--gold);color:#fff}
+    .mini-btn.gold:hover{background:var(--gold-hover)}
+    .mini-btn.danger{background:var(--danger-bg);border-color:var(--danger-bg);color:var(--danger)}
+    .mini-btn.danger:hover{background:var(--danger);color:#fff}
+    
+    .muted{color:var(--muted);font-size:12px;margin-top:4px}
+    .ok{color:var(--ok);font-weight:600}
+    .empty{padding:40px;text-align:center;color:var(--muted);font-size:14px}
+    
     .live-badge {
       display:inline-flex;
       align-items:center;
       gap:6px;
-      padding:6px 12px;
-      border:1px solid rgba(36,91,51,.3);
+      padding:6px 14px;
+      border:1px solid rgba(45,138,77,.3);
       background:#ebf7ee;
       color:var(--ok);
       font-size:10px;
+      font-weight:700;
       letter-spacing:2px;
       text-transform:uppercase;
-      border-radius:4px;
-      transition:opacity 0.3s;
+      border-radius:20px;
     }
     .live-badge::before {
       content:'';
@@ -119,56 +178,31 @@
       animation:blink 1.5s infinite;
     }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-    @media(max-width:900px){
+    
+    @media(max-width:768px){
+      .topbar{flex-direction:column;gap:16px;padding:16px}
+      .wrap{padding:16px}
       .grid{grid-template-columns:1fr}
-      h1{font-size:34px}
-    }
-    @media(max-width:760px){
-      .wrap{padding:20px 12px 42px}
-      .top{align-items:flex-start}
-      h1{font-size:28px}
-      .top-actions{width:100%}
-      .btn{flex:1 1 140px;text-align:center}
-      .panel{padding:16px 14px;overflow:hidden}
-      .panel h2{font-size:22px}
-      table{min-width:0;display:block}
-      thead{display:none}
-      tbody{display:block}
-      tr{display:block;padding:12px 0;border-bottom:1px solid var(--line)}
-      td{
-        display:grid;
-        grid-template-columns:minmax(88px,108px) 1fr;
-        gap:12px;
-        padding:8px 0;
-        border-bottom:none;
-      }
-      td::before{
-        content:attr(data-label);
-        font-size:10px;
-        letter-spacing:1.5px;
-        text-transform:uppercase;
-        color:var(--muted);
-      }
-      .actions{gap:6px}
-      .mini-btn{flex:1 1 120px}
+      .page-head h1{font-size:32px}
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="top">
-      <div>
-        <div class="eyebrow">Operations Panel</div>
-        <h1>AURUM Admin Dashboard</h1>
-      </div>
+  <header class="topbar">
+    <div class="brand">AURUM <span>Admin Portal</span></div>
       <div class="top-actions">
         <div class="live-badge" id="liveBadge" title="Real-time updates active">Live</div>
         <a class="btn secondary" href="index.html">Website</a>
         <button class="btn secondary" id="refreshBtn" type="button">Refresh</button>
         <button class="btn" id="logoutBtn" type="button">Logout</button>
       </div>
+  </header>
+
+  <main class="wrap">
+    <div class="page-head">
+      <h1>Dashboard Overview</h1>
+      <p>Manage reservations, track live orders, and monitor your guests in real-time.</p>
     </div>
-    <p class="top-note">Manage reservations, track paid orders, and keep customer operations clean from one place.</p>
 
     <div class="grid">
       <div class="card">
@@ -186,56 +220,62 @@
     </div>
 
     <div class="panel">
-      <h2>Reservations</h2>
-      <div id="reservationsEmpty" class="empty">Loading reservations...</div>
-      <table id="reservationsTable" hidden>
-        <thead>
-          <tr>
-            <th>Guest</th>
-            <th>Contact</th>
-            <th>Reservation</th>
-            <th>Request</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="panel-head"><h2>Reservations</h2></div>
+      <div class="table-responsive">
+        <div id="reservationsEmpty" class="empty">Loading reservations...</div>
+        <table id="reservationsTable" hidden>
+          <thead>
+            <tr>
+              <th>Guest</th>
+              <th>Contact</th>
+              <th>Details</th>
+              <th>Special Requests</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
 
     <div class="panel">
-      <h2>Paid Orders</h2>
-      <div id="ordersEmpty" class="empty">Loading orders...</div>
-      <table id="ordersTable" hidden>
-        <thead>
-          <tr>
-            <th>Provider</th>
-            <th>Customer Info</th>
-            <th>Delivery Address</th>
-            <th>Order Summary</th>
-            <th>Created</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="panel-head"><h2>Live Orders</h2></div>
+      <div class="table-responsive">
+        <div id="ordersEmpty" class="empty">Loading orders...</div>
+        <table id="ordersTable" hidden>
+          <thead>
+            <tr>
+              <th>Status & ID</th>
+              <th>Customer Info</th>
+              <th>Delivery Address</th>
+              <th>Order Summary</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
 
     <div class="panel">
-      <h2>Users</h2>
-      <div id="usersEmpty" class="empty">Loading users...</div>
-      <table id="usersTable" hidden>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Created</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="panel-head"><h2>Registered Users</h2></div>
+      <div class="table-responsive">
+        <div id="usersEmpty" class="empty">Loading users...</div>
+        <table id="usersTable" hidden>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Date Joined</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
-  </div>
+  </main>
 
   <script>
     const usersCount = document.getElementById('usersCount');
@@ -358,14 +398,14 @@
           tableId: 'reservationsTable',
           emptyId: 'reservationsEmpty',
           buildRow: row => `
-            <td><strong>${escapeHtml(`${row.firstName || ''} ${row.lastName || ''}`.trim() || 'Guest')}</strong><div class="muted">${escapeHtml(row.diningOption || 'Standard')}</div></td>
+            <td><strong>${escapeHtml(`${row.firstName || ''} ${row.lastName || ''}`.trim() || 'Guest')}</strong><div class="muted">Opt: ${escapeHtml(row.diningOption || 'Standard')}</div></td>
             <td>${escapeHtml(row.guestEmail || '')}<div class="muted">${escapeHtml(row.phone || 'No phone')}</div></td>
-            <td><span class="pill ${escapeHtml(row.status || 'pending')}">${escapeHtml(row.status || 'pending')}</span><div style="margin-top:8px">${escapeHtml(row.date || 'No date')}</div><div>${escapeHtml(row.time || 'No time')}</div><div class="muted">${escapeHtml(row.guests || 'Guests not set')}</div></td>
-            <td>${escapeHtml(row.notes || 'No special requests')}<div class="muted">${formatDate(row.createdAt)}</div></td>
+            <td><span class="pill ${escapeHtml(row.status || 'pending')}">${escapeHtml(row.status || 'pending')}</span><div class="muted" style="margin-top:8px;font-weight:600;color:var(--ink)">${escapeHtml(row.date || 'No date')} at ${escapeHtml(row.time || 'No time')}</div><div class="muted">${escapeHtml(row.guests || 'Guests not set')}</div></td>
+            <td><div style="max-width:280px">${escapeHtml(row.notes || 'No special requests')}</div><div class="muted" style="margin-top:6px">Requested: ${formatDate(row.createdAt)}</div></td>
             <td>
               <div class="actions">
                 <button class="mini-btn gold" type="button" data-action="approve-reservation" data-id="${escapeHtml(row.id || '')}">Approve</button>
-                <button class="mini-btn" type="button" data-action="reject-reservation" data-id="${escapeHtml(row.id || '')}">Reject</button>
+                <button class="mini-btn secondary" type="button" data-action="reject-reservation" data-id="${escapeHtml(row.id || '')}">Reject</button>
                 <button class="mini-btn danger" type="button" data-action="delete-reservation" data-id="${escapeHtml(row.id || '')}">Delete</button>
               </div>
             </td>
@@ -382,11 +422,11 @@
             const loc = row.deliveryLocation || {};
             const address = [loc.addressLine1, loc.addressLine2, loc.landmark, loc.city, loc.pincode].filter(Boolean).join(', ');
             return `
-              <td><span class="pill ${escapeHtml(row.status || 'paid')}">${escapeHtml(row.provider || 'Payment')}</span><div class="muted" style="margin-top:4px">${escapeHtml(row.orderRef || row.orderId || row.sessionId || row.paymentId || '')}</div></td>
-              <td><strong>${escapeHtml(loc.fullName || row.customerEmail || 'Guest')}</strong><div class="muted">${escapeHtml(loc.phone || 'No phone')}</div><div class="muted" style="font-size:11px">${escapeHtml(row.customerEmail || '')}</div></td>
-              <td><div style="font-size:13px;line-height:1.5;max-width:280px">${escapeHtml(address || 'No Address Provided')}</div><div class="muted" style="font-size:11px;margin-top:4px">Note: ${escapeHtml(loc.instructions || 'None')}</div></td>
-              <td><strong class="ok">₹${escapeHtml(row.amountTotal)}</strong><div class="muted" style="font-size:12px;margin-top:4px">${escapeHtml(Array.isArray(row.items) ? row.items.map(item => `${item.name} x${item.qty}`).join(', ') : 'No items')}</div></td>
-              <td>${formatDate(row.createdAt)}<div class="muted" style="text-transform:uppercase;font-size:10px;margin-top:4px">${escapeHtml(row.status || 'paid')}</div></td>
+              <td><span class="pill ${escapeHtml(row.status || 'paid')}">${escapeHtml(row.provider || 'Payment')}</span><div class="muted" style="margin-top:6px;font-family:monospace">${escapeHtml(row.orderRef || row.orderId || row.sessionId || row.paymentId || '')}</div></td>
+              <td><strong>${escapeHtml(loc.fullName || row.customerEmail || 'Guest')}</strong><div class="muted">${escapeHtml(loc.phone || 'No phone')}</div><div class="muted">${escapeHtml(row.customerEmail || '')}</div></td>
+              <td><div style="max-width:280px">${escapeHtml(address || 'No Address Provided')}</div><div class="muted" style="margin-top:6px">Note: ${escapeHtml(loc.instructions || 'None')}</div></td>
+              <td><strong class="ok" style="font-size:16px">₹${escapeHtml(row.amountTotal)}</strong><div class="muted" style="margin-top:6px;line-height:1.5">${escapeHtml(Array.isArray(row.items) ? row.items.map(item => `${item.name} x${item.qty}`).join(', ') : 'No items')}</div></td>
+              <td>${formatDate(row.createdAt)}<div class="muted" style="text-transform:uppercase;margin-top:6px">${escapeHtml(row.status || 'paid')}</div></td>
               <td>
                 <div class="actions">
                   <button class="mini-btn gold" type="button" data-action="mark-delivered" data-id="${escapeHtml(row.id || '')}">Delivered</button>
