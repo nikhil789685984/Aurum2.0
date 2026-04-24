@@ -1374,7 +1374,7 @@ footer{background:var(--char2);padding:90px 70px 44px}
     <button class="ev-close" id="evClose">&times;</button>
     <div class="ev-modal-header" style="margin-bottom:24px;">
       <h3 id="evTitle" style="font-family:'Playfair Display',serif;font-size:36px;line-height:1.1;color:var(--charcoal)">Event Name</h3>
-      <p style="font-size:14px;color:var(--stone);margin-top:10px;">Reserve your spot instantly by paying a 10% advance fee securely via Razorpay.</p>
+      <p style="font-size:14px;color:var(--stone);margin-top:10px;">Reserve your spot instantly by paying a 50% advance fee securely via Razorpay.</p>
     </div>
     <div class="ev-modal-summary">
       <p><span>Guest:</span> <strong id="evCelebName" style="color:var(--white)">-</strong></p>
@@ -1406,7 +1406,7 @@ footer{background:var(--char2);padding:90px 70px 44px}
     </div>
     <div class="ev-cost-box">
       <div class="ev-cost-row"><span>Total Event Fee</span><strong id="evTotalFee">₹0</strong></div>
-      <div class="ev-cost-row total"><span>Advance Payable (10%)</span><strong id="evAdvanceFee">₹0</strong></div>
+      <div class="ev-cost-row total"><span>Advance Payable (50%)</span><strong id="evAdvanceFee">₹0</strong></div>
     </div>
     <button id="evPayBtn" class="btn-gold" style="width:100%;padding:18px;font-size:12px;">Pay Advance & Register</button>
   </div>
@@ -1755,7 +1755,7 @@ function updateEvCalc() {
   if(!currentEvent) return;
   const g = Number(evGuests.value) || 1;
   const total = currentEvent.price * g;
-  const advance = Math.round(total * 0.1);
+  const advance = Math.round(total * 0.5);
   evTotalFee.textContent = `₹${total.toLocaleString('en-IN')}`;
   evAdvanceFee.textContent = `₹${advance.toLocaleString('en-IN')}`;
 }
@@ -1820,7 +1820,7 @@ evPayBtn.addEventListener('click', async () => {
           body: JSON.stringify(response)
         });
         evModal.classList.remove('on');
-        showMailPopup('Event Registration Successful! Check your email.');
+        showMailPopup('Registration Successful! Ticket sent to your email.');
       }
     };
     new window.Razorpay(options).open();

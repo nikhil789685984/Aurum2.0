@@ -508,11 +508,10 @@
             <td><strong>${escapeHtml(row.eventName || 'Event')}</strong><div class="muted" style="margin-top:6px;font-family:monospace">${escapeHtml(row.paymentId || row.id || '')}</div></td>
             <td><strong>${escapeHtml(row.name || 'Guest')}</strong><div class="muted">${escapeHtml(row.phone || '')}</div><div class="muted">${escapeHtml(row.authEmail || '')}</div></td>
             <td><strong class="ok" style="font-size:18px">${escapeHtml(row.guests || 1)}</strong></td>
-            <td><span class="pill ${escapeHtml(row.status === 'fully_paid' ? 'delivered' : 'paid')}">${escapeHtml(row.status === 'fully_paid' ? 'Fully Paid' : 'Advance Paid')}</span><div class="muted" style="margin-top:6px">Paid: ₹${escapeHtml(row.advancePaid)}<br>Total: ₹${escapeHtml(row.totalFee)}</div></td>
+            <td><span class="pill delivered">Ticket Sent</span><div class="muted" style="margin-top:6px">Paid: ₹${escapeHtml(row.advancePaid)}<br>Balance: ₹${escapeHtml(row.totalFee - row.advancePaid)}</div></td>
             <td>${formatDate(row.createdAt)}</td>
             <td>
               <div class="actions">
-                ${row.status !== 'fully_paid' ? `<button class="mini-btn gold" type="button" data-action="send-ticket" data-id="${escapeHtml(row.id || '')}">Send Ticket</button>` : ''}
                 <button class="mini-btn danger" type="button" data-action="delete-event" data-id="${escapeHtml(row.id || '')}">Delete</button>
               </div>
             </td>
@@ -587,10 +586,6 @@
         try { await deleteEventRegistration(id); }
         catch (err) { window.alert(err?.message || 'Failed to delete event registration.'); }
       }
-    if (button.dataset.action === 'send-ticket') {
-      try { await sendEventTicket(id); }
-      catch (err) { window.alert(err?.message || 'Failed to send ticket.'); }
-    }
     });
 
     logoutBtn.addEventListener('click', async () => {
