@@ -397,22 +397,16 @@ function createSession(email) {
 
 function setSessionCookie(res, token) {
   const maxAge = Math.floor(SESSION_TTL_MS / 1000);
-  const isProduction = process.env.NODE_ENV === 'production';
-  const sameSite = isProduction ? 'None' : 'Lax';
-  const secure = isProduction ? '; Secure' : '';
   res.setHeader(
     'Set-Cookie',
-    `aurum_session=${token}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=${sameSite}${secure}`
+    `aurum_session=${token}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=None; Secure`
   );
 }
 
 function clearSessionCookie(res) {
-  const isProduction = process.env.NODE_ENV === 'production';
-  const sameSite = isProduction ? 'None' : 'Lax';
-  const secure = isProduction ? '; Secure' : '';
   res.setHeader(
     'Set-Cookie',
-    `aurum_session=; HttpOnly; Path=/; Max-Age=0; SameSite=${sameSite}${secure}`
+    `aurum_session=; HttpOnly; Path=/; Max-Age=0; SameSite=None; Secure`
   );
 }
 

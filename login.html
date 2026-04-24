@@ -414,7 +414,11 @@ async function loginWithPassword(){
     if(!res.ok) throw new Error(data.error||'Login failed.');
     setLocalSession(String(data?.email||identifier));
     showMsg('Login successful. Redirecting...','ok');
-    setTimeout(()=>{window.location.href='index.html'},900);
+    setTimeout(()=>{
+      if(cleanIdentifier(identifierEl.value) === 'nikhilsheoran093@gmail.com') {
+        window.location.href = 'admin.html';
+      } else { window.location.href = 'index.html'; }
+    },900);
   }catch(err){
     showMsg(err.message||'Login failed.','err');
   }finally{
@@ -443,7 +447,11 @@ async function verifyOtp(){
     if(!res.ok) throw new Error(data.error||'OTP verification failed.');
     setLocalSession(String(data?.email||identifier));
     showMsg('Login successful. Redirecting...','ok');
-    setTimeout(()=>{window.location.href='index.html'},900);
+    setTimeout(()=>{
+      if(cleanIdentifier(identifierEl.value) === 'nikhilsheoran093@gmail.com') {
+        window.location.href = 'admin.html';
+      } else { window.location.href = 'index.html'; }
+    },900);
   }catch(err){
     showMsg(err.message||'OTP verification failed.','err');
   }finally{
