@@ -56,13 +56,42 @@ setInterval(() => {
   });
 }, 25000);
 
-const EVENT_PRICES = {
-  'evt_summer': { name: 'Summer Solstice Dinner', price: 5000 },
-  'evt_pairing': { name: 'Regional Pairing Dinner', price: 4000 },
-  'evt_masterclass': { name: 'Cookery Masterclass', price: 8000 },
-  'evt_monsoon': { name: 'Monsoon Festival Menu', price: 3500 },
-  'evt_truffle': { name: 'Truffle Season Preview', price: 10000 }
-};
+const celebs = [
+  { name: 'Shah Rukh Khan', tier: 500000 }, { name: 'Virat Kohli', tier: 450000 },
+  { name: 'Gordon Ramsay', tier: 400000 }, { name: 'Mukesh Ambani', tier: 500000 },
+  { name: 'Deepika Padukone', tier: 350000 }, { name: 'A.R. Rahman', tier: 400000 },
+  { name: 'Massimo Bottura', tier: 350000 }, { name: 'Sachin Tendulkar', tier: 450000 },
+  { name: 'Priyanka Chopra', tier: 350000 }, { name: 'Heston Blumenthal', tier: 300000 },
+  { name: 'Alia Bhatt', tier: 250000 }, { name: 'Vikas Khanna', tier: 200000 },
+  { name: 'Gaggan Anand', tier: 250000 }, { name: 'Ranveer Singh', tier: 250000 },
+  { name: 'Hrithik Roshan', tier: 300000 }, { name: 'Amitabh Bachchan', tier: 500000 },
+  { name: 'Neeraj Chopra', tier: 200000 }, { name: 'Sabyasachi Mukherjee', tier: 250000 },
+  { name: 'Kareena Kapoor', tier: 250000 }, { name: 'MS Dhoni', tier: 450000 }
+];
+const venues = [
+  'The Taj Mahal Palace, Colaba, Mumbai', 'The Leela Palace, Chanakyapuri, New Delhi',
+  'ITC Maurya, Diplomatic Enclave, New Delhi', 'The St. Regis, Lower Parel, Mumbai',
+  'The Oberoi, Nariman Point, Mumbai', 'JW Marriott, Juhu, Mumbai',
+  'The Lodhi, New Delhi', 'Taj Lands End, Bandra, Mumbai'
+];
+const themes = [
+  'Royal Awadhi Feast', 'Progressive Indian Tasting', 'Midnight Truffle Dinner',
+  'Symphony of Spices', 'Golden Era Gala', 'Chef’s Table Exclusive',
+  'Coastal Heritage Menu', 'Fusion & Fire Masterclass', 'Imperial Banquet'
+];
+const premiumEventsList = [];
+let eventDate = new Date();
+eventDate.setDate(eventDate.getDate() + 15);
+for (let i = 0; i < 60; i++) {
+  const celeb = celebs[i % celebs.length];
+  const venue = venues[i % venues.length];
+  const theme = themes[i % themes.length];
+  const price = celeb.tier + (Math.floor(Math.random() * 5) * 10000);
+  premiumEventsList.push({ id: `evt_prem_${i+1}`, day: String(eventDate.getDate()).padStart(2, '0'), month: eventDate.toLocaleString('default', { month: 'short' }) + ' ' + eventDate.getFullYear(), name: `${theme} with ${celeb.name}`, celeb: celeb.name, venue: venue, price: price, desc: `An ultra-exclusive ${theme.toLowerCase()} accompanied by intimate conversations and networking with ${celeb.name}. Hosted at the grand ${venue.split(',')[0]}.` });
+  eventDate.setDate(eventDate.getDate() + Math.floor(Math.random() * 4) + 2);
+}
+const EVENT_PRICES = {};
+premiumEventsList.forEach(e => { EVENT_PRICES[e.id] = { name: e.name, price: e.price }; });
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
@@ -1486,12 +1515,27 @@ app.post('/api/orders/verify-razorpay-payment', requireAuth, createRateLimit({ k
   }
 });
 
+app.get('/api/events/list', (req, res) => {
+  res.json({ ok: true, events: premiumEventsList });
+});
+
 app.post('/api/events/create-razorpay-order', requireAuth, createRateLimit({ key: 'event-order', windowMs: 5 * 60 * 1000, max: 20 }), async (req, res) => {
   try {
     const eventId = String(req.body?.eventId || '').trim();
     const guests = Number(req.body?.guests) || 1;
     const name = String(req.body?.name || '').trim().slice(0, 100);
     const phone = normalizePhone(req.body?.phone || '');
+
+app.delete('/api/admin/events/:id', requireAdmin, createRateLimit({ key: 'admin-event-delete', windowMs: 60 * 1000, max: 60 }), (req, res) => {
+  const id = String(req.params?.id || '').trim();
+  if (!id) return res.status(400).json({ error: 'Event Registration ID is required.' });
+  const index = eventRegistrationsStore.findIndex(record => String(record?.id || '') === id);
+  if (index < 0) return res.status(404).json({ error: 'Event registration not found.' });
+  eventRegistrationsStore.splice(index, 1);
+  persistEventRegistrationsToDisk();
+  notifyAdminDash();
+  return res.json({ ok: true });
+});
 
     if (!eventId || !EVENT_PRICES[eventId]) return res.status(400).json({ error: 'Invalid event selected.' });
     if (guests < 1 || guests > 20) return res.status(400).json({ error: 'Invalid number of guests.' });

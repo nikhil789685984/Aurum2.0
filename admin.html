@@ -293,6 +293,7 @@
               <th>Seats</th>
               <th>Payment Status</th>
               <th>Date Registered</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -509,6 +510,11 @@
             <td><strong class="ok" style="font-size:18px">${escapeHtml(row.guests || 1)}</strong></td>
             <td><span class="pill paid">Advance Paid</span><div class="muted" style="margin-top:6px">Paid: ₹${escapeHtml(row.advancePaid)}<br>Total: ₹${escapeHtml(row.totalFee)}</div></td>
             <td>${formatDate(row.createdAt)}</td>
+            <td>
+              <div class="actions">
+                <button class="mini-btn danger" type="button" data-action="delete-event" data-id="${escapeHtml(row.id || '')}">Delete</button>
+              </div>
+            </td>
           `
         });
 
@@ -562,6 +568,23 @@
         if (action === 'delete-order') await deleteOrder(id);
       } catch (err) {
         window.alert(err?.message || 'Order action failed.');
+      }
+    });
+
+    async function deleteEventRegistration(id) {
+      if (!window.confirm('Delete this event registration?')) return;
+      await apiRequest(`/api/admin/events/${encodeURIComponent(id)}`, { method: 'DELETE' });
+      await loadAdmin();
+    }
+
+    const eventsTable = document.getElementById('eventsTable');
+    eventsTable.addEventListener('click', async event => {
+      const button = event.target.closest('[data-action]');
+      if (!button) return;
+      const id = button.dataset.id;
+      if (button.dataset.action === 'delete-event') {
+        try { await deleteEventRegistration(id); }
+        catch (err) { window.alert(err?.message || 'Failed to delete event registration.'); }
       }
     });
 
