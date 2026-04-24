@@ -186,9 +186,9 @@
         <thead>
           <tr>
             <th>Provider</th>
-            <th>Customer</th>
-            <th>Amount</th>
-            <th>Items</th>
+            <th>Customer Info</th>
+            <th>Delivery Address</th>
+            <th>Order Summary</th>
             <th>Created</th>
             <th>Actions</th>
           </tr>
@@ -349,24 +349,29 @@
           `
         });
 
+        const activeOrders = Array.isArray(data.orders) ? data.orders.filter(o => o.status !== 'delivered') : [];
+
         renderTable({
-          rows: Array.isArray(data.orders) ? data.orders : [],
+          rows: activeOrders,
           tableId: 'ordersTable',
           emptyId: 'ordersEmpty',
-          buildRow: row => `
-            <td><span class="pill ${escapeHtml(row.status || 'paid')}">${escapeHtml(row.provider || 'Payment')}</span><div class="muted">${escapeHtml(row.orderRef || row.orderId || row.sessionId || row.paymentId || '')}</div></td>
-            <td>${escapeHtml(row.customerEmail || 'Unknown')}</td>
-            <td class="ok">${escapeHtml(row.amountTotal)} ${escapeHtml(row.currency || 'INR')}</td>
-            <td>${escapeHtml(Array.isArray(row.items) ? row.items.map(item => `${item.name} x${item.qty}`).join(', ') : 'No items')}</td>
-            <td>${formatDate(row.createdAt)}<div class="muted">${escapeHtml(row.status || 'paid')}</div></td>
-            <td>
-              <div class="actions">
-                <button class="mini-btn" type="button" data-action="processing-order" data-id="${escapeHtml(row.id || '')}">Processing</button>
-                <button class="mini-btn gold" type="button" data-action="complete-order" data-id="${escapeHtml(row.id || '')}">Complete</button>
-                <button class="mini-btn danger" type="button" data-action="delete-order" data-id="${escapeHtml(row.id || '')}">Delete</button>
-              </div>
-            </td>
-          `
+          buildRow: row => {
+            const loc = row.deliveryLocation || {};
+            const address = [loc.addressLine1, loc.addressLine2, loc.landmark, loc.city, loc.pincode].filter(Boolean).join(', ');
+            return `
+              <td><span class="pill ${escapeHtml(row.status || 'paid')}">${escapeHtml(row.provider || 'Payment')}</span><div class="muted" style="margin-top:4px">${escapeHtml(row.orderRef || row.orderId || row.sessionId || row.paymentId || '')}</div></td>
+              <td><strong>${escapeHtml(loc.fullName || row.customerEmail || 'Guest')}</strong><div class="muted">${escapeHtml(loc.phone || 'No phone')}</div><div class="muted" style="font-size:11px">${escapeHtml(row.customerEmail || '')}</div></td>
+              <td><div style="font-size:13px;line-height:1.5;max-width:280px">${escapeHtml(address || 'No Address Provided')}</div><div class="muted" style="font-size:11px;margin-top:4px">Note: ${escapeHtml(loc.instructions || 'None')}</div></td>
+              <td><strong class="ok">₹${escapeHtml(row.amountTotal)}</strong><div class="muted" style="font-size:12px;margin-top:4px">${escapeHtml(Array.isArray(row.items) ? row.items.map(item => `${item.name} x${item.qty}`).join(', ') : 'No items')}</div></td>
+              <td>${formatDate(row.createdAt)}<div class="muted" style="text-transform:uppercase;font-size:10px;margin-top:4px">${escapeHtml(row.status || 'paid')}</div></td>
+              <td>
+                <div class="actions">
+                  <button class="mini-btn gold" type="button" data-action="mark-delivered" data-id="${escapeHtml(row.id || '')}">Delivered</button>
+                  <button class="mini-btn danger" type="button" data-action="delete-order" data-id="${escapeHtml(row.id || '')}">Delete</button>
+                </div>
+              </td>
+            `;
+          }
         });
 
         renderTable({
@@ -411,8 +416,11 @@
       const id = button.dataset.id;
       const action = button.dataset.action;
       try {
-        if (action === 'processing-order') await updateOrderStatus(id, 'processing');
-        if (action === 'complete-order') await updateOrderStatus(id, 'completed');
+        if (action === 'mark-delivered') {
+          if (window.confirm('Are you confirm that the item is delivered?')) {
+            await updateOrderStatus(id, 'delivered');
+          }
+        }
         if (action === 'delete-order') await deleteOrder(id);
       } catch (err) {
         window.alert(err?.message || 'Order action failed.');

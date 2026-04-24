@@ -1755,7 +1755,7 @@ app.delete('/api/admin/reservations/:id', requireAdmin, createRateLimit({ key: '
 app.post('/api/admin/orders/:id/status', requireAdmin, createRateLimit({ key: 'admin-order-status', windowMs: 60 * 1000, max: 60 }), (req, res) => {
   const id = String(req.params?.id || '').trim();
   const status = String(req.body?.status || '').trim().toLowerCase();
-  if (!['pending', 'paid', 'processing', 'completed'].includes(status)) {
+  if (!['pending', 'paid', 'processing', 'completed', 'delivered'].includes(status)) {
     return res.status(400).json({ error: 'Invalid order status.' });
   }
   const order = findPaidOrderById(id);
