@@ -1844,11 +1844,14 @@ function setGuestNavState(){
   logoutLink.setAttribute('href','login.html');
 }
 
-const bottomAuthController = new AbortController();
-const bottomAuthTimeout = setTimeout(() => bottomAuthController.abort(), 3000);
-fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include', headers:{'X-Auth-Email':getAuthEmail()}, signal: bottomAuthController.signal})
+let bottomSignal;
+if (typeof AbortController !== 'undefined') {
+  const bottomCtrl = new AbortController();
+  bottomSignal = bottomCtrl.signal;
+  setTimeout(() => bottomCtrl.abort(), 3000);
+}
+fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include', headers:{'X-Auth-Email':getAuthEmail()}, signal: bottomSignal})
   .then(res=>{
-    clearTimeout(bottomAuthTimeout);
     return res.ok?res.json():null;
   })
   .then(data=>{
@@ -1896,10 +1899,13 @@ if(logoutLink){
 async function loadEvents() {
   const container = document.getElementById('eventsListContainer');
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000); // 4 seconds max wait
-    const res = await fetch(apiUrl('/api/events/list'), { signal: controller.signal });
-    clearTimeout(timeoutId);
+    let evSignal;
+    if (typeof AbortController !== 'undefined') {
+      const evCtrl = new AbortController();
+      evSignal = evCtrl.signal;
+      setTimeout(() => evCtrl.abort(), 4000);
+    }
+    const res = await fetch(apiUrl('/api/events/list'), { signal: evSignal });
     const data = await res.json();
     if (data.ok && data.events && data.events.length > 0) {
       renderEventsList(data.events);
@@ -1944,7 +1950,7 @@ function renderEventsList(events) {
   document.querySelectorAll('#eventsListContainer .reveal').forEach(el => obs.observe(el));
   attachEventModalListeners();
 }
-window.addEventListener('DOMContentLoaded', loadEvents);
+loadEvents();
 
 /* ── EVENT REGISTRATION LOGIC ── */
 const evModal = document.getElementById('evModal');

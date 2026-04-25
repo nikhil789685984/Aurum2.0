@@ -121,10 +121,13 @@ function getPillClass(status) {
 
 async function loadProfile() {
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500);
-    const res = await fetch(apiUrl('/api/user/profile'), { credentials: 'include', headers:{'X-Auth-Email':getAuthEmail()}, signal: controller.signal });
-    clearTimeout(timeoutId);
+    let signal;
+    if (typeof AbortController !== 'undefined') {
+      const ctrl = new AbortController();
+      signal = ctrl.signal;
+      setTimeout(() => ctrl.abort(), 3500);
+    }
+    const res = await fetch(apiUrl('/api/user/profile'), { credentials: 'include', headers:{'X-Auth-Email':getAuthEmail()}, signal });
     if (!res.ok) throw new Error('Not logged in');
     const data = await res.json();
     
