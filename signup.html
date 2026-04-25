@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AURUM Signup</title>
+<script>
+  if (window.location.hostname.includes('github.io')) {
+    window.location.replace('https://aurum2-0-1.onrender.com' + window.location.pathname + window.location.search);
+  }
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -260,10 +265,10 @@ async function signup(){
       signal
     });
     clearTimeout(slowTimer);
-    if(res.status===404){
+    const data=await res.json().catch(()=>({}));
+    if(res.status===404 && !data.error){
       throw new Error('Signup API not found. Backend server is not running/deployed.');
     }
-    const data=await res.json().catch(()=>({}));
     if(!res.ok) throw new Error(data.error||'Signup failed.');
     showMsg('Account created successfully. Redirecting to login...','ok');
     nameEl.value='';

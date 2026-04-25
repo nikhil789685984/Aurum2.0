@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AURUM — Indian Dining · India</title>
 <script>
+  if (window.location.hostname.includes('github.io')) {
+    window.location.replace('https://aurum2-0-1.onrender.com' + window.location.pathname + window.location.search);
+  }
   if (!localStorage.getItem('aurum_auth_email')) {
     window.location.replace('login.html');
   }
