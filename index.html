@@ -368,32 +368,6 @@ nav.scrolled .nav-ham span{background:var(--charcoal)}
 .map-pin-wrap a{display:inline-block;margin-top:24px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:4px;transition:color .3s,border-color .3s}
 .map-pin-wrap a:hover{color:var(--gold);border-color:var(--gold)}
 
-/* ─── CUSTOM TABLE ────────────────────────── */
-.custom-sec{background:var(--char2);padding:140px 0}
-.custom-inner{max-width:1200px;margin:0 auto;padding:0 70px}
-.custom-grid{display:grid;grid-template-columns:1fr 380px;gap:40px;margin-top:60px}
-.custom-options{background:var(--white);border-radius:12px;overflow:hidden}
-.co-tabs{display:flex;border-bottom:1px solid var(--line-light)}
-.ctab{flex:1;padding:18px;background:#f9f9f9;border:none;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-family:'Manrope',sans-serif;font-weight:600;color:var(--stone);cursor:pointer;transition:all .3s}
-.ctab.on{background:var(--white);color:var(--gold);border-bottom:2px solid var(--gold)}
-.co-list{max-height:500px;overflow-y:auto;padding:20px}
-.co-item{display:flex;justify-content:space-between;align-items:center;padding:16px;border-bottom:1px solid #eee;gap:16px}
-.co-item:last-child{border-bottom:none}
-.co-info h4{font-family:'Playfair Display',serif;font-size:20px;color:var(--charcoal);margin-bottom:4px}
-.co-info p{font-size:13px;color:var(--stone)}
-.co-action{display:flex;align-items:center;gap:16px}
-.co-price{font-weight:600;color:var(--charcoal)}
-.btn-add{width:32px;height:32px;border-radius:50%;border:1px solid var(--gold);background:var(--white);color:var(--gold);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
-.btn-add:hover{background:var(--gold);color:var(--white)}
-.custom-summary{background:var(--white);border-radius:12px;padding:30px;height:fit-content;position:sticky;top:100px}
-.custom-summary h3{font-family:'Playfair Display',serif;font-size:26px;color:var(--charcoal);margin-bottom:24px;text-align:center;border-bottom:1px solid #eee;padding-bottom:16px}
-.cs-list{min-height:100px;max-height:300px;overflow-y:auto;margin-bottom:24px}
-.cs-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px dashed #eee}
-.cs-item h4{font-size:14px;color:var(--charcoal);font-weight:500}
-.btn-rem{width:24px;height:24px;border-radius:50%;border:1px solid var(--danger);background:var(--white);color:var(--danger);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.btn-rem:hover{background:var(--danger);color:var(--white)}
-.cs-total{font-family:'Playfair Display',serif;font-size:32px;color:var(--gold);text-align:center;margin-bottom:24px;padding-top:16px;border-top:1px solid #eee}
-
 /* ─── FOOTER ──────────────────────────────── */
 footer{background:var(--char2);padding:90px 70px 44px}
 .foot-top{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr 1fr;gap:50px;padding-bottom:60px;border-bottom:1px solid rgba(255,255,255,.06)}
@@ -1123,33 +1097,6 @@ footer{background:var(--char2);padding:90px 70px 44px}
   </div>
 </section>
 
-<!-- ══════════════ CUSTOM TABLE ══════════════ -->
-<section class="custom-sec" id="custom">
-  <div class="custom-inner">
-    <div class="custom-head reveal">
-      <div class="label center light">Curate Your Experience</div>
-      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(44px,5vw,68px);font-weight:300;color:var(--white);text-align:center;margin-top:18px">Build Your <em>Custom Table</em></h2>
-    </div>
-    <div class="custom-grid">
-      <div class="custom-options reveal from-left">
-        <div class="co-tabs">
-          <button class="ctab on" onclick="switchCTab('food')">Food Menu</button>
-          <button class="ctab" onclick="switchCTab('wine')">Wine Cellar</button>
-        </div>
-        <div class="co-list" id="coList"></div>
-      </div>
-      <div class="custom-summary reveal from-right">
-        <h3>Your Selection</h3>
-        <div id="csList" class="cs-list">
-          <div style="font-size:14px;color:var(--stone);text-align:center;padding:20px 0">No items selected</div>
-        </div>
-        <div class="cs-total">Total: <span id="csTotal">₹0</span></div>
-        <button class="btn-gold" style="width:100%" onclick="bookCustomTable()">Request This Table</button>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ══════════════ VALUES ══════════════ -->
 <section class="values-sec">
   <div class="values-inner">
@@ -1567,63 +1514,6 @@ const menus={
   ]
 };
 
-const winesData = [
-  {n: 'Dom Pérignon Vintage', r: 'Champagne, France', p: '₹35,000'},
-  {n: 'Krug Grande Cuvée Brut', r: 'Champagne, France', p: '₹42,000'},
-  {n: 'Louis Roederer Cristal', r: 'Champagne, France', p: '₹55,000'},
-  {n: 'Moët & Chandon Rosé Impérial', r: 'Champagne, France', p: '₹18,000'},
-  {n: 'Billecart-Salmon Brut Réserve', r: 'Champagne, France', p: '₹15,500'},
-  {n: 'Veuve Clicquot La Grande Dame', r: 'Champagne, France', p: '₹38,000'},
-  {n: 'Laurent-Perrier Cuvée Rosé', r: 'Champagne, France', p: '₹22,000'},
-  {n: 'Pol Roger Sir Winston Churchill', r: 'Champagne, France', p: '₹45,000'},
-  {n: 'Ruinart Blanc de Blancs', r: 'Champagne, France', p: '₹20,000'},
-  {n: 'Sula Rasa Shiraz', r: 'Nashik, India', p: '₹3,500'},
-  {n: 'Fratelli Sette', r: 'Akluj, India', p: '₹4,000'},
-  {n: 'Grover Zampa Chêne Grand Reserve', r: 'Nandi Hills, India', p: '₹4,500'},
-  {n: 'KRSMA Estates Cabernet Sauvignon', r: 'Hampi Hills, India', p: '₹5,000'},
-  {n: 'York Arros', r: 'Nashik, India', p: '₹3,800'},
-  {n: 'Sula Dindori Reserve Viognier', r: 'Nashik, India', p: '₹3,200'},
-  {n: 'Château Margaux', r: 'Bordeaux, France', p: '₹1,20,000'},
-  {n: 'Château Lafite Rothschild', r: 'Bordeaux, France', p: '₹1,45,000'},
-  {n: 'Château Haut-Brion', r: 'Bordeaux, France', p: '₹1,30,000'},
-  {n: 'Château Mouton Rothschild', r: 'Bordeaux, France', p: '₹1,25,000'},
-  {n: 'Petrus', r: 'Pomerol, France', p: '₹3,50,000'},
-  {n: 'Domaine de la Romanée-Conti', r: 'Burgundy, France', p: '₹4,50,000'},
-  {n: 'Louis Latour Montrachet Grand Cru', r: 'Burgundy, France', p: '₹95,000'},
-  {n: 'Joseph Drouhin Corton-Charlemagne', r: 'Burgundy, France', p: '₹65,000'},
-  {n: 'Domaine Leflaive Puligny-Montrachet', r: 'Burgundy, France', p: '₹45,000'},
-  {n: 'Château d\\'Yquem', r: 'Sauternes, France', p: '₹1,10,000'},
-  {n: 'Tignanello', r: 'Tuscany, Italy', p: '₹32,000'},
-  {n: 'Sassicaia', r: 'Tuscany, Italy', p: '₹45,000'},
-  {n: 'Ornellaia', r: 'Tuscany, Italy', p: '₹42,000'},
-  {n: 'Gaja Barbaresco', r: 'Piedmont, Italy', p: '₹55,000'},
-  {n: 'Biondi-Santi Brunello di Montalcino', r: 'Tuscany, Italy', p: '₹48,000'},
-  {n: 'Antinori Solaia', r: 'Tuscany, Italy', p: '₹58,000'},
-  {n: 'Masi Amarone della Valpolicella', r: 'Veneto, Italy', p: '₹28,000'},
-  {n: 'Vega Sicilia Unico', r: 'Ribera del Duero, Spain', p: '₹75,000'},
-  {n: 'Bodegas Muga Prado Enea', r: 'Rioja, Spain', p: '₹28,000'},
-  {n: 'Dominio de Pingus', r: 'Ribera del Duero, Spain', p: '₹1,15,000'},
-  {n: 'Marqués de Murrieta Castillo Ygay', r: 'Rioja, Spain', p: '₹34,000'},
-  {n: 'Penfolds Grange', r: 'South Australia', p: '₹1,10,000'},
-  {n: 'Henschke Hill of Grace', r: 'Eden Valley, Australia', p: '₹1,25,000'},
-  {n: 'Torbreck RunRig Shiraz', r: 'Barossa Valley, Australia', p: '₹55,000'},
-  {n: 'Opus One', r: 'Napa Valley, USA', p: '₹85,000'},
-  {n: 'Screaming Eagle Cabernet Sauvignon', r: 'Napa Valley, USA', p: '₹3,20,000'},
-  {n: 'Ridge Vineyards Monte Bello', r: 'Santa Cruz, USA', p: '₹65,000'},
-  {n: 'Joseph Phelps Insignia', r: 'Napa Valley, USA', p: '₹72,000'},
-  {n: 'Robert Mondavi Reserve Cabernet', r: 'Napa Valley, USA', p: '₹48,000'},
-  {n: 'Cloudy Bay Sauvignon Blanc', r: 'Marlborough, New Zealand', p: '₹12,000'},
-  {n: 'Felton Road Block 3 Pinot Noir', r: 'Central Otago, New Zealand', p: '₹22,000'},
-  {n: 'Klein Constantia Vin de Constance', r: 'Constantia, South Africa', p: '₹25,000'},
-  {n: 'Kanonkop Paul Sauer', r: 'Stellenbosch, South Africa', p: '₹16,000'},
-  {n: 'Rust en Vrede Rubicon', r: 'Stellenbosch, South Africa', p: '₹14,500'},
-  {n: 'Concha y Toro Almaviva', r: 'Maipo Valley, Chile', p: '₹45,000'},
-  {n: 'Catena Zapata Malbec Argentino', r: 'Mendoza, Argentina', p: '₹32,000'},
-  {n: 'Montes Alpha M', r: 'Colchagua Valley, Chile', p: '₹28,000'},
-  {n: 'E. Guigal Côte Rôtie La Landonne', r: 'Rhône, France', p: '₹68,000'},
-  {n: 'Paul Jaboulet Aîné Hermitage La Chapelle', r: 'Rhône, France', p: '₹55,000'}
-];
-
 function switchTab(btn,key){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   btn.classList.add('on');
@@ -1642,88 +1532,6 @@ function renderMenu(key){
   });
 }
 renderMenu('starters');
-
-function renderWines() {
-  const wg = document.getElementById('wineGrid');
-  if(!wg) return;
-  wg.innerHTML = '';
-  winesData.forEach((w,i) => {
-    const d = document.createElement('div');
-    d.className = 'wg-item';
-    d.innerHTML = `<div><h4>${w.n}</h4><p>${w.r}</p></div><span>${w.p}</span>`;
-    wg.appendChild(d);
-  });
-}
-renderWines();
-
-/* ── CUSTOM TABLE LOGIC ── */
-let customCart = [];
-function switchCTab(type) {
-  const tabs = document.querySelectorAll('.ctab');
-  tabs[0].classList.toggle('on', type === 'food');
-  tabs[1].classList.toggle('on', type === 'wine');
-  
-  const list = document.getElementById('coList');
-  list.innerHTML = '';
-  
-  if (type === 'food') {
-    const allFood = [...menus.starters, ...menus.mains, ...menus.desserts];
-    allFood.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'co-item';
-      div.innerHTML = `<div class="co-info"><h4>${item.n}</h4><p>${item.d}</p></div><div class="co-action"><span class="co-price">${item.p}</span><button class="btn-add" onclick="addToCustom('${item.n.replace(/'/g,"\\'")}', '${item.p}')">+</button></div>`;
-      list.appendChild(div);
-    });
-  } else {
-    winesData.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'co-item';
-      div.innerHTML = `<div class="co-info"><h4>${item.n}</h4><p>${item.r}</p></div><div class="co-action"><span class="co-price">${item.p}</span><button class="btn-add" onclick="addToCustom('${item.n.replace(/'/g,"\\'")}', '${item.p}')">+</button></div>`;
-      list.appendChild(div);
-    });
-  }
-}
-switchCTab('food');
-
-function addToCustom(name, price) {
-  customCart.push({ n: name, p: price });
-  updateCustomUI();
-}
-
-function remFromCustom(index) {
-  customCart.splice(index, 1);
-  updateCustomUI();
-}
-
-function updateCustomUI() {
-  const list = document.getElementById('csList');
-  const totEl = document.getElementById('csTotal');
-  list.innerHTML = '';
-  let total = 0;
-  
-  if (customCart.length === 0) {
-    list.innerHTML = '<div style="font-size:14px;color:var(--stone);text-align:center;padding:20px 0">No items selected</div>';
-  } else {
-    customCart.forEach((item, i) => {
-      const numPrice = parseInt(item.p.replace(/[^\d]/g, '')) || 0;
-      total += numPrice;
-      list.innerHTML += `<div class="cs-item"><h4>${item.n}</h4><div style="display:flex;align-items:center;gap:12px"><span>${item.p}</span><button class="btn-rem" onclick="remFromCustom(${i})">-</button></div></div>`;
-    });
-  }
-  totEl.textContent = `₹${total.toLocaleString('en-IN')}`;
-}
-
-function bookCustomTable() {
-  if (customCart.length === 0) {
-    showMailPopup('Please select at least one item.');
-    return;
-  }
-  let sum = "CUSTOM TABLE REQUEST:\\n";
-  customCart.forEach(i => sum += `• ${i.n}\\n`);
-  document.querySelector('.rform textarea').value = sum;
-  document.getElementById('reservations').scrollIntoView({ behavior: 'smooth' });
-  showMailPopup('Custom selection added to reservation form!');
-}
 
 function getReservationMinDateValue(){
   const date=new Date();
