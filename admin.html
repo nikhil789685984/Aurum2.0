@@ -132,6 +132,23 @@
     .pill.rejected{background:var(--danger-bg);color:var(--danger)}
     .pill.paid{background:#E6F0FD;color:#2D5B9E}
     
+    .search-bar {
+      width: 100%;
+      max-width: 400px;
+      padding: 14px 18px;
+      border: 1px solid rgba(26,22,18,0.15);
+      border-radius: 8px;
+      font-family: 'Manrope', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+      margin-bottom: 28px;
+    }
+    .search-bar:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+    }
+
     .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
     .mini-btn{
       border:1px solid var(--line-light);
@@ -219,6 +236,8 @@
       <h1>Dashboard Overview</h1>
       <p>Manage reservations, track live orders, and monitor your guests in real-time.</p>
     </div>
+
+    <input type="text" id="globalSearch" class="search-bar" placeholder="Search by name, email, order ID, phone, or status..." autocomplete="off" />
 
     <div class="grid">
       <div class="card">
@@ -351,6 +370,7 @@
     const eventsCount = document.getElementById('eventsCount');
     const eventsRevenue = document.getElementById('eventsRevenue');
     const ordersRevenue = document.getElementById('ordersRevenue');
+    const globalSearch = document.getElementById('globalSearch');
     const refreshBtn = document.getElementById('refreshBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const reservationsTable = document.getElementById('reservationsTable');
@@ -572,6 +592,8 @@
             <td>${formatDate(row.createdAt)}</td>
           `
         });
+
+        applySearchFilter();
       } catch (err) {
         const message = (err && err.message) || 'Unable to load admin dashboard.';
         ['reservationsEmpty', 'ordersEmpty', 'usersEmpty'].forEach(id => {
@@ -582,6 +604,18 @@
       }
     }
 
+    function applySearchFilter() {
+      const query = (globalSearch.value || '').toLowerCase().trim();
+      const tables = document.querySelectorAll('table tbody');
+      tables.forEach(tbody => {
+        tbody.querySelectorAll('tr').forEach(tr => {
+          const text = tr.textContent.toLowerCase();
+          tr.style.display = text.includes(query) ? '' : 'none';
+        });
+      });
+    }
+
+    globalSearch.addEventListener('input', applySearchFilter);
     refreshBtn.addEventListener('click', loadAdmin);
     reservationsTable.addEventListener('click', async event => {
       const button = event.target.closest('[data-action]');
