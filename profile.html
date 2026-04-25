@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Account — AURUM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -125,7 +127,7 @@ async function loadProfile() {
     if (typeof AbortController !== 'undefined') {
       const ctrl = new AbortController();
       signal = ctrl.signal;
-      setTimeout(() => ctrl.abort(), 3500);
+      setTimeout(() => ctrl.abort(), 1200);
     }
     const res = await fetch(apiUrl('/api/user/profile'), { credentials: 'include', headers:{'X-Auth-Email':getAuthEmail()}, signal });
     if (!res.ok) throw new Error('Not logged in');

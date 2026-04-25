@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AURUM — Indian Dining · India</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1080&q=60&auto=format&fit=crop">
 <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -1421,7 +1424,7 @@ function removePreloader(){
   if(hb) setTimeout(()=>hb.classList.add('loaded'),200);
 }
 window.addEventListener('load', removePreloader);
-setTimeout(removePreloader, 1500); 
+setTimeout(removePreloader, 400); 
 
 window.addEventListener('error', function(e) {
   if (e.target.tagName && e.target.tagName.toLowerCase() === 'img') {
@@ -1656,7 +1659,7 @@ let bottomSignal;
 if (typeof AbortController !== 'undefined') {
   const bottomCtrl = new AbortController();
   bottomSignal = bottomCtrl.signal;
-  setTimeout(() => bottomCtrl.abort(), 3000);
+  setTimeout(() => bottomCtrl.abort(), 1000);
 }
 fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include', headers:{'X-Auth-Email':getAuthEmail()}, signal: bottomSignal})
   .then(res=>{
@@ -1711,7 +1714,7 @@ async function loadEvents() {
     if (typeof AbortController !== 'undefined') {
       const evCtrl = new AbortController();
       evSignal = evCtrl.signal;
-      setTimeout(() => evCtrl.abort(), 4000);
+      setTimeout(() => evCtrl.abort(), 1000);
     }
     const res = await fetch(apiUrl('/api/events/list'), { signal: evSignal });
     const data = await res.json();
