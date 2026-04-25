@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const Stripe = require('stripe');
 const Razorpay = require('razorpay');
+const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
 const app = express();
@@ -244,6 +245,7 @@ function hashPassword(password, salt) {
   return crypto.scryptSync(password, salt, 64).toString('hex');
 }
 
+let db;
 async function initMongoDB() {
   try {
     const uri = process.env.MONGODB_URI || "mongodb+srv://nikhil093:Nikhilchitkara093@cluster0.vrefqbc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -397,9 +399,10 @@ function createSession(email) {
 
 function setSessionCookie(res, token) {
   const maxAge = Math.floor(SESSION_TTL_MS / 1000);
+  const cookieFlags = process.env.NODE_ENV === 'production' || process.env.PORT ? 'SameSite=None; Secure' : 'SameSite=Lax';
   res.setHeader(
     'Set-Cookie',
-    `aurum_session=${token}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=None; Secure`
+    `aurum_session=${token}; HttpOnly; Path=/; Max-Age=${maxAge}; ${cookieFlags}`
   );
 }
 
@@ -452,11 +455,6 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-loadUsersFromDisk();
-loadSessionsFromDisk();
-loadReservationsFromDisk();
-loadPaidOrdersFromDisk();
-loadEventRegistrationsFromDisk();
 
 function createTransporter() {
   const smtpHost = process.env.SMTP_HOST;
@@ -1547,16 +1545,6 @@ app.post('/api/events/create-razorpay-order', requireAuth, createRateLimit({ key
     const name = String(req.body?.name || '').trim().slice(0, 100);
     const phone = normalizePhone(req.body?.phone || '');
 
-app.delete('/api/admin/events/:id', requireAdmin, createRateLimit({ key: 'admin-event-delete', windowMs: 60 * 1000, max: 60 }), (req, res) => {
-  const id = String(req.params?.id || '').trim();
-  if (!id) return res.status(400).json({ error: 'Event Registration ID is required.' });
-  const index = eventRegistrationsStore.findIndex(record => String(record?.id || '') === id);
-  if (index < 0) return res.status(404).json({ error: 'Event registration not found.' });
-  eventRegistrationsStore.splice(index, 1);
-  persistEventRegistrationsToDisk();
-  notifyAdminDash();
-  return res.json({ ok: true });
-});
 
     if (!eventId || !EVENT_PRICES[eventId]) return res.status(400).json({ error: 'Invalid event selected.' });
     if (guests < 1 || guests > 20) return res.status(400).json({ error: 'Invalid number of guests.' });
@@ -1594,6 +1582,17 @@ app.delete('/api/admin/events/:id', requireAdmin, createRateLimit({ key: 'admin-
   } catch (err) {
     return res.status(500).json({ error: err?.message || 'Order creation failed.' });
   }
+});
+
+app.delete('/api/admin/events/:id', requireAdmin, createRateLimit({ key: 'admin-event-delete', windowMs: 60 * 1000, max: 60 }), (req, res) => {
+  const id = String(req.params?.id || '').trim();
+  if (!id) return res.status(400).json({ error: 'Event Registration ID is required.' });
+  const index = eventRegistrationsStore.findIndex(record => String(record?.id || '') === id);
+  if (index < 0) return res.status(404).json({ error: 'Event registration not found.' });
+  eventRegistrationsStore.splice(index, 1);
+  persistEventRegistrationsToDisk();
+  notifyAdminDash();
+  return res.json({ ok: true });
 });
 
 app.post('/api/events/verify-razorpay-payment', requireAuth, createRateLimit({ key: 'event-verify', windowMs: 5 * 60 * 1000, max: 20 }), async (req, res) => {
