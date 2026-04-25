@@ -1423,6 +1423,7 @@ const API_BASE=(()=>{
   return String(window.AURUM_API_BASE||saved||fallback).replace(/\/+$/,'');
 })();
 const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
+function getAuthEmail(){ try{return localStorage.getItem(DEMO_SESSION_KEY)||'';}catch(_){return '';} }
 function clearLocalSession(){
   try{
     localStorage.removeItem(DEMO_SESSION_KEY);
@@ -1759,7 +1760,7 @@ function handleRes(btn){
   fetch(apiUrl('/api/reservations'),{
     credentials:'include',
     method:'POST',
-    headers:{'Content-Type':'application/json', 'X-Auth-Email': localStorage.getItem(DEMO_SESSION_KEY) || ''},
+    headers:{'Content-Type':'application/json', 'X-Auth-Email': getAuthEmail()},
     body:JSON.stringify(payload)
   })
     .then(async res=>{
@@ -1813,7 +1814,7 @@ function setGuestNavState(){
 
 const bottomAuthController = new AbortController();
 const bottomAuthTimeout = setTimeout(() => bottomAuthController.abort(), 3000);
-fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include', headers:{'X-Auth-Email':localStorage.getItem(DEMO_SESSION_KEY)||''}, signal: bottomAuthController.signal})
+fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include', headers:{'X-Auth-Email':getAuthEmail()}, signal: bottomAuthController.signal})
   .then(res=>{
     clearTimeout(bottomAuthTimeout);
     return res.ok?res.json():null;
@@ -1973,7 +1974,7 @@ evPayBtn.addEventListener('click', async () => {
     const res = await fetch(apiUrl('/api/events/create-razorpay-order'), {
       method: 'POST',
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json', 'X-Auth-Email': localStorage.getItem(DEMO_SESSION_KEY) || '' },
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
       body: JSON.stringify({ eventId: currentEvent.id, guests, name, phone })
     });
     clearTimeout(slowTimer);
@@ -1993,7 +1994,7 @@ evPayBtn.addEventListener('click', async () => {
         await fetch(apiUrl('/api/events/verify-razorpay-payment'), {
           method: 'POST',
           credentials: 'include',
-          headers: { 'Content-Type': 'application/json', 'X-Auth-Email': localStorage.getItem(DEMO_SESSION_KEY) || '' },
+          headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
           body: JSON.stringify(response)
         });
         evModal.classList.remove('on');

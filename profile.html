@@ -105,6 +105,7 @@ const API_BASE=(()=>{
   return String(window.AURUM_API_BASE||saved||fallback).replace(/\/+$/,'');
 })();
 const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
+function getAuthEmail(){ try{return localStorage.getItem('aurum_auth_email')||'';}catch(_){return '';} }
 
 function formatDate(val) {
   const date = new Date(val);
@@ -122,7 +123,7 @@ async function loadProfile() {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 3500);
-    const res = await fetch(apiUrl('/api/user/profile'), { credentials: 'include', headers:{'X-Auth-Email':localStorage.getItem('aurum_auth_email')||''}, signal: controller.signal });
+    const res = await fetch(apiUrl('/api/user/profile'), { credentials: 'include', headers:{'X-Auth-Email':getAuthEmail()}, signal: controller.signal });
     clearTimeout(timeoutId);
     if (!res.ok) throw new Error('Not logged in');
     const data = await res.json();

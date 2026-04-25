@@ -372,6 +372,7 @@ const API_BASE = (() => {
   return String(window.AURUM_API_BASE || saved || fallback).replace(/\/+$/, '');
 })();
 const apiUrl = path => API_BASE ? `${API_BASE}${path}` : path;
+function getAuthEmail(){ try{return localStorage.getItem(DEMO_SESSION_KEY)||'';}catch(_){return '';} }
 function clearLocalSession() {
   try {
     localStorage.removeItem(DEMO_SESSION_KEY);
@@ -827,7 +828,7 @@ async function startCheckout() {
     const res = await fetch(apiUrl('/api/orders/create-razorpay-order'), {
       credentials: 'include',
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Auth-Email': localStorage.getItem(DEMO_SESSION_KEY) || '' },
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
       body: JSON.stringify({ items, deliveryLocation })
     });
     const contentType = String(res.headers.get('content-type') || '');
@@ -856,7 +857,7 @@ async function startCheckout() {
           const verifyRes = await fetch(apiUrl('/api/orders/verify-razorpay-payment'), {
             credentials: 'include',
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Auth-Email': localStorage.getItem(DEMO_SESSION_KEY) || '' },
+            headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
             body: JSON.stringify(response)
           });
           const verifyType = String(verifyRes.headers.get('content-type') || '');
