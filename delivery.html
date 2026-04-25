@@ -827,7 +827,7 @@ async function startCheckout() {
     const res = await fetch(apiUrl('/api/orders/create-razorpay-order'), {
       credentials: 'include',
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Email': localStorage.getItem(DEMO_SESSION_KEY) || '' },
       body: JSON.stringify({ items, deliveryLocation })
     });
     const contentType = String(res.headers.get('content-type') || '');
@@ -856,7 +856,7 @@ async function startCheckout() {
           const verifyRes = await fetch(apiUrl('/api/orders/verify-razorpay-payment'), {
             credentials: 'include',
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-Auth-Email': localStorage.getItem(DEMO_SESSION_KEY) || '' },
             body: JSON.stringify(response)
           });
           const verifyType = String(verifyRes.headers.get('content-type') || '');

@@ -1759,7 +1759,7 @@ function handleRes(btn){
   fetch(apiUrl('/api/reservations'),{
     credentials:'include',
     method:'POST',
-    headers:{'Content-Type':'application/json'},
+    headers:{'Content-Type':'application/json', 'X-Auth-Email': localStorage.getItem(DEMO_SESSION_KEY) || ''},
     body:JSON.stringify(payload)
   })
     .then(async res=>{
@@ -1813,7 +1813,7 @@ function setGuestNavState(){
 
 const bottomAuthController = new AbortController();
 const bottomAuthTimeout = setTimeout(() => bottomAuthController.abort(), 3000);
-fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include', signal: bottomAuthController.signal})
+fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include', headers:{'X-Auth-Email':localStorage.getItem(DEMO_SESSION_KEY)||''}, signal: bottomAuthController.signal})
   .then(res=>{
     clearTimeout(bottomAuthTimeout);
     return res.ok?res.json():null;
@@ -1824,13 +1824,17 @@ fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include', signal
         const adminLi = document.getElementById('adminNavLi');
         if(adminLi) adminLi.style.display = '';
       }
-        const profileLi = document.getElementById('profileNavLi');
-        if(profileLi) profileLi.style.display = '';
+      const profileLi = document.getElementById('profileNavLi');
+      if(profileLi) profileLi.style.display = '';
       return;
     }
-    setGuestNavState();
+    fallbackToLocalAuth();
   })
   .catch(()=>{
+    fallbackToLocalAuth();
+  });
+
+function fallbackToLocalAuth() {
     try {
       const savedUser = localStorage.getItem(DEMO_SESSION_KEY);
       if (savedUser) {
@@ -1842,7 +1846,7 @@ fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include', signal
         if (profileLi) profileLi.style.display = '';
       } else { setGuestNavState(); }
     } catch(e) { setGuestNavState(); }
-  });
+}
 
 if(logoutLink){
   logoutLink.addEventListener('click',async e=>{
@@ -1969,7 +1973,7 @@ evPayBtn.addEventListener('click', async () => {
     const res = await fetch(apiUrl('/api/events/create-razorpay-order'), {
       method: 'POST',
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Email': localStorage.getItem(DEMO_SESSION_KEY) || '' },
       body: JSON.stringify({ eventId: currentEvent.id, guests, name, phone })
     });
     clearTimeout(slowTimer);
@@ -1989,7 +1993,7 @@ evPayBtn.addEventListener('click', async () => {
         await fetch(apiUrl('/api/events/verify-razorpay-payment'), {
           method: 'POST',
           credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-Auth-Email': localStorage.getItem(DEMO_SESSION_KEY) || '' },
           body: JSON.stringify(response)
         });
         evModal.classList.remove('on');

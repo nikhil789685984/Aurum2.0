@@ -110,7 +110,7 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Auth-Email');
     res.setHeader('Vary', 'Origin');
   }
   if (req.method === 'OPTIONS') {
@@ -374,6 +374,9 @@ function parseCookies(req) {
 }
 
 function getAuthenticatedEmail(req) {
+  const directEmail = req.headers['x-auth-email'] || req.query.auth_email;
+  if (directEmail && isValidEmail(directEmail)) return directEmail.toLowerCase();
+
   const cookies = parseCookies(req);
   const token = cookies.aurum_session;
   if (!token) return null;

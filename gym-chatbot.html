@@ -123,7 +123,7 @@ async function askGymBot(message){
   const res=await fetch(apiUrl('/api/gym-chatbot'),{
     credentials:'include',
     method:'POST',
-    headers:{'Content-Type':'application/json'},
+    headers:{'Content-Type':'application/json', 'X-Auth-Email': localStorage.getItem('aurum_auth_email')||''},
     body:JSON.stringify({message})
   });
   const data=await res.json().catch(()=>({}));

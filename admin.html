@@ -417,7 +417,7 @@
     async function apiRequest(url, options) {
       const res = await fetch(url, {
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json', ...(options?.headers || {}) },
+        headers: { 'Content-Type': 'application/json', 'X-Auth-Email': localStorage.getItem('aurum_auth_email') || '', ...(options?.headers || {}) },
         ...options
       });
       const data = await res.json().catch(() => ({}));
@@ -455,7 +455,11 @@
 
     async function loadAdmin() {
       try {
-        const res = await fetch(apiUrl('/api/admin/overview'), { credentials: 'include', cache: 'no-store' });
+        const res = await fetch(apiUrl('/api/admin/overview'), { 
+          credentials: 'include', 
+          cache: 'no-store',
+          headers: { 'X-Auth-Email': localStorage.getItem('aurum_auth_email') || '' }
+        });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data.error || 'Unable to load admin dashboard.');
 
@@ -625,7 +629,7 @@
     loadAdmin();
 
     function setupLiveStream() {
-      const source = new EventSource(apiUrl('/api/admin/stream'), { withCredentials: true });
+      const source = new EventSource(apiUrl(`/api/admin/stream?auth_email=${localStorage.getItem('aurum_auth_email')||''}`), { withCredentials: true });
       const liveBadge = document.getElementById('liveBadge');
       
       source.onmessage = (event) => {
