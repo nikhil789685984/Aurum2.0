@@ -770,8 +770,12 @@ function setCheckoutLoading(loading) {
   if (loading) {
     cartCheckoutBtn.textContent = 'Opening...';
     cartCheckoutBtn.disabled = true;
+    window._checkoutSlowTimer = setTimeout(() => {
+      if(checkoutLoading) cartCheckoutBtn.textContent = 'Waking server (~40s)...';
+    }, 3000);
     return;
   }
+  clearTimeout(window._checkoutSlowTimer);
   const { count } = getCartTotals();
   cartCheckoutBtn.textContent = 'Order Now';
   cartCheckoutBtn.disabled = count === 0;

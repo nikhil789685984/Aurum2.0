@@ -215,7 +215,8 @@ function cleanPhone(v){
 
 function isApiUnavailableError(err){
   const txt=String(err&&err.message||'').toLowerCase();
-  return txt.includes('api not found')||txt.includes('failed to fetch')||txt.includes('networkerror')||txt.includes('load failed');
+  const name=String(err&&err.name||'').toLowerCase();
+  return txt.includes('api not found')||txt.includes('failed to fetch')||txt.includes('networkerror')||txt.includes('load failed')||name.includes('abort');
 }
 
 function getDemoUsers(){
@@ -256,6 +257,7 @@ async function signup(){
 
   signupBtn.disabled=true;
   signupBtn.textContent='Creating...';
+  let slowTimer = setTimeout(() => { signupBtn.textContent = 'Waking server (~40s)...'; }, 3000);
   try{
     const res=await fetch(apiUrl('/api/auth/signup'),{
       method:'POST',
@@ -263,6 +265,7 @@ async function signup(){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({name,email,phone,password,confirmPassword})
     });
+    clearTimeout(slowTimer);
     if(res.status===404){
       throw new Error('Signup API not found. Backend server is not running/deployed.');
     }
@@ -276,6 +279,7 @@ async function signup(){
     confirmPasswordEl.value='';
     setTimeout(()=>{window.location.href='login.html';},1200);
   }catch(err){
+    clearTimeout(slowTimer);
     if(isApiUnavailableError(err)){
       const users=getDemoUsers();
       if(users.some(u=>String(u.email||'').toLowerCase()===email)){

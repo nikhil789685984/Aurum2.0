@@ -1780,6 +1780,7 @@ function handleRes(btn){
   btn.style.background='var(--gold2)';
   btn.style.borderColor='var(--gold2)';
   btn.disabled=true;
+  let slowTimer = setTimeout(() => { btn.textContent = 'Waking server (~40s)...'; }, 3000);
   fetch(apiUrl('/api/reservations'),{
     credentials:'include',
     method:'POST',
@@ -1787,6 +1788,7 @@ function handleRes(btn){
     body:JSON.stringify(payload)
   })
     .then(async res=>{
+      clearTimeout(slowTimer);
       const data=await res.json().catch(()=>({}));
       if(!res.ok) throw new Error(data.error||'Failed to send reservation email.');
       form.reset();
@@ -1797,6 +1799,7 @@ function handleRes(btn){
       setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.style.borderColor='';btn.disabled=false},3000);
     })
     .catch(err=>{
+      clearTimeout(slowTimer);
       const msg=(err&&err.message)||'Could not send request.';
       if(msg.toLowerCase().includes('failed to fetch')){
         showMailPopup('Server not reachable. Run npm start and open localhost:3000.');
@@ -1968,6 +1971,7 @@ evPayBtn.addEventListener('click', async () => {
   }
   evPayBtn.disabled = true;
   evPayBtn.textContent = 'Processing...';
+  let slowTimer = setTimeout(() => { evPayBtn.textContent = 'Waking server (~40s)...'; }, 3000);
   
   try {
     const res = await fetch(apiUrl('/api/events/create-razorpay-order'), {
@@ -1976,6 +1980,7 @@ evPayBtn.addEventListener('click', async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ eventId: currentEvent.id, guests, name, phone })
     });
+    clearTimeout(slowTimer);
     const data = await res.json().catch(() => ({}));
     if(!res.ok) throw new Error(data.error || 'Failed to start payment');
 
@@ -2001,6 +2006,7 @@ evPayBtn.addEventListener('click', async () => {
     };
     new window.Razorpay(options).open();
   } catch (err) {
+    clearTimeout(slowTimer);
     alert(err.message);
   } finally {
     evPayBtn.disabled = false;

@@ -326,7 +326,8 @@ function cleanIdentifier(v){
 
 function isApiUnavailableError(err){
   const txt=String(err&&err.message||'').toLowerCase();
-  return txt.includes('api not found')||txt.includes('failed to fetch')||txt.includes('networkerror')||txt.includes('load failed');
+  const name=String(err&&err.name||'').toLowerCase();
+  return txt.includes('api not found')||txt.includes('failed to fetch')||txt.includes('networkerror')||txt.includes('load failed')||name.includes('abort');
 }
 
 function setLocalSession(email){
@@ -381,6 +382,7 @@ async function sendOtp(){
   if(!identifier){showMsg('Enter your email or phone number.','err');return;}
   sendBtn.disabled=true;
   sendBtn.textContent='Sending OTP...';
+  let slowTimer = setTimeout(() => { sendBtn.textContent = 'Waking server (~40s)...'; }, 3000);
   try{
     const res=await fetch(apiUrl('/api/auth/send-otp'),{
       method:'POST',
@@ -388,6 +390,7 @@ async function sendOtp(){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({identifier})
     });
+    clearTimeout(slowTimer);
     if(res.status===404){
       throw new Error('Login API not found. Backend server is not running/deployed.');
     }
@@ -398,6 +401,7 @@ async function sendOtp(){
     const channel=via==='sms'?'phone':'inbox';
     showMsg(`OTP sent. Check your ${channel}.`,'ok');
   }catch(err){
+    clearTimeout(slowTimer);
     if(isApiUnavailableError(err)){
       const users = getDemoUsers();
       const user = users.find(u => cleanIdentifier(u.email) === identifier || cleanIdentifier(u.phone) === identifier);
@@ -427,6 +431,7 @@ async function loginWithPassword(){
   }
   loginBtn.disabled=true;
   loginBtn.textContent='Logging In...';
+  let slowTimer = setTimeout(() => { loginBtn.textContent = 'Waking server (~40s)...'; }, 3000);
   try{
     const res=await fetch(apiUrl('/api/auth/login-password'),{
       method:'POST',
@@ -434,6 +439,7 @@ async function loginWithPassword(){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({identifier,password})
     });
+    clearTimeout(slowTimer);
     if(res.status===404){
       throw new Error('Login API not found. Backend server is not running/deployed.');
     }
@@ -447,6 +453,7 @@ async function loginWithPassword(){
       } else { window.location.href = 'index.html'; }
     },900);
   }catch(err){
+    clearTimeout(slowTimer);
     if(isApiUnavailableError(err)){
       const users = getDemoUsers();
       const user = users.find(u => cleanIdentifier(u.email) === identifier || cleanIdentifier(u.phone) === identifier);
@@ -475,6 +482,7 @@ async function verifyOtp(){
   if(!identifier||!otp){showMsg('Enter email/phone and OTP.','err');return;}
   verifyBtn.disabled=true;
   verifyBtn.textContent='Verifying...';
+  let slowTimer = setTimeout(() => { verifyBtn.textContent = 'Waking server (~40s)...'; }, 3000);
   try{
     const res=await fetch(apiUrl('/api/auth/verify-otp'),{
       method:'POST',
@@ -482,6 +490,7 @@ async function verifyOtp(){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({identifier,otp})
     });
+    clearTimeout(slowTimer);
     if(res.status===404){
       throw new Error('Login API not found. Backend server is not running/deployed.');
     }
@@ -495,6 +504,7 @@ async function verifyOtp(){
       } else { window.location.href = 'index.html'; }
     },900);
   }catch(err){
+    clearTimeout(slowTimer);
     if(isApiUnavailableError(err)){
       const demoOtp = readDemoOtp(identifier);
       if(demoOtp && demoOtp.otp === otp){
