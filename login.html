@@ -263,7 +263,10 @@ input:focus{border-color:rgba(201,168,76,.9);box-shadow:0 0 0 3px rgba(201,168,7
         <input id="email" type="text" placeholder="yourname@gmail.com or +91XXXXXXXXXX" autocomplete="username">
       </div>
       <div class="field">
-        <label for="password">Password</label>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+          <label for="password" style="margin-bottom:0">Password</label>
+          <a href="#" id="forgotBtn" style="font-size:10px; letter-spacing:1px; color:var(--gold); text-decoration:none; text-transform:uppercase;">Forgot?</a>
+        </div>
         <input id="password" type="password" placeholder="Your password" autocomplete="current-password">
       </div>
       <button id="loginBtn" class="btn">Login</button>
@@ -296,6 +299,7 @@ const loginBtn=document.getElementById('loginBtn');
 const sendBtn=document.getElementById('sendBtn');
 const verifyBtn=document.getElementById('verifyBtn');
 const resendBtn=document.getElementById('resendBtn');
+const forgotBtn=document.getElementById('forgotBtn');
 const otpWrap=document.getElementById('otpWrap');
 const msg=document.getElementById('msg');
 const DEMO_OTP_PREFIX='aurum_demo_otp_';
@@ -303,8 +307,9 @@ const DEMO_SESSION_KEY='aurum_auth_email';
 const API_BASE=(()=>{
   let saved='';
   try{saved=String(localStorage.getItem('aurum_api_base')||'').trim();}catch(_){}
-  const inferred='https://aurum2-final.onrender.com';
-  return String(window.AURUM_API_BASE||saved||inferred).replace(/\/+$/,'');
+  const isGit=location.hostname.includes('github.io');
+  const fallback=isGit?'https://aurum2-0-1.onrender.com':(location.protocol.startsWith('http')?location.origin:'');
+  return String(window.AURUM_API_BASE||saved||fallback).replace(/\/+$/,'');
 })();
 const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
 
@@ -348,6 +353,16 @@ function saveDemoOtp(email,otp){
   try{localStorage.setItem(DEMO_OTP_PREFIX+email,JSON.stringify(rec));}catch(_){}
 }
 
+function getDemoUsers(){
+  try{
+    const raw=localStorage.getItem('aurum_demo_users');
+    const parsed=raw?JSON.parse(raw):[];
+    return Array.isArray(parsed)?parsed:[];
+  }catch(_){
+    return [];
+  }
+}
+
 function readDemoOtp(email){
   try{
     const raw=localStorage.getItem(DEMO_OTP_PREFIX+email);
@@ -383,7 +398,19 @@ async function sendOtp(){
     const channel=via==='sms'?'phone':'inbox';
     showMsg(`OTP sent. Check your ${channel}.`,'ok');
   }catch(err){
-    showMsg(err.message||'Failed to send OTP.','err');
+    if(isApiUnavailableError(err)){
+      const users = getDemoUsers();
+      const user = users.find(u => cleanIdentifier(u.email) === identifier || cleanIdentifier(u.phone) === identifier);
+      if(user || identifier === 'nikhilsheoran093@gmail.com'){
+        saveDemoOtp(identifier, '123456');
+        otpWrap.classList.add('on');
+        showMsg('Demo mode: OTP sent. Use 123456.', 'ok');
+      } else {
+        showMsg('Account not found. Please sign up first.', 'err');
+      }
+    } else {
+      showMsg(err.message||'Failed to send OTP.','err');
+    }
   }finally{
     sendBtn.disabled=false;
     sendBtn.textContent='Send OTP';
@@ -420,7 +447,22 @@ async function loginWithPassword(){
       } else { window.location.href = 'index.html'; }
     },900);
   }catch(err){
-    showMsg(err.message||'Login failed.','err');
+    if(isApiUnavailableError(err)){
+      const users = getDemoUsers();
+      const user = users.find(u => cleanIdentifier(u.email) === identifier || cleanIdentifier(u.phone) === identifier);
+      if(user || (identifier === 'nikhilsheoran093@gmail.com' && password === 'nikhil093')){
+        setLocalSession(user ? user.email : identifier);
+        showMsg('Login successful in demo mode. Redirecting...','ok');
+        setTimeout(()=>{
+          if(identifier === 'nikhilsheoran093@gmail.com') { window.location.href = 'admin.html'; }
+          else { window.location.href = 'index.html'; }
+        },900);
+      } else {
+        showMsg('Account not found. Please sign up first.', 'err');
+      }
+    } else {
+      showMsg(err.message||'Login failed.','err');
+    }
   }finally{
     loginBtn.disabled=false;
     loginBtn.textContent='Login';
@@ -453,11 +495,33 @@ async function verifyOtp(){
       } else { window.location.href = 'index.html'; }
     },900);
   }catch(err){
-    showMsg(err.message||'OTP verification failed.','err');
+    if(isApiUnavailableError(err)){
+      const demoOtp = readDemoOtp(identifier);
+      if(demoOtp && demoOtp.otp === otp){
+        const users = getDemoUsers();
+        const user = users.find(u => cleanIdentifier(u.email) === identifier || cleanIdentifier(u.phone) === identifier);
+        setLocalSession(user ? user.email : identifier);
+        showMsg('Login successful in demo mode. Redirecting...','ok');
+        setTimeout(()=>{
+          if(identifier === 'nikhilsheoran093@gmail.com') { window.location.href = 'admin.html'; }
+          else { window.location.href = 'index.html'; }
+        },900);
+      } else { showMsg('Invalid or expired OTP.', 'err'); }
+    } else {
+      showMsg(err.message||'OTP verification failed.','err');
+    }
   }finally{
     verifyBtn.disabled=false;
     verifyBtn.textContent='Verify OTP';
   }
+}
+
+if(forgotBtn){
+  forgotBtn.addEventListener('click',e=>{
+    e.preventDefault();
+    showMsg('Please use the "Send OTP" button below to log in without a password.','ok');
+    identifierEl.focus();
+  });
 }
 
 loginBtn.addEventListener('click',loginWithPassword);
@@ -472,15 +536,6 @@ identifierEl.addEventListener('keydown',e=>{
   else sendOtp();
 });
 
-function checkAutoAdminLogin() {
-  const email = cleanIdentifier(identifierEl.value);
-  const pass = passwordEl.value;
-  if (email === 'nikhilsheoran093@gmail.com' && pass === 'nikhil093') {
-    loginWithPassword();
-  }
-}
-identifierEl.addEventListener('input', checkAutoAdminLogin);
-passwordEl.addEventListener('input', checkAutoAdminLogin);
 
 fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include'})
   .then(res=>{

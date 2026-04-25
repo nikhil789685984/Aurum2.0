@@ -247,14 +247,9 @@ footer p{font-size:14px;color:var(--stone);text-align:center}
   .cart-total{font-size:20px}
 }
 
-#authGuard{position:fixed;inset:0;background:var(--cream);z-index:9999999;display:flex;align-items:center;justify-content:center}
-.auth-spinner{width:36px;height:36px;border:3px solid rgba(201,168,76,.2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
-<!-- AUTH GUARD -->
-<div id="authGuard"><div class="auth-spinner"></div></div>
 
   <header class="topbar">
     <div class="topbar-inner">
@@ -380,8 +375,9 @@ const DEMO_SESSION_KEY = 'aurum_auth_email';
 const API_BASE = (() => {
   let saved = '';
   try { saved = String(localStorage.getItem('aurum_api_base') || '').trim(); } catch (_) { }
-  const inferred = 'https://aurum2-final.onrender.com';
-  return String(window.AURUM_API_BASE || saved || inferred).replace(/\/+$/, '');
+  const isGit=location.hostname.includes('github.io');
+  const fallback=isGit?'https://aurum2-0-1.onrender.com':(location.protocol.startsWith('http')?location.origin:'');
+  return String(window.AURUM_API_BASE || saved || fallback).replace(/\/+$/, '');
 })();
 const apiUrl = path => API_BASE ? `${API_BASE}${path}` : path;
 function clearLocalSession() {
@@ -406,7 +402,6 @@ function clearLocalSession() {
                     }
                     const profileLink = document.getElementById('profileLink');
                     if (profileLink) profileLink.style.display = '';
-                    document.getElementById('authGuard').style.display='none';
                     return;
                   }
               else {
@@ -423,7 +418,6 @@ function clearLocalSession() {
   let localAuth = false;
   try { localAuth = Boolean(localStorage.getItem(DEMO_SESSION_KEY)); } catch (_) { }
   if (!localAuth) window.location.href = 'login.html';
-            else document.getElementById('authGuard').style.display='none';
 })();
 
 window.addEventListener('pageshow', event => {
