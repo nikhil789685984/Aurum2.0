@@ -470,28 +470,31 @@ function requireAdmin(req, res, next) {
 
 
 function createTransporter() {
-  const smtpHost = process.env.SMTP_HOST;
-  const smtpPort = Number(process.env.SMTP_PORT || 587);
+  const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const smtpPort = Number(process.env.SMTP_PORT || 465);
   const smtpUser = process.env.SMTP_USER;
   const smtpPass = process.env.SMTP_PASS;
   const fromEmail = process.env.FROM_EMAIL || smtpUser;
 
-  if (!smtpHost || !smtpUser || !smtpPass || !fromEmail) {
+  if (!smtpUser || !smtpPass) {
     throw new Error('Server email configuration is incomplete.');
   }
 
-  const transporter = nodemailer.createTransport({
-    host: smtpHost,
-    port: smtpPort,
-    secure: smtpPort === 465,
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
-    auth: {
-      user: smtpUser,
-      pass: smtpPass
+  const isGmail = smtpHost.includes('gmail');
+  const transporter = nodemailer.createTransport(
+    isGmail ? {
+      service: 'gmail',
+      auth: { user: smtpUser, pass: smtpPass }
+    } : {
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpPort === 465,
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
+      auth: { user: smtpUser, pass: smtpPass }
     }
-  });
+  );
 
   return { transporter, fromEmail };
 }
@@ -503,7 +506,7 @@ async function sendViaResend({ fromEmail, to, subject, text, html, replyTo, atta
   }
 
   const payload = {
-    from: fromEmail,
+    from: String(fromEmail).includes('@') ? fromEmail : 'onboarding@resend.dev',
     to: Array.isArray(to) ? to : [to],
     subject
   };
