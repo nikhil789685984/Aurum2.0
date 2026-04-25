@@ -1399,8 +1399,8 @@ const DEMO_SESSION_KEY='aurum_auth_email';
 const API_BASE=(()=>{
   let saved='';
   try{saved=String(localStorage.getItem('aurum_api_base')||'').trim();}catch(_){}
-  const isGit=location.hostname.includes('github.io');
-  const fallback=isGit?'https://aurum2-0-1.onrender.com':(location.protocol.startsWith('http')?location.origin:'');
+  const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  const fallback = isLocal ? 'http://localhost:3000' : 'https://aurum2-0-1.onrender.com';
   return String(window.AURUM_API_BASE||saved||fallback).replace(/\/+$/,'');
 })();
 const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
