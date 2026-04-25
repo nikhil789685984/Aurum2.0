@@ -2091,9 +2091,6 @@ app.get('/refund-policy', (req, res) => {
 
 app.get('/login', (req, res) => {
   setNoStore(res);
-  if (getAuthenticatedEmail(req)) {
-    return res.redirect('/');
-  }
   res.sendFile(path.join(__dirname, 'login.html'));
 });
 
@@ -2103,9 +2100,6 @@ app.get('/login.html', (req, res) => {
 
 app.get('/signup', (req, res) => {
   setNoStore(res);
-  if (getAuthenticatedEmail(req)) {
-    return res.redirect('/');
-  }
   res.sendFile(path.join(__dirname, 'signup.html'));
 });
 
@@ -2115,79 +2109,70 @@ app.get('/signup.html', (req, res) => {
 
 app.get('/', (req, res) => {
   setNoStore(res);
-  if (getAuthenticatedEmail(req)) {
-    return res.sendFile(path.join(__dirname, 'index.html'));
-  }
-  return res.sendFile(path.join(__dirname, 'login.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.get('/index.html', (req, res) => {
   setNoStore(res);
-  if (!getAuthenticatedEmail(req)) {
-    return res.redirect('/login');
-  }
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('/website.html', requireAuth, (req, res) => {
+app.get('/website.html', (req, res) => {
   res.redirect('/index.html');
 });
 
-app.get('/delivery', requireAuth, (req, res) => {
+app.get('/delivery', (req, res) => {
   setNoStore(res);
   res.sendFile(path.join(__dirname, 'delivery.html'));
 });
 
-app.get('/delivery.html', requireAuth, (req, res) => {
+app.get('/delivery.html', (req, res) => {
   setNoStore(res);
   res.sendFile(path.join(__dirname, 'delivery.html'));
 });
 
-app.get('/admin', requireAdmin, (req, res) => {
+app.get('/admin', (req, res) => {
   setNoStore(res);
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
-app.get('/admin.html', requireAdmin, (req, res) => {
+app.get('/admin.html', (req, res) => {
   setNoStore(res);
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
-app.get('/profile', requireAuth, (req, res) => {
+app.get('/profile', (req, res) => {
   setNoStore(res);
   res.sendFile(path.join(__dirname, 'profile.html'));
 });
 
-app.get('/profile.html', requireAuth, (req, res) => {
+app.get('/profile.html', (req, res) => {
   setNoStore(res);
   res.sendFile(path.join(__dirname, 'profile.html'));
 });
 
-app.get('/gym-chatbot', requireAuth, (req, res) => {
+app.get('/gym-chatbot', (req, res) => {
   setNoStore(res);
   res.sendFile(path.join(__dirname, 'gym-chatbot.html'));
 });
 
-app.get('/gym-chatbot.html', requireAuth, (req, res) => {
+app.get('/gym-chatbot.html', (req, res) => {
   setNoStore(res);
   res.sendFile(path.join(__dirname, 'gym-chatbot.html'));
 });
 
-app.get('/order-success', requireAuth, (req, res) => {
+app.get('/order-success', (req, res) => {
   setNoStore(res);
   res.sendFile(path.join(__dirname, 'order-success.html'));
 });
 
-app.get('/order-success.html', requireAuth, (req, res) => {
+app.get('/order-success.html', (req, res) => {
   setNoStore(res);
   res.sendFile(path.join(__dirname, 'order-success.html'));
 });
 
 app.get('*', (req, res) => {
-  if (getAuthenticatedEmail(req)) {
-    return res.redirect('/');
-  }
-  return res.redirect('/login');
+  res.redirect('/');
 });
 
 app.listen(PORT, () => {
