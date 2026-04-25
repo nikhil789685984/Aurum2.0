@@ -5,14 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AURUM Delivery · London</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script>
-  if(localStorage.getItem('aurum_update_v7') !== 'true') {
-    localStorage.setItem('aurum_update_v7', 'true');
-    const url = new URL(window.location.href);
-    url.searchParams.set('v', new Date().getTime());
-    window.location.replace(url.toString());
-  }
-</script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -391,7 +383,10 @@ function clearLocalSession() {
 
 (async function ensureAccess() {
   try {
-    const res = await fetch(apiUrl('/api/auth/status'), { cache: 'no-store', credentials: 'include' });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2500);
+    const res = await fetch(apiUrl('/api/auth/status'), { cache: 'no-store', credentials: 'include', signal: controller.signal });
+    clearTimeout(timeoutId);
     if (res.ok) {
             const data = await res.json().catch(() => null);
             if (data && typeof data.authenticated === 'boolean') {

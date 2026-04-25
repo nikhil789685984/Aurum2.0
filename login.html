@@ -5,14 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AURUM Login</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script>
-  if(localStorage.getItem('aurum_update_v7') !== 'true') {
-    localStorage.setItem('aurum_update_v7', 'true');
-    const url = new URL(window.location.href);
-    url.searchParams.set('v', new Date().getTime());
-    window.location.replace(url.toString());
-  }
-</script>
 <style>
 :root{
   --cream:#F6F1E7;
@@ -544,9 +536,11 @@ identifierEl.addEventListener('keydown',e=>{
   else sendOtp();
 });
 
-
-fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include'})
+const authController = new AbortController();
+const authTimeout = setTimeout(() => authController.abort(), 2500);
+fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include', signal: authController.signal})
   .then(res=>{
+    clearTimeout(authTimeout);
     if(!res.ok) throw new Error('API unreachable');
     return res.json();
   })
