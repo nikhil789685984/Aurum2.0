@@ -83,11 +83,18 @@ p{
     <div class="kicker">AURUM Delivery</div>
     <h1>Payment Successful</h1>
     <p>Your order has been confirmed and sent to our kitchen team.</p>
-    <div class="eta">Estimated Delivery: 3-4 Hours</div>
+    <div class="eta" id="etaDisplay">Estimated Delivery: 45 Minutes</div>
     <div class="actions">
       <a class="btn primary" href="delivery.html">Back to Delivery</a>
       <a class="btn" href="index.html">Back to Home</a>
     </div>
   </main>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const eta = params.get('eta');
+    if (eta) {
+      document.getElementById('etaDisplay').textContent = `Estimated Delivery: ${eta} Minutes`;
+    }
+  </script>
 </body>
 </html>

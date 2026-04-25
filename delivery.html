@@ -341,6 +341,7 @@ footer p{font-size:14px;color:var(--stone);text-align:center}
       <div class="cart-summary">
         <div>
           <small id="cartSummaryCount">0 items</small>
+          <div id="cartEstTime" style="font-size:11px;color:#1f9f58;margin-top:4px;font-weight:700;display:none;"></div>
         </div>
         <strong id="cartSummaryTotal">₹0</strong>
       </div>
@@ -685,7 +686,7 @@ function updateCartUI() {
   const estTimeEl = document.getElementById('cartEstTime');
   if (estTimeEl) {
     if (count > 0) {
-      estTimeEl.textContent = `Estimated Delivery: ${count * 10} mins`;
+      estTimeEl.textContent = `Estimated Delivery: ${Math.max(30, count * 10)} mins`;
       estTimeEl.style.display = 'block';
     } else {
       estTimeEl.style.display = 'none';
@@ -795,12 +796,14 @@ async function startCheckout() {
           if (!verifyRes.ok) {
             throw new Error((verifyData && verifyData.error) || 'Payment verification failed.');
           }
+          const { count } = getCartTotals();
+          const eta = Math.max(30, count * 10);
           cartState.items.clear();
           updateCartUI();
           showToast('Payment successful.');
           closeCart();
           setTimeout(() => {
-            window.location.href = 'order-success.html';
+            window.location.href = `order-success.html?eta=${eta}`;
           }, 400);
         } catch (verifyErr) {
           showToast((verifyErr && verifyErr.message) || 'Payment verification failed.');
@@ -852,10 +855,12 @@ async function startCodCheckout() {
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((data && data.error) || 'Unable to place order.');
+    const { count } = getCartTotals();
+    const eta = Math.max(30, count * 10);
     cartState.items.clear();
     updateCartUI();
     closeCart();
-    window.location.href = 'order-success.html';
+    window.location.href = `order-success.html?eta=${eta}`;
   } catch (err) {
     setCheckoutLoading(false);
     showToast((err && err.message) || 'Order placement failed.');

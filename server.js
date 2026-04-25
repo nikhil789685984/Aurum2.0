@@ -817,35 +817,37 @@ async function processPaidRazorpayOrder(orderId, paymentId, signature) {
   ].join('\n');
 
   const toEmail = process.env.ORDER_NOTIFICATION_EMAIL || 'nikhilsheoran093@gmail.com';
-  await sendEmail({
-    to: toEmail,
-    subject: `Paid Delivery Order - Razorpay ${orderId}`,
-    text: [
-      'A Razorpay payment has been completed for a delivery order.',
-      '',
-      `Razorpay Order ID: ${orderId}`,
-      `Razorpay Payment ID: ${paymentId}`,
-      `Customer Email: ${customerEmail}`,
-      `Amount Paid: ₹${amountTotal.toFixed(2)} INR`,
-      '',
-      'Delivery Location:',
-      locationText,
-      '',
-      'Items:',
-      itemsText
-    ].join('\n'),
-    html: `
-      <h2>Paid Delivery Order (Razorpay)</h2>
-      <p><strong>Razorpay Order ID:</strong> ${orderId}</p>
-      <p><strong>Razorpay Payment ID:</strong> ${paymentId}</p>
-      <p><strong>Customer Email:</strong> ${customerEmail}</p>
-      <p><strong>Amount Paid:</strong> ₹${amountTotal.toFixed(2)} INR</p>
-      <h3>Delivery Location</h3>
-      <pre style="font-family:Arial,sans-serif;white-space:pre-wrap">${locationText}</pre>
-      <h3>Items</h3>
-      <pre style="font-family:Arial,sans-serif;white-space:pre-wrap">${itemsText}</pre>
-    `
-  });
+  try {
+    await sendEmail({
+      to: toEmail,
+      subject: `Paid Delivery Order - Razorpay ${orderId}`,
+      text: [
+        'A Razorpay payment has been completed for a delivery order.',
+        '',
+        `Razorpay Order ID: ${orderId}`,
+        `Razorpay Payment ID: ${paymentId}`,
+        `Customer Email: ${customerEmail}`,
+        `Amount Paid: ₹${amountTotal.toFixed(2)} INR`,
+        '',
+        'Delivery Location:',
+        locationText,
+        '',
+        'Items:',
+        itemsText
+      ].join('\n'),
+      html: `
+        <h2>Paid Delivery Order (Razorpay)</h2>
+        <p><strong>Razorpay Order ID:</strong> ${orderId}</p>
+        <p><strong>Razorpay Payment ID:</strong> ${paymentId}</p>
+        <p><strong>Customer Email:</strong> ${customerEmail}</p>
+        <p><strong>Amount Paid:</strong> ₹${amountTotal.toFixed(2)} INR</p>
+        <h3>Delivery Location</h3>
+        <pre style="font-family:Arial,sans-serif;white-space:pre-wrap">${locationText}</pre>
+        <h3>Items</h3>
+        <pre style="font-family:Arial,sans-serif;white-space:pre-wrap">${itemsText}</pre>
+      `
+    });
+  } catch (err) { console.error('Owner email send failed (Razorpay):', err); }
 
   try {
     await sendEmail({
@@ -954,28 +956,30 @@ async function processPaidCheckoutSession(sessionId) {
   const estTimeMins = totalQty > 0 ? totalQty * 10 : 30;
 
   const toEmail = process.env.ORDER_NOTIFICATION_EMAIL || 'nikhilsheoran093@gmail.com';
-  await sendEmail({
-    to: toEmail,
-    subject: `Paid Delivery Order - ${sessionId}`,
-    text: [
-      'A payment has been completed for a delivery order.',
-      '',
-      `Stripe Session ID: ${sessionId}`,
-      `Customer Email: ${customerEmail}`,
-      `Amount Paid: ${amountTotal.toFixed(2)} ${currency}`,
-      '',
-      'Items:',
-      itemsText
-    ].join('\n'),
-    html: `
-      <h2>Paid Delivery Order</h2>
-      <p><strong>Stripe Session ID:</strong> ${sessionId}</p>
-      <p><strong>Customer Email:</strong> ${customerEmail}</p>
-      <p><strong>Amount Paid:</strong> ${amountTotal.toFixed(2)} ${currency}</p>
-      <h3>Items</h3>
-      <pre style="font-family:Arial,sans-serif;white-space:pre-wrap">${itemsText}</pre>
-    `
-  });
+  try {
+    await sendEmail({
+      to: toEmail,
+      subject: `Paid Delivery Order - ${sessionId}`,
+      text: [
+        'A payment has been completed for a delivery order.',
+        '',
+        `Stripe Session ID: ${sessionId}`,
+        `Customer Email: ${customerEmail}`,
+        `Amount Paid: ${amountTotal.toFixed(2)} ${currency}`,
+        '',
+        'Items:',
+        itemsText
+      ].join('\n'),
+      html: `
+        <h2>Paid Delivery Order</h2>
+        <p><strong>Stripe Session ID:</strong> ${sessionId}</p>
+        <p><strong>Customer Email:</strong> ${customerEmail}</p>
+        <p><strong>Amount Paid:</strong> ${amountTotal.toFixed(2)} ${currency}</p>
+        <h3>Items</h3>
+        <pre style="font-family:Arial,sans-serif;white-space:pre-wrap">${itemsText}</pre>
+      `
+    });
+  } catch (err) { console.error('Owner email send failed (Stripe):', err); }
 
   try {
     await sendEmail({
@@ -1457,33 +1461,35 @@ app.post('/api/orders/place-cod-order', requireAuth, createRateLimit({ key: 'pla
     const customerEmail = req.authEmail;
     const ownerEmail = process.env.ORDER_NOTIFICATION_EMAIL || process.env.TO_EMAIL || 'nikhilsheoran093@gmail.com';
 
-    await sendEmail({
-      to: ownerEmail,
-      subject: `New COD Delivery Order - ${orderRef}`,
-      text: [
-        'A new cash on delivery order has been placed.',
-        '',
-        `Order Ref: ${orderRef}`,
-        `Customer Email: ${customerEmail}`,
-        `Amount: ₹${amountTotal.toFixed(2)}`,
-        '',
-        'Delivery Location:',
-        locationText,
-        '',
-        'Items:',
-        itemsText
-      ].join('\n'),
-      html: `
-        <h2>New COD Delivery Order</h2>
-        <p><strong>Order Ref:</strong> ${orderRef}</p>
-        <p><strong>Customer Email:</strong> ${customerEmail}</p>
-        <p><strong>Amount:</strong> ₹${amountTotal.toFixed(2)}</p>
-        <h3>Delivery Location</h3>
-        <pre style="font-family:Arial,sans-serif;white-space:pre-wrap">${locationText}</pre>
-        <h3>Items</h3>
-        <pre style="font-family:Arial,sans-serif;white-space:pre-wrap">${itemsText}</pre>
-      `
-    });
+    try {
+      await sendEmail({
+        to: ownerEmail,
+        subject: `New COD Delivery Order - ${orderRef}`,
+        text: [
+          'A new cash on delivery order has been placed.',
+          '',
+          `Order Ref: ${orderRef}`,
+          `Customer Email: ${customerEmail}`,
+          `Amount: ₹${amountTotal.toFixed(2)}`,
+          '',
+          'Delivery Location:',
+          locationText,
+          '',
+          'Items:',
+          itemsText
+        ].join('\n'),
+        html: `
+          <h2>New COD Delivery Order</h2>
+          <p><strong>Order Ref:</strong> ${orderRef}</p>
+          <p><strong>Customer Email:</strong> ${customerEmail}</p>
+          <p><strong>Amount:</strong> ₹${amountTotal.toFixed(2)}</p>
+          <h3>Delivery Location</h3>
+          <pre style="font-family:Arial,sans-serif;white-space:pre-wrap">${locationText}</pre>
+          <h3>Items</h3>
+          <pre style="font-family:Arial,sans-serif;white-space:pre-wrap">${itemsText}</pre>
+        `
+      });
+    } catch (err) { console.error('Owner email send failed (COD):', err); }
 
     try {
       await sendEmail({
