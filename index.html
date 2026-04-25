@@ -1849,14 +1849,20 @@ evPayBtn.addEventListener('click', async () => {
       prefill: data.prefill,
       theme: { color: '#C9A84C' },
       handler: async function(response) {
-        await fetch(apiUrl('/api/events/verify-razorpay-payment'), {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
-          body: JSON.stringify(response)
-        });
-        evModal.classList.remove('on');
-        showMailPopup('Registration Successful! Ticket sent to your email.');
+        try {
+          const vRes = await fetch(apiUrl('/api/events/verify-razorpay-payment'), {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
+            body: JSON.stringify(response)
+          });
+          const vData = await vRes.json().catch(()=>({}));
+          if (!vRes.ok) throw new Error(vData.error || 'Payment verification failed on server.');
+          evModal.classList.remove('on');
+          showMailPopup('Registration Successful! Ticket sent to your email.');
+        } catch(err) {
+          alert('Error: ' + err.message);
+        }
       }
     };
     new window.Razorpay(options).open();

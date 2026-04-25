@@ -513,6 +513,7 @@ async function sendViaResend({ fromEmail, to, subject, text, html, replyTo, atta
   if (attachments) {
     payload.attachments = attachments.map(a => ({
       filename: a.filename,
+      content_type: a.contentType,
       content: Buffer.isBuffer(a.content) ? a.content.toString('base64') : a.content
     }));
   }
@@ -1646,6 +1647,16 @@ app.post('/api/events/verify-razorpay-payment', requireAuth, createRateLimit({ k
       const filename = isPdf ? `AURUM_Ticket_${regRecord.id}.pdf` : `AURUM_Ticket_${regRecord.id}.html`;
       const content = isPdf ? ticketData : ticketData.buffer;
 
+      const ownerEmail = process.env.ORDER_NOTIFICATION_EMAIL || process.env.TO_EMAIL || 'nikhilsheoran093@gmail.com';
+      try {
+        await sendEmail({
+          to: ownerEmail,
+          subject: `New Event Registration - ${pending.eventName}`,
+          text: `A new guest has registered for an event.\n\nEvent: ${pending.eventName}\nGuest: ${pending.name} (${pending.authEmail})\nPhone: ${pending.phone}\nSeats: ${pending.guests}\nAdvance Paid: ₹${pending.advancePaid}\nStatus: Confirmed`,
+          html: `<h2>New Event Registration</h2><p><strong>Event:</strong> ${pending.eventName}</p><p><strong>Guest:</strong> ${pending.name} (${pending.authEmail})</p><p><strong>Phone:</strong> ${pending.phone}</p><p><strong>Seats:</strong> ${pending.guests}</p><p><strong>Advance Paid:</strong> ₹${pending.advancePaid}</p>`
+        });
+      } catch (e) { console.error('Admin event email error:', e); }
+
       await sendEmail({
         to: pending.authEmail,
         subject: `Your Ultra-Premium Ticket: ${pending.eventName}`,
@@ -1668,7 +1679,7 @@ app.post('/api/events/verify-razorpay-payment', requireAuth, createRateLimit({ k
             </div>
           </div>
         `,
-        attachments: [{ filename, content }]
+        attachments: [{ filename, content, contentType: isPdf ? 'application/pdf' : 'text/html' }]
       });
     } catch (e) { console.error('Ticket email error:', e); }
 
