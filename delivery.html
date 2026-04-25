@@ -375,7 +375,10 @@ const API_BASE = (() => {
   const fallback = isLocal ? location.origin : 'https://aurum2-0-1.onrender.com';
   return String(window.AURUM_API_BASE || saved || fallback).replace(/\/+$/, '');
 })();
-const apiUrl = path => API_BASE ? `${API_BASE}${path}` : path;
+const apiUrl=path=>{
+  if(location.hostname.includes('onrender.com')) return path;
+  return API_BASE?`${API_BASE}${path}`:path;
+};
 function getAuthEmail(){ try{return localStorage.getItem(DEMO_SESSION_KEY)||'';}catch(_){return '';} }
 function clearLocalSession() {
   try {
@@ -735,6 +738,7 @@ function removeItem(name) {
   cartState.items.delete(name);
 }
 
+let orderAttempts = 0;
 async function startCheckout() {
   if (!getAuthEmail()) {
     window.location.href = 'login.html';
@@ -752,82 +756,93 @@ async function startCheckout() {
     return;
   }
   persistDeliveryLocation();
-  try {
     setCheckoutLoading(true);
-    const res = await fetch(apiUrl('/api/orders/create-razorpay-order'), {
-      credentials: 'include',
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
-      body: JSON.stringify({ items, deliveryLocation })
-    });
-    const contentType = String(res.headers.get('content-type') || '');
-    const data = contentType.includes('application/json')
-      ? await res.json().catch(() => ({}))
-      : {};
-    if (!res.ok || !(data && data.orderId) || !(data && data.keyId)) {
-      throw new Error((data && data.error) || 'Unable to start payment.');
-    }
-
-    if (typeof window.Razorpay !== 'function') {
-      throw new Error('Razorpay SDK failed to load. Check your internet connection.');
-    }
-
-    const options = {
-      key: data.keyId,
-      amount: data.amount,
-      currency: data.currency || 'INR',
-      name: 'AURUM Delivery',
-      description: 'Food Order Payment',
-      order_id: data.orderId,
-      prefill: data.prefill || {},
-      theme: { color: '#C9A84C' },
-      handler: async function (response) {
-        try {
-          const verifyRes = await fetch(apiUrl('/api/orders/verify-razorpay-payment'), {
-            credentials: 'include',
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
-            body: JSON.stringify(response)
-          });
-          const verifyType = String(verifyRes.headers.get('content-type') || '');
-          const verifyData = verifyType.includes('application/json')
-            ? await verifyRes.json().catch(() => ({}))
-            : {};
-          if (!verifyRes.ok) {
-            throw new Error((verifyData && verifyData.error) || 'Payment verification failed.');
-          }
-          const { count } = getCartTotals();
-          const eta = Math.max(30, count * 10);
-          cartState.items.clear();
-          updateCartUI();
-          showToast('Payment successful.');
-          closeCart();
-          setTimeout(() => {
-            window.location.href = `order-success.html?eta=${eta}`;
-          }, 400);
-        } catch (verifyErr) {
-          showToast((verifyErr && verifyErr.message) || 'Payment verification failed.');
-        } finally {
-          setCheckoutLoading(false);
-        }
-      },
-      modal: {
-        ondismiss: function () {
-          setCheckoutLoading(false);
-          showToast('Payment window closed.');
-        }
+  const attempt = async () => {
+    try {
+      let signal;
+      if(typeof AbortController !== 'undefined'){
+        const ctrl = new AbortController();
+        signal = ctrl.signal;
+        setTimeout(() => ctrl.abort(), 120000);
       }
-    };
+      const res = await fetch(apiUrl('/api/orders/create-razorpay-order'), {
+        credentials: 'include',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
+        body: JSON.stringify({ items, deliveryLocation }),
+        signal
+      });
+      const contentType = String(res.headers.get('content-type') || '');
+      const data = contentType.includes('application/json') ? await res.json().catch(() => ({})) : {};
+      if (!res.ok || !(data && data.orderId) || !(data && data.keyId)) throw new Error((data && data.error) || 'Unable to start payment.');
+      if (typeof window.Razorpay !== 'function') throw new Error('Razorpay SDK failed to load. Check your internet connection.');
 
-    const rz = new window.Razorpay(options);
-    rz.open();
-  } catch (err) {
-    setCheckoutLoading(false);
-    showToast((err && err.message) || 'Payment start failed.');
-    return;
-  }
+      const options = {
+        key: data.keyId,
+        amount: data.amount,
+        currency: data.currency || 'INR',
+        name: 'AURUM Delivery',
+        description: 'Food Order Payment',
+        order_id: data.orderId,
+        prefill: data.prefill || {},
+        theme: { color: '#C9A84C' },
+        handler: async function (response) {
+          try {
+            let vSignal;
+            if(typeof AbortController !== 'undefined'){
+              const vCtrl = new AbortController();
+              vSignal = vCtrl.signal;
+              setTimeout(() => vCtrl.abort(), 120000);
+            }
+            const verifyRes = await fetch(apiUrl('/api/orders/verify-razorpay-payment'), {
+              credentials: 'include',
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
+              body: JSON.stringify(response),
+              signal: vSignal
+            });
+            const verifyType = String(verifyRes.headers.get('content-type') || '');
+            const verifyData = verifyType.includes('application/json') ? await verifyRes.json().catch(() => ({})) : {};
+            if (!verifyRes.ok) throw new Error((verifyData && verifyData.error) || 'Payment verification failed.');
+            const { count } = getCartTotals();
+            const eta = Math.max(30, count * 10);
+            cartState.items.clear();
+            updateCartUI();
+            showToast('Payment successful.');
+            closeCart();
+            setTimeout(() => { window.location.href = `order-success.html?eta=${eta}`; }, 400);
+          } catch (verifyErr) {
+            showToast((verifyErr && verifyErr.message) || 'Payment verification failed.');
+          } finally {
+            setCheckoutLoading(false);
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setCheckoutLoading(false);
+            showToast('Payment window closed.');
+          }
+        }
+      };
+      orderAttempts = 0;
+      const rz = new window.Razorpay(options);
+      rz.open();
+    } catch (err) {
+      if(String(err?.message||'').toLowerCase().includes('failed to fetch') && orderAttempts < 2) {
+        orderAttempts++;
+        if(cartCheckoutBtn) cartCheckoutBtn.textContent = `Waking server... (${orderAttempts}/2)`;
+        setTimeout(attempt, 3000);
+        return;
+      }
+      orderAttempts = 0;
+      setCheckoutLoading(false);
+      showToast((err && err.message) || 'Payment start failed.');
+    }
+  };
+  attempt();
 }
 
+let codAttempts = 0;
 async function startCodCheckout() {
   if (!getAuthEmail()) {
     window.location.href = 'login.html';
@@ -845,26 +860,44 @@ async function startCodCheckout() {
     return;
   }
   persistDeliveryLocation();
-  try {
     setCheckoutLoading(true);
-    const res = await fetch(apiUrl('/api/orders/place-cod-order'), {
-      credentials: 'include',
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
-      body: JSON.stringify({ items, deliveryLocation })
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error((data && data.error) || 'Unable to place order.');
-    const { count } = getCartTotals();
-    const eta = Math.max(30, count * 10);
-    cartState.items.clear();
-    updateCartUI();
-    closeCart();
-    window.location.href = `order-success.html?eta=${eta}`;
-  } catch (err) {
-    setCheckoutLoading(false);
-    showToast((err && err.message) || 'Order placement failed.');
-  }
+  const attempt = async () => {
+    try {
+      let signal;
+      if(typeof AbortController !== 'undefined'){
+        const ctrl = new AbortController();
+        signal = ctrl.signal;
+        setTimeout(() => ctrl.abort(), 120000);
+      }
+      const res = await fetch(apiUrl('/api/orders/place-cod-order'), {
+        credentials: 'include',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
+        body: JSON.stringify({ items, deliveryLocation }),
+        signal
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error((data && data.error) || 'Unable to place order.');
+      codAttempts = 0;
+      const { count } = getCartTotals();
+      const eta = Math.max(30, count * 10);
+      cartState.items.clear();
+      updateCartUI();
+      closeCart();
+      window.location.href = `order-success.html?eta=${eta}`;
+    } catch (err) {
+      if(String(err?.message||'').toLowerCase().includes('failed to fetch') && codAttempts < 2) {
+        codAttempts++;
+        if(cartCodBtn) cartCodBtn.textContent = `Waking server... (${codAttempts}/2)`;
+        setTimeout(attempt, 3000);
+        return;
+      }
+      codAttempts = 0;
+      setCheckoutLoading(false);
+      showToast((err && err.message) || 'Order placement failed.');
+    }
+  };
+  attempt();
 }
 
 async function confirmPaymentFromUrl() {

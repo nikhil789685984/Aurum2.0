@@ -1403,7 +1403,10 @@ const API_BASE=(()=>{
   const fallback = isLocal ? location.origin : 'https://aurum2-0-1.onrender.com';
   return String(window.AURUM_API_BASE||saved||fallback).replace(/\/+$/,'');
 })();
-const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
+const apiUrl=path=>{
+  if(location.hostname.includes('onrender.com')) return path;
+  return API_BASE?`${API_BASE}${path}`:path;
+};
 function getAuthEmail(){ try{return localStorage.getItem(DEMO_SESSION_KEY)||'';}catch(_){return '';} }
 function clearLocalSession(){
   try{
@@ -1812,7 +1815,8 @@ function attachEventModalListeners() {
 evClose.addEventListener('click', () => evModal.classList.remove('on'));
 evGuests.addEventListener('change', updateEvCalc);
 
-evPayBtn.addEventListener('click', async () => {
+let evAttempts = 0;
+async function processEventOrder() {
   if (!getAuthEmail()) {
     window.location.href = 'login.html';
     return;
@@ -1828,52 +1832,79 @@ evPayBtn.addEventListener('click', async () => {
   evPayBtn.textContent = 'Processing...';
   let slowTimer = setTimeout(() => { evPayBtn.textContent = 'Waking server (~40s)...'; }, 3000);
   
-  try {
-    const res = await fetch(apiUrl('/api/events/create-razorpay-order'), {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
-      body: JSON.stringify({ eventId: currentEvent.id, guests, name, phone })
-    });
-    clearTimeout(slowTimer);
-    const data = await res.json().catch(() => ({}));
-    if(!res.ok) throw new Error(data.error || 'Failed to start payment');
-
-    const options = {
-      key: data.keyId,
-      amount: data.amount,
-      currency: data.currency,
-      name: 'AURUM Events',
-      description: `Advance for ${currentEvent.name}`,
-      order_id: data.orderId,
-      prefill: data.prefill,
-      theme: { color: '#C9A84C' },
-      handler: async function(response) {
-        try {
-          const vRes = await fetch(apiUrl('/api/events/verify-razorpay-payment'), {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
-            body: JSON.stringify(response)
-          });
-          const vData = await vRes.json().catch(()=>({}));
-          if (!vRes.ok) throw new Error(vData.error || 'Payment verification failed on server.');
-          evModal.classList.remove('on');
-          showMailPopup('Registration Successful! Ticket sent to your email.');
-        } catch(err) {
-          alert('Error: ' + err.message);
-        }
+  const attempt = async () => {
+    try {
+      let signal;
+      if(typeof AbortController !== 'undefined'){
+        const ctrl = new AbortController();
+        signal = ctrl.signal;
+        setTimeout(() => ctrl.abort(), 120000);
       }
-    };
-    new window.Razorpay(options).open();
-  } catch (err) {
-    clearTimeout(slowTimer);
-    alert(err.message);
-  } finally {
-    evPayBtn.disabled = false;
-    evPayBtn.textContent = 'Pay Advance & Register';
-  }
-});
+      const res = await fetch(apiUrl('/api/events/create-razorpay-order'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
+        body: JSON.stringify({ eventId: currentEvent.id, guests, name, phone }),
+        signal
+      });
+      clearTimeout(slowTimer);
+      const data = await res.json().catch(() => ({}));
+      if(!res.ok) throw new Error(data.error || 'Failed to start payment');
+
+      const options = {
+        key: data.keyId,
+        amount: data.amount,
+        currency: data.currency,
+        name: 'AURUM Events',
+        description: `Advance for ${currentEvent.name}`,
+        order_id: data.orderId,
+        prefill: data.prefill,
+        theme: { color: '#C9A84C' },
+        handler: async function(response) {
+          try {
+            let vSignal;
+            if(typeof AbortController !== 'undefined'){
+              const vCtrl = new AbortController();
+              vSignal = vCtrl.signal;
+              setTimeout(() => vCtrl.abort(), 120000);
+            }
+            const vRes = await fetch(apiUrl('/api/events/verify-razorpay-payment'), {
+              method: 'POST',
+              credentials: 'include',
+              headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
+              body: JSON.stringify(response),
+              signal: vSignal
+            });
+            const vData = await vRes.json().catch(()=>({}));
+            if (!vRes.ok) throw new Error(vData.error || 'Payment verification failed on server.');
+            evModal.classList.remove('on');
+            showMailPopup('Registration Successful! Ticket sent to your email.');
+          } catch(err) {
+            alert('Error: ' + err.message);
+          }
+        }
+      };
+      evAttempts = 0;
+      new window.Razorpay(options).open();
+      evPayBtn.disabled = false;
+      evPayBtn.textContent = 'Pay Advance & Register';
+    } catch (err) {
+      if(String(err?.message||'').toLowerCase().includes('failed to fetch') && evAttempts < 2) {
+        evAttempts++;
+        evPayBtn.textContent = `Waking server... (${evAttempts}/2)`;
+        setTimeout(attempt, 3000);
+        return;
+      }
+      evAttempts = 0;
+      clearTimeout(slowTimer);
+      alert(err.message);
+      evPayBtn.disabled = false;
+      evPayBtn.textContent = 'Pay Advance & Register';
+    }
+  };
+  attempt();
+}
+evPayBtn.addEventListener('click', processEventOrder);
 </script>
 </body>
 </html>
