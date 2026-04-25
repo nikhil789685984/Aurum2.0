@@ -1459,14 +1459,16 @@ window.addEventListener('pageshow',e=>{
 });
 
 /* ── LOADER ── */
-window.addEventListener('load',()=>{
+function removePreloader(){
   const preloader = document.getElementById('preloader');
-  if(preloader) {
+  if(preloader && preloader.style.display !== 'none') {
     preloader.style.opacity = '0';
     setTimeout(() => preloader.style.display = 'none', 600);
+    setTimeout(()=>document.getElementById('heroBg')?.classList.add('loaded'),200);
   }
-  setTimeout(()=>document.getElementById('heroBg').classList.add('loaded'),200);
-});
+}
+window.addEventListener('load', removePreloader);
+setTimeout(removePreloader, 2500); // Fallback: force remove after 2.5 seconds
 
 /* ── CURSOR ── */
 const cur=document.getElementById('cur'),fol=document.getElementById('fol');
@@ -1850,38 +1852,55 @@ if(logoutLink){
 }
 
 async function loadEvents() {
+  const container = document.getElementById('eventsListContainer');
   try {
-    const res = await fetch(apiUrl('/api/events/list'));
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000); // 4 seconds max wait
+    const res = await fetch(apiUrl('/api/events/list'), { signal: controller.signal });
+    clearTimeout(timeoutId);
     const data = await res.json();
-    if (data.ok && data.events) {
-      const container = document.getElementById('eventsListContainer');
-      container.innerHTML = '';
-      data.events.forEach((evt, i) => {
-        const delay = (i % 10) * 0.1;
-        const el = document.createElement('div');
-        el.className = 'event reveal';
-        el.style.transitionDelay = `${delay}s`;
-        el.innerHTML = `
-          <div class="event-date"><div class="day">${evt.day}</div><div class="month">${evt.month}</div></div>
-          <div class="event-info">
-            <div class="event-meta" style="font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:10px; display:flex; gap:16px; flex-wrap:wrap;">
-              <span><strong style="color:var(--stone)">Guest:</strong> ${evt.celeb}</span>
-              <span><strong style="color:var(--stone)">Venue:</strong> ${evt.venue}</span>
-            </div>
-            <h3>${evt.name}</h3>
-            <p>${evt.desc}</p>
-          </div>
-          <div class="event-action">
-            <div class="ev-price">₹${evt.price.toLocaleString('en-IN')} <span>p.p.</span></div>
-            <button class="btn-gold ev-reg-btn" data-id="${evt.id}" data-name="${evt.name}" data-price="${evt.price}" data-venue="${evt.venue}" data-celeb="${evt.celeb}" data-date="${evt.day} ${evt.month}">Register Now</button>
-          </div>
-        `;
-        container.appendChild(el);
-      });
-      document.querySelectorAll('#eventsListContainer .reveal').forEach(el => obs.observe(el));
-      attachEventModalListeners();
+    if (data.ok && data.events && data.events.length > 0) {
+      renderEventsList(data.events);
+      return;
     }
-  } catch (e) { console.error('Failed to load events', e); }
+  } catch (e) { console.warn('Backend slow or offline, loading fallback events...'); }
+  
+  const fallbackEvents = [
+    {id: 'evt_prem_1', day: '15', month: 'Nov 2026', name: 'Royal Awadhi Feast with Shah Rukh Khan', celeb: 'Shah Rukh Khan', venue: 'The Taj Mahal Palace, Mumbai', price: 540000, desc: 'An ultra-exclusive royal awadhi feast accompanied by intimate conversations and networking with Shah Rukh Khan.'},
+    {id: 'evt_prem_2', day: '18', month: 'Nov 2026', name: 'Progressive Indian Tasting with Virat Kohli', celeb: 'Virat Kohli', venue: 'The Leela Palace, New Delhi', price: 470000, desc: 'An ultra-exclusive progressive indian tasting accompanied by intimate conversations and networking with Virat Kohli.'},
+    {id: 'evt_prem_3', day: '22', month: 'Nov 2026', name: 'Midnight Truffle Dinner with Gordon Ramsay', celeb: 'Gordon Ramsay', venue: 'ITC Maurya, New Delhi', price: 430000, desc: 'An ultra-exclusive midnight truffle dinner accompanied by intimate conversations and networking with Gordon Ramsay.'},
+    {id: 'evt_prem_4', day: '25', month: 'Nov 2026', name: 'Symphony of Spices with Deepika Padukone', celeb: 'Deepika Padukone', venue: 'The St. Regis, Mumbai', price: 380000, desc: 'An ultra-exclusive symphony of spices accompanied by intimate conversations and networking with Deepika Padukone.'}
+  ];
+  renderEventsList(fallbackEvents);
+}
+
+function renderEventsList(events) {
+  const container = document.getElementById('eventsListContainer');
+  container.innerHTML = '';
+  events.slice(0, 6).forEach((evt, i) => {
+    const delay = (i % 10) * 0.1;
+    const el = document.createElement('div');
+    el.className = 'event reveal';
+    el.style.transitionDelay = `${delay}s`;
+    el.innerHTML = `
+      <div class="event-date"><div class="day">${evt.day}</div><div class="month">${String(evt.month).split(' ')[0]}</div></div>
+      <div class="event-info">
+        <div class="event-meta" style="font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:10px; display:flex; gap:16px; flex-wrap:wrap;">
+          <span><strong style="color:var(--stone)">Guest:</strong> ${evt.celeb}</span>
+          <span><strong style="color:var(--stone)">Venue:</strong> ${evt.venue}</span>
+        </div>
+        <h3>${evt.name}</h3>
+        <p>${evt.desc}</p>
+      </div>
+      <div class="event-action">
+        <div class="ev-price">₹${evt.price.toLocaleString('en-IN')} <span>p.p.</span></div>
+        <button class="btn-gold ev-reg-btn" data-id="${evt.id}" data-name="${evt.name}" data-price="${evt.price}" data-venue="${evt.venue}" data-celeb="${evt.celeb}" data-date="${evt.day} ${evt.month}">Register Now</button>
+      </div>
+    `;
+    container.appendChild(el);
+  });
+  document.querySelectorAll('#eventsListContainer .reveal').forEach(el => obs.observe(el));
+  attachEventModalListeners();
 }
 window.addEventListener('DOMContentLoaded', loadEvents);
 
