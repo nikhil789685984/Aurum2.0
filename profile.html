@@ -13,44 +13,71 @@
   --charcoal:#1A1612;--stone:#7A6F62;--white:#FFFFFF;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Manrope',sans-serif;background:var(--cream);color:var(--charcoal);overflow-x:hidden}
+body{font-family:'Manrope',sans-serif;background:var(--cream);color:var(--charcoal);overflow-x:hidden;min-height:100vh}
 
-.topbar{position:sticky;top:0;z-index:1000;background:rgba(250,247,242,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(201,168,76,.2)}
-.topbar-inner{max-width:1200px;margin:0 auto;padding:20px 34px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--charcoal)}
+.topbar{position:absolute;top:0;left:0;right:0;z-index:1000;background:transparent;border-bottom:1px solid rgba(255,255,255,.1)}
+.topbar-inner{max-width:1200px;margin:0 auto;padding:24px 34px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--white)}
 .brand-word{font-family:'Playfair Display',serif;font-size:28px;letter-spacing:6px;font-weight:300}
-.link-btn{font-size:10px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 18px;border:1px solid rgba(26,22,18,.18);color:var(--stone);transition:all .3s}
-.link-btn:hover{border-color:var(--gold);color:var(--gold)}
-.link-btn.gold{border-color:rgba(201,168,76,.75);color:var(--gold)}
+.link-btn{font-size:10px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 20px;border:1px solid rgba(255,255,255,.3);color:var(--white);transition:all .3s;background:transparent;cursor:pointer}
+.link-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.1)}
+.link-btn.gold{border-color:var(--gold);color:var(--charcoal);background:var(--gold)}
+.link-btn.gold:hover{background:transparent;color:var(--gold)}
 
-.hero{background:var(--charcoal);color:var(--white);padding:90px 34px 70px;text-align:center}
-.hero h1{font-family:'Playfair Display',serif;font-size:clamp(40px,6vw,60px);font-weight:300;margin-bottom:12px}
-.hero p{color:rgba(255,255,255,.6);font-size:14px;letter-spacing:2px;text-transform:uppercase}
+.hero{background:linear-gradient(165deg,var(--charcoal) 0%,#2a221a 100%);color:var(--white);padding:140px 34px 120px;text-align:center;position:relative}
+.hero::after{content:'';position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1080&q=30&auto=format') center/cover;opacity:.03;pointer-events:none}
+.hero-inner{position:relative;z-index:1;max-width:800px;margin:0 auto;animation:slideUp .8s ease}
+.kicker{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:inline-block;border-bottom:1px solid var(--gold);padding-bottom:6px}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(46px,6vw,64px);font-weight:300;margin-bottom:12px;line-height:1.1}
+.hero p{color:rgba(255,255,255,.6);font-size:13px;letter-spacing:2px;text-transform:uppercase}
 
-.wrap{max-width:1200px;margin:0 auto;padding:60px 34px 100px;display:grid;grid-template-columns:1fr;gap:40px}
-.panel{background:var(--white);border:1px solid rgba(201,168,76,.2);box-shadow:0 14px 30px rgba(26,22,18,.05)}
-.panel-head{padding:24px 30px;border-bottom:1px solid rgba(201,168,76,.15);background:var(--warm)}
-.panel-head h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;color:var(--charcoal)}
+.wrap{max-width:1100px;margin:-60px auto 100px;padding:0 34px;display:grid;grid-template-columns:1fr;gap:40px;position:relative;z-index:2}
+.panel{background:var(--white);border:1px solid rgba(201,168,76,.25);border-top:4px solid var(--gold);box-shadow:0 20px 50px rgba(26,22,18,.08);border-radius:8px;overflow:hidden;opacity:0;animation:slideUp .8s ease forwards}
+.panel:nth-child(1){animation-delay:.1s}
+.panel:nth-child(2){animation-delay:.2s}
+.panel:nth-child(3){animation-delay:.3s}
+
+.panel-head{padding:30px 40px;border-bottom:1px solid rgba(201,168,76,.15);background:linear-gradient(to right,#FCFAF5,#FFFFFF);display:flex;align-items:center;gap:16px}
+.panel-icon{font-family:'Playfair Display',serif;font-size:32px;color:var(--gold);font-style:italic;line-height:1}
+.panel-head h2{font-family:'Playfair Display',serif;font-size:28px;font-weight:400;color:var(--charcoal)}
+
 .list{display:flex;flex-direction:column}
-.item{padding:24px 30px;border-bottom:1px solid rgba(26,22,18,.06);display:flex;justify-content:space-between;align-items:center;gap:20px;transition:background .3s}
+.item{padding:32px 40px;border-bottom:1px solid rgba(26,22,18,.06);display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center;transition:background .3s}
 .item:last-child{border-bottom:none}
-.item:hover{background:#fdfcf9}
-.info h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--charcoal);margin-bottom:6px}
-.info p{font-size:13px;color:var(--stone);line-height:1.6}
-.status{text-align:right}
-.pill{display:inline-block;padding:6px 12px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:4px;background:#F0EBE1;color:var(--stone)}
-.pill.ok{background:#EBF7EE;color:#2D8A4D}
-.pill.pending{background:#FFF4D9;color:#9E7014}
-.pill.err{background:#FDECEB;color:#D64545}
-.status-date{display:block;font-size:11px;color:var(--stone);margin-top:8px}
+.item:hover{background:#FDFCF9}
 
-.empty{padding:50px 30px;text-align:center;color:var(--stone);font-size:14px}
+.info h3{font-family:'Playfair Display',serif;font-size:24px;color:var(--charcoal);margin-bottom:10px;font-weight:500}
+.info p{font-size:14px;color:var(--stone);line-height:1.7}
+.info .meta{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap}
+.meta-tag{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--charcoal);background:var(--warm);padding:6px 12px;border-radius:4px;border:1px solid rgba(201,168,76,.2)}
 
-@media(max-width:760px){
-  .item{flex-direction:column;align-items:flex-start;gap:12px}
-  .status{text-align:left}
+.status{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.pill{display:inline-flex;align-items:center;padding:8px 16px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-radius:4px;border:1px solid transparent}
+.pill.ok{background:#EBF7EE;color:#2D8A4D;border-color:rgba(45,138,77,.2)}
+.pill.pending{background:#FFF4D9;color:#9E7014;border-color:rgba(158,112,20,.2)}
+.pill.err{background:#FDECEB;color:#D64545;border-color:rgba(214,69,69,.2)}
+.status-date{font-size:11px;color:var(--stone);letter-spacing:1px;text-transform:uppercase}
+
+.price-tag{font-family:'Playfair Display',serif;font-size:26px;color:var(--gold);line-height:1;margin-bottom:4px}
+
+.empty{padding:60px 40px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px}
+.empty-icon{font-size:42px;color:rgba(201,168,76,.3)}
+.empty p{color:var(--stone);font-size:16px;font-family:'Playfair Display',serif;font-style:italic}
+
+@keyframes slideUp{
+  0%{opacity:0;transform:translateY(30px)}
+  100%{opacity:1;transform:translateY(0)}
 }
 
+@media(max-width:760px){
+  .hero{padding:120px 24px 100px}
+  .hero h1{font-size:40px}
+  .wrap{padding:0 20px;margin-top:-40px}
+  .panel-head{padding:24px}
+  .item{grid-template-columns:1fr;gap:20px;padding:24px}
+  .status{align-items:flex-start;text-align:left}
+  .info .meta{flex-direction:column;gap:8px}
+}
 </style>
 </head>
 <body>
@@ -68,32 +95,44 @@ body{font-family:'Manrope',sans-serif;background:var(--cream);color:var(--charco
   </header>
 
   <section class="hero">
-    <h1 id="userName">Welcome</h1>
-    <p id="userEmail">Loading your profile...</p>
+    <div class="hero-inner">
+      <div class="kicker">AURUM Member</div>
+      <h1 id="userName">Welcome</h1>
+      <p id="userEmail">Loading your profile...</p>
+    </div>
   </section>
 
   <main class="wrap">
     <!-- Reservations -->
     <div class="panel">
-      <div class="panel-head"><h2>My Table Reservations</h2></div>
+      <div class="panel-head">
+        <span class="panel-icon">I</span>
+        <h2>Table Reservations</h2>
+      </div>
       <div class="list" id="resList">
-        <div class="empty">Loading...</div>
+        <div class="empty"><p>Loading reservations...</p></div>
       </div>
     </div>
 
     <!-- Event Tickets -->
     <div class="panel">
-      <div class="panel-head"><h2>My Event Tickets</h2></div>
+      <div class="panel-head">
+        <span class="panel-icon">II</span>
+        <h2>My Event Tickets</h2>
+      </div>
       <div class="list" id="eventList">
-        <div class="empty">Loading...</div>
+        <div class="empty"><p>Loading events...</p></div>
       </div>
     </div>
 
     <!-- Delivery Orders -->
     <div class="panel">
-      <div class="panel-head"><h2>My Delivery Orders</h2></div>
+      <div class="panel-head">
+        <span class="panel-icon">III</span>
+        <h2>My Delivery Orders</h2>
+      </div>
       <div class="list" id="orderList">
-        <div class="empty">Loading...</div>
+        <div class="empty"><p>Loading orders...</p></div>
       </div>
     </div>
   </main>
@@ -140,14 +179,18 @@ async function loadProfile() {
     const rList = document.getElementById('resList');
     rList.innerHTML = '';
     if(data.reservations.length === 0) {
-      rList.innerHTML = '<div class="empty">No table reservations found.</div>';
+      rList.innerHTML = '<div class="empty"><div class="empty-icon">🍽️</div><p>No table reservations found. Book a table to see it here.</p></div>';
     } else {
       data.reservations.forEach(r => {
         rList.innerHTML += `
           <div class="item">
             <div class="info">
-              <h3>${r.date} at ${r.time}</h3>
-              <p>${r.guests} · Option: ${r.diningOption || 'Standard'}</p>
+              <h3>${r.date}</h3>
+              <div class="meta">
+                <span class="meta-tag">Time: ${r.time}</span>
+                <span class="meta-tag">Guests: ${r.guests}</span>
+                <span class="meta-tag">${r.diningOption || 'Standard Dining'}</span>
+              </div>
             </div>
             <div class="status">
               <span class="pill ${getPillClass(r.status)}">${r.status || 'Pending'}</span>
@@ -161,19 +204,23 @@ async function loadProfile() {
     const eList = document.getElementById('eventList');
     eList.innerHTML = '';
     if(data.events.length === 0) {
-      eList.innerHTML = '<div class="empty">No event tickets found.</div>';
+      eList.innerHTML = '<div class="empty"><div class="empty-icon">🎟️</div><p>No event tickets found. Explore our upcoming events.</p></div>';
     } else {
       data.events.forEach(e => {
         eList.innerHTML += `
           <div class="item">
             <div class="info">
               <h3>${e.eventName}</h3>
-              <p>${e.venue} · ${e.date}</p>
-              <p style="margin-top:6px;font-weight:600">Total: ₹${e.totalFee} | Paid: ₹${e.advancePaid}</p>
+              <p style="margin-bottom:8px">${e.venue}</p>
+              <div class="meta">
+                <span class="meta-tag">Date: ${e.date}</span>
+                <span class="meta-tag">Admit: ${e.guests}</span>
+              </div>
             </div>
             <div class="status">
+              <div class="price-tag">₹${e.totalFee.toLocaleString('en-IN')}</div>
               <span class="pill ${getPillClass(e.status)}">${e.status === 'fully_paid' ? 'Fully Paid' : 'Ticket Sent'}</span>
-              <span class="status-date">Purchased: ${formatDate(e.createdAt)}</span>
+              <span class="status-date">Paid Advance: ₹${e.advancePaid.toLocaleString('en-IN')}</span>
             </div>
           </div>`;
       });
@@ -183,18 +230,18 @@ async function loadProfile() {
     const oList = document.getElementById('orderList');
     oList.innerHTML = '';
     if(data.orders.length === 0) {
-      oList.innerHTML = '<div class="empty">No delivery orders found.</div>';
+      oList.innerHTML = '<div class="empty"><div class="empty-icon">🛵</div><p>No delivery orders found. Order your favorite dishes.</p></div>';
     } else {
       data.orders.forEach(o => {
-        const items = o.items ? o.items.map(i => `${i.name} x${i.qty}`).join(', ') : 'Items hidden';
+        const items = o.items ? o.items.map(i => `${i.name} (x${i.qty})`).join(', ') : 'Items hidden';
         oList.innerHTML += `
           <div class="item">
             <div class="info">
-              <h3>Order ${o.orderRef || o.orderId || o.sessionId || ''}</h3>
+              <h3>Order #${String(o.orderRef || o.orderId || o.sessionId || '').slice(-6).toUpperCase()}</h3>
               <p>${items}</p>
-              <p style="margin-top:6px;font-weight:600">Total: ₹${o.amountTotal}</p>
             </div>
             <div class="status">
+              <div class="price-tag">₹${o.amountTotal.toLocaleString('en-IN')}</div>
               <span class="pill ${getPillClass(o.status)}">${o.status || 'Paid'}</span>
               <span class="status-date">Ordered: ${formatDate(o.createdAt)}</span>
             </div>
