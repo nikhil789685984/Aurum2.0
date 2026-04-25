@@ -221,7 +221,16 @@ function isApiUnavailableError(err){
   return txt.includes('api not found')||txt.includes('failed to fetch')||txt.includes('networkerror')||txt.includes('load failed')||name.includes('abort');
 }
 
-rt(    sg('Password must be at least 8 characters.','err');
+async function signup(){
+  const name=String(nameEl.value||'').trim();
+  const email=cleanEmail(emailEl.value);
+  const phone=cleanPhone(phoneEl.value);
+  const password=String(passwordEl.value||'');
+  const confirmPassword=String(confirmPasswordEl.value||'');
+
+  if(!name||!email||!phone||!password||!confirmPassword){ showMsg('Please fill all fields.','err'); return; }
+  if(password.length<8){
+    showMsg('Password must be at least 8 characters.','err');
     return;
   }
   if(password!==confirmPassword){
