@@ -344,7 +344,10 @@ footer p{font-size:14px;color:var(--stone);text-align:center}
         </div>
         <strong id="cartSummaryTotal">₹0</strong>
       </div>
-      <button id="cartCheckoutBtn" class="cart-checkout" type="button">Order Now</button>
+    <div style="display:flex;gap:10px;flex-direction:column">
+      <button id="cartCheckoutBtn" class="cart-checkout" type="button">Pay Online (Razorpay)</button>
+      <button id="cartCodBtn" class="cart-checkout" style="background:transparent;border-color:var(--gold);color:var(--charcoal)" type="button">Cash on Delivery</button>
+    </div>
       <div class="location-box">
         <div class="location-title">Delivery Location</div>
         <div class="location-grid">
@@ -400,6 +403,7 @@ const cartEmpty = document.getElementById('cartEmpty');
 const cartSummaryCount = document.getElementById('cartSummaryCount');
 const cartSummaryTotal = document.getElementById('cartSummaryTotal');
 const cartCheckoutBtn = document.getElementById('cartCheckoutBtn');
+const cartCodBtn = document.getElementById('cartCodBtn');
 const locFullName = document.getElementById('locFullName');
 const locPhone = document.getElementById('locPhone');
 const locAddress1 = document.getElementById('locAddress1');
@@ -649,15 +653,23 @@ function setCheckoutLoading(loading) {
   if (loading) {
     cartCheckoutBtn.textContent = 'Opening...';
     cartCheckoutBtn.disabled = true;
+    if(cartCodBtn) { cartCodBtn.disabled = true; cartCodBtn.textContent = 'Processing...'; }
     window._checkoutSlowTimer = setTimeout(() => {
-      if(checkoutLoading) cartCheckoutBtn.textContent = 'Waking server (~40s)...';
+      if(checkoutLoading) {
+        cartCheckoutBtn.textContent = 'Waking server (~40s)...';
+        if(cartCodBtn) cartCodBtn.textContent = 'Waking server (~40s)...';
+      }
     }, 3000);
     return;
   }
   clearTimeout(window._checkoutSlowTimer);
   const { count } = getCartTotals();
-  cartCheckoutBtn.textContent = 'Order Now';
+  cartCheckoutBtn.textContent = 'Pay Online (Razorpay)';
   cartCheckoutBtn.disabled = count === 0;
+  if(cartCodBtn) {
+    cartCodBtn.textContent = 'Cash on Delivery';
+    cartCodBtn.disabled = count === 0;
+  }
 }
 
 function updateCartUI() {
@@ -723,6 +735,10 @@ function removeItem(name) {
 }
 
 async function startCheckout() {
+  if (!getAuthEmail()) {
+    window.location.href = 'login.html';
+    return;
+  }
   const items = Array.from(cartState.items.values());
   const deliveryLocation = getDeliveryLocationPayload();
   if (!items.length) {
@@ -809,6 +825,43 @@ async function startCheckout() {
   }
 }
 
+async function startCodCheckout() {
+  if (!getAuthEmail()) {
+    window.location.href = 'login.html';
+    return;
+  }
+  const items = Array.from(cartState.items.values());
+  const deliveryLocation = getDeliveryLocationPayload();
+  if (!items.length) {
+    showToast('Cart is empty. Add items first.');
+    return;
+  }
+  const locationError = validateDeliveryLocation(deliveryLocation);
+  if (locationError) {
+    showToast(locationError);
+    return;
+  }
+  persistDeliveryLocation();
+  try {
+    setCheckoutLoading(true);
+    const res = await fetch(apiUrl('/api/orders/place-cod-order'), {
+      credentials: 'include',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Auth-Email': getAuthEmail() },
+      body: JSON.stringify({ items, deliveryLocation })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data && data.error) || 'Unable to place order.');
+    cartState.items.clear();
+    updateCartUI();
+    closeCart();
+    window.location.href = 'order-success.html';
+  } catch (err) {
+    setCheckoutLoading(false);
+    showToast((err && err.message) || 'Order placement failed.');
+  }
+}
+
 async function confirmPaymentFromUrl() {
   // Kept for backward compatibility with old Stripe redirect params.
   const params = new URLSearchParams(window.location.search);
@@ -853,6 +906,7 @@ cartItems.addEventListener('click', event => {
 });
 
 if(cartCheckoutBtn) cartCheckoutBtn.addEventListener('click', startCheckout);
+if(cartCodBtn) cartCodBtn.addEventListener('click', startCodCheckout);
 if(cartTopBtn) cartTopBtn.addEventListener('click', openCart);
 if(cartFab) cartFab.addEventListener('click', openCart);
 if(cartCloseBtn) cartCloseBtn.addEventListener('click', closeCart);

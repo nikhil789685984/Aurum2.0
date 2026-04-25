@@ -1813,6 +1813,10 @@ evClose.addEventListener('click', () => evModal.classList.remove('on'));
 evGuests.addEventListener('change', updateEvCalc);
 
 evPayBtn.addEventListener('click', async () => {
+  if (!getAuthEmail()) {
+    window.location.href = 'login.html';
+    return;
+  }
   const name = evName.value.trim();
   const phone = evPhone.value.trim();
   const guests = evGuests.value;
