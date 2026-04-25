@@ -558,25 +558,3 @@ identifierEl.addEventListener('keydown',e=>{
   else sendOtp();
 });
 
-const authController = new AbortController();
-const authTimeout = setTimeout(() => authController.abort(), 2500);
-fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include', signal: authController.signal})
-  .then(res=>{
-    clearTimeout(authTimeout);
-    if(!res.ok) throw new Error('API unreachable');
-    return res.json();
-  })
-  .then(data=>{
-    if(data&&typeof data.authenticated==='boolean'){
-      if(data.authenticated) window.location.href='index.html';
-      else clearLocalSession();
-      return;
-    }
-    clearLocalSession();
-  })
-  .catch(err=>{
-    if(isApiUnavailableError(err) && hasLocalSession()) window.location.href='index.html';
-  });
-</script>
-</body>
-</html>

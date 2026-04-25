@@ -1432,31 +1432,6 @@ function clearLocalSession(){
   }catch(_){}
 }
 
-(async function ensureAccess(){
-  try{
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000);
-    const res=await fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include', signal: controller.signal});
-    clearTimeout(timeoutId);
-    if(res.ok){
-      const data=await res.json().catch(()=>null);
-      if(data&&typeof data.authenticated==='boolean'){
-        if(data.authenticated) return;
-      }
-      clearLocalSession();
-      window.location.replace('login.html');
-      return;
-    }
-    clearLocalSession();
-    window.location.replace('login.html');
-    return;
-  }catch(_){
-    let localAuth = false;
-    try { localAuth = Boolean(localStorage.getItem(DEMO_SESSION_KEY)); } catch (_) { }
-    if (!localAuth) window.location.replace('login.html');
-  }
-})();
-
 window.addEventListener('pageshow',e=>{
   if(e.persisted) location.reload();
 });
