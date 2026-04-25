@@ -132,9 +132,14 @@
     .pill.rejected{background:var(--danger-bg);color:var(--danger)}
     .pill.paid{background:#E6F0FD;color:#2D5B9E}
     
+    .search-wrap {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+      max-width: 520px;
+    }
     .search-bar {
-      width: 100%;
-      max-width: 400px;
+      flex: 1;
       padding: 14px 18px;
       border: 1px solid rgba(26,22,18,0.15);
       border-radius: 8px;
@@ -142,7 +147,6 @@
       font-size: 14px;
       outline: none;
       transition: all 0.2s;
-      margin-bottom: 28px;
     }
     .search-bar:focus {
       border-color: var(--gold);
@@ -237,7 +241,10 @@
       <p>Manage reservations, track live orders, and monitor your guests in real-time.</p>
     </div>
 
-    <input type="text" id="globalSearch" class="search-bar" placeholder="Search by name, email, order ID, phone, or status..." autocomplete="off" />
+    <div class="search-wrap">
+      <input type="text" id="globalSearch" class="search-bar" placeholder="Search name, email, order ID, phone..." autocomplete="off" />
+      <button id="searchBtn" class="btn" style="padding: 0 24px; font-size: 12px;">Search</button>
+    </div>
 
     <div class="grid">
       <div class="card">
@@ -371,6 +378,7 @@
     const eventsRevenue = document.getElementById('eventsRevenue');
     const ordersRevenue = document.getElementById('ordersRevenue');
     const globalSearch = document.getElementById('globalSearch');
+    const searchBtn = document.getElementById('searchBtn');
     const refreshBtn = document.getElementById('refreshBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const reservationsTable = document.getElementById('reservationsTable');
@@ -616,6 +624,13 @@
     }
 
     globalSearch.addEventListener('input', applySearchFilter);
+    globalSearch.addEventListener('keydown', e => { if (e.key === 'Enter') applySearchFilter(); });
+    searchBtn.addEventListener('click', () => {
+      applySearchFilter();
+      const orig = searchBtn.textContent;
+      searchBtn.textContent = 'Searched ✓';
+      setTimeout(() => searchBtn.textContent = orig, 1000);
+    });
     refreshBtn.addEventListener('click', loadAdmin);
     reservationsTable.addEventListener('click', async event => {
       const button = event.target.closest('[data-action]');
