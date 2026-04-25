@@ -254,6 +254,12 @@ async function initMongoDB() {
     db = client.db('aurum_db');
     console.log("Connected to MongoDB!");
 
+    usersStore.clear();
+    sessionsStore.clear();
+    reservationsStore.length = 0;
+    paidOrdersStore.length = 0;
+    eventRegistrationsStore.length = 0;
+
     const users = await db.collection('users').find({}).toArray();
     users.forEach(u => usersStore.set(u.email, u));
 
@@ -704,6 +710,7 @@ function recordReservation(details) {
     ...details,
     createdAt: new Date().toISOString()
   });
+  if (db) db.collection('reservations').insertOne({ _id: reservationsStore[0].id, ...reservationsStore[0] }).catch(e => console.error("DB Insert Error:", e));
   persistReservationsToDisk();
   notifyAdminDash();
 }
@@ -715,6 +722,7 @@ function recordPaidOrder(details) {
     ...details,
     createdAt: new Date().toISOString()
   });
+  if (db) db.collection('orders').insertOne({ _id: paidOrdersStore[0].id, ...paidOrdersStore[0] }).catch(e => console.error("DB Insert Error:", e));
   persistPaidOrdersToDisk();
   notifyAdminDash();
 }
@@ -731,6 +739,7 @@ function deleteReservationById(id) {
   const index = reservationsStore.findIndex(record => String(record?.id || '') === String(id || '').trim());
   if (index < 0) return false;
   reservationsStore.splice(index, 1);
+  if (db) db.collection('reservations').deleteOne({ _id: id }).catch(e => console.error("DB Delete Error:", e));
   persistReservationsToDisk();
   notifyAdminDash();
   return true;
@@ -740,6 +749,7 @@ function deletePaidOrderById(id) {
   const index = paidOrdersStore.findIndex(record => String(record?.id || '') === String(id || '').trim());
   if (index < 0) return false;
   paidOrdersStore.splice(index, 1);
+  if (db) db.collection('orders').deleteOne({ _id: id }).catch(e => console.error("DB Delete Error:", e));
   persistPaidOrdersToDisk();
   notifyAdminDash();
   return true;
@@ -1512,6 +1522,7 @@ app.post('/api/orders/place-cod-order', requireAuth, createRateLimit({ key: 'pla
       deliveryLocation,
       createdAt: new Date().toISOString()
     });
+  if (db) db.collection('orders').insertOne({ _id: paidOrdersStore[0].id, ...paidOrdersStore[0] }).catch(e => console.error("DB Insert Error:", e));
     persistPaidOrdersToDisk();
     notifyAdminDash();
 
@@ -1593,6 +1604,7 @@ app.delete('/api/admin/events/:id', requireAdmin, createRateLimit({ key: 'admin-
   const index = eventRegistrationsStore.findIndex(record => String(record?.id || '') === id);
   if (index < 0) return res.status(404).json({ error: 'Event registration not found.' });
   eventRegistrationsStore.splice(index, 1);
+  if (db) db.collection('events').deleteOne({ _id: id }).catch(e => console.error("DB Delete Error:", e));
   persistEventRegistrationsToDisk();
   notifyAdminDash();
   return res.json({ ok: true });
@@ -1615,6 +1627,7 @@ app.post('/api/events/verify-razorpay-payment', requireAuth, createRateLimit({ k
 
     const regRecord = { id: createId('evr'), ...pending, paymentId, status: 'ticket_sent', createdAt: new Date().toISOString() };
     eventRegistrationsStore.unshift(regRecord);
+    if (db) db.collection('events').insertOne({ _id: regRecord.id, ...regRecord }).catch(e => console.error("DB Insert Error:", e));
     persistEventRegistrationsToDisk();
     notifyAdminDash();
     razorpayEventOrderStore.delete(orderId);
@@ -1829,6 +1842,8 @@ app.post('/api/auth/signup', createRateLimit({ key: 'signup', windowMs: 10 * 60 
       passwordHash,
       createdAt: Date.now()
     });
+    const nUser = usersStore.get(email);
+    if (db) db.collection('users').insertOne({ _id: nUser.email, ...nUser }).catch(e => console.error("DB Insert Error:", e));
     persistUsersToDisk();
     notifyAdminDash();
 
@@ -1956,6 +1971,7 @@ app.post('/api/admin/reservations/:id/status', requireAdmin, createRateLimit({ k
 
     reservation.status = status;
     reservation.updatedAt = new Date().toISOString();
+    if (db) db.collection('reservations').updateOne({ _id: id }, { $set: { status, updatedAt: reservation.updatedAt } }).catch(e => console.error("DB Update Error:", e));
     persistReservationsToDisk();
     notifyAdminDash();
 
@@ -2035,6 +2051,7 @@ app.post('/api/admin/orders/:id/status', requireAdmin, createRateLimit({ key: 'a
   }
   order.status = status;
   order.updatedAt = new Date().toISOString();
+  if (db) db.collection('orders').updateOne({ _id: id }, { $set: { status, updatedAt: order.updatedAt } }).catch(e => console.error("DB Update Error:", e));
   persistPaidOrdersToDisk();
   notifyAdminDash();
   return res.json({ ok: true, order });
