@@ -8,9 +8,9 @@ const Razorpay = require('razorpay');
 const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
-// Auto-Fallback for Razorpay Test Keys
-process.env.RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || 'rzp_test_ShoBYBlSHmJ4d8';
-process.env.RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || 'oTe8qeFBm6ZxuaFwwNwJclmG';
+// Force Razorpay Test Keys (Ignores broken Render Environment Variables)
+process.env.RAZORPAY_KEY_ID = 'rzp_test_ShoBYBlSHmJ4d8';
+process.env.RAZORPAY_KEY_SECRET = 'oTe8qeFBm6ZxuaFwwNwJclmG';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
