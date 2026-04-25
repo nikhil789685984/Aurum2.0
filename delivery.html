@@ -672,9 +672,9 @@ function loadCartFromStorage() {
     if (!Array.isArray(records)) return;
     cartState.items.clear();
     records.forEach(record => {
-      const name = String(record?.name || '').trim();
-      const price = Number(record?.price) || 0;
-      const qty = Number(record?.qty) || 0;
+      const name = String((record && record.name) || '').trim();
+      const price = Number(record && record.price) || 0;
+      const qty = Number(record && record.qty) || 0;
       if (!name || price <= 0 || qty <= 0) return;
       cartState.items.set(name, { name, price, qty });
     });
@@ -685,14 +685,14 @@ function loadCartFromStorage() {
 
 function getDeliveryLocationPayload() {
   return {
-    fullName: String(locFullName?.value || '').trim(),
-    phone: String(locPhone?.value || '').trim(),
-    addressLine1: String(locAddress1?.value || '').trim(),
-    addressLine2: String(locAddress2?.value || '').trim(),
-    landmark: String(locLandmark?.value || '').trim(),
-    city: String(locCity?.value || '').trim(),
-    pincode: String(locPincode?.value || '').trim(),
-    instructions: String(locInstructions?.value || '').trim()
+    fullName: String((locFullName && locFullName.value) || '').trim(),
+    phone: String((locPhone && locPhone.value) || '').trim(),
+    addressLine1: String((locAddress1 && locAddress1.value) || '').trim(),
+    addressLine2: String((locAddress2 && locAddress2.value) || '').trim(),
+    landmark: String((locLandmark && locLandmark.value) || '').trim(),
+    city: String((locCity && locCity.value) || '').trim(),
+    pincode: String((locPincode && locPincode.value) || '').trim(),
+    instructions: String((locInstructions && locInstructions.value) || '').trim()
   };
 }
 
@@ -835,8 +835,8 @@ async function startCheckout() {
     const data = contentType.includes('application/json')
       ? await res.json().catch(() => ({}))
       : {};
-    if (!res.ok || !data?.orderId || !data?.keyId) {
-      throw new Error(data?.error || 'Unable to start payment.');
+    if (!res.ok || !(data && data.orderId) || !(data && data.keyId)) {
+      throw new Error((data && data.error) || 'Unable to start payment.');
     }
 
     if (typeof window.Razorpay !== 'function') {
@@ -865,7 +865,7 @@ async function startCheckout() {
             ? await verifyRes.json().catch(() => ({}))
             : {};
           if (!verifyRes.ok) {
-            throw new Error(verifyData?.error || 'Payment verification failed.');
+            throw new Error((verifyData && verifyData.error) || 'Payment verification failed.');
           }
           cartState.items.clear();
           updateCartUI();
@@ -875,7 +875,7 @@ async function startCheckout() {
             window.location.href = 'order-success.html';
           }, 400);
         } catch (verifyErr) {
-          showToast(verifyErr?.message || 'Payment verification failed.');
+          showToast((verifyErr && verifyErr.message) || 'Payment verification failed.');
         } finally {
           setCheckoutLoading(false);
         }
@@ -892,7 +892,7 @@ async function startCheckout() {
     rz.open();
   } catch (err) {
     setCheckoutLoading(false);
-    showToast(err?.message || 'Payment start failed.');
+    showToast((err && err.message) || 'Payment start failed.');
     return;
   }
 }
@@ -910,8 +910,10 @@ deliveryMenuGrid?.addEventListener('click', event => {
   if (!button) return;
   const item = button.closest('.menu-item');
   if (!item) return;
-  const name = item.querySelector('.menu-name')?.textContent?.trim() || 'Item';
-  const price = parsePrice(item.querySelector('.menu-price')?.textContent);
+  const mn = item.querySelector('.menu-name');
+  const name = (mn && mn.textContent) ? mn.textContent.trim() : 'Item';
+  const mp = item.querySelector('.menu-price');
+  const price = parsePrice(mp ? mp.textContent : '');
   addItemToCart(name, price);
   updateCartUI();
   bumpCart();
@@ -938,11 +940,11 @@ cartItems.addEventListener('click', event => {
   updateCartUI();
 });
 
-cartCheckoutBtn?.addEventListener('click', startCheckout);
-cartTopBtn?.addEventListener('click', openCart);
-cartFab?.addEventListener('click', openCart);
-cartCloseBtn?.addEventListener('click', closeCart);
-cartOverlay?.addEventListener('click', closeCart);
+if(cartCheckoutBtn) cartCheckoutBtn.addEventListener('click', startCheckout);
+if(cartTopBtn) cartTopBtn.addEventListener('click', openCart);
+if(cartFab) cartFab.addEventListener('click', openCart);
+if(cartCloseBtn) cartCloseBtn.addEventListener('click', closeCart);
+if(cartOverlay) cartOverlay.addEventListener('click', closeCart);
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') closeCart();
 });

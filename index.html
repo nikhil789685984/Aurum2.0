@@ -368,6 +368,32 @@ nav.scrolled .nav-ham span{background:var(--charcoal)}
 .map-pin-wrap a{display:inline-block;margin-top:24px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:4px;transition:color .3s,border-color .3s}
 .map-pin-wrap a:hover{color:var(--gold);border-color:var(--gold)}
 
+/* ─── CUSTOM TABLE ────────────────────────── */
+.custom-sec{background:var(--char2);padding:140px 0}
+.custom-inner{max-width:1200px;margin:0 auto;padding:0 70px}
+.custom-grid{display:grid;grid-template-columns:1fr 380px;gap:40px;margin-top:60px}
+.custom-options{background:var(--white);border-radius:12px;overflow:hidden}
+.co-tabs{display:flex;border-bottom:1px solid var(--line-light)}
+.ctab{flex:1;padding:18px;background:#f9f9f9;border:none;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-family:'Manrope',sans-serif;font-weight:600;color:var(--stone);cursor:pointer;transition:all .3s}
+.ctab.on{background:var(--white);color:var(--gold);border-bottom:2px solid var(--gold)}
+.co-list{max-height:500px;overflow-y:auto;padding:20px}
+.co-item{display:flex;justify-content:space-between;align-items:center;padding:16px;border-bottom:1px solid #eee;gap:16px}
+.co-item:last-child{border-bottom:none}
+.co-info h4{font-family:'Playfair Display',serif;font-size:20px;color:var(--charcoal);margin-bottom:4px}
+.co-info p{font-size:13px;color:var(--stone)}
+.co-action{display:flex;align-items:center;gap:16px}
+.co-price{font-weight:600;color:var(--charcoal)}
+.btn-add{width:32px;height:32px;border-radius:50%;border:1px solid var(--gold);background:var(--white);color:var(--gold);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.btn-add:hover{background:var(--gold);color:var(--white)}
+.custom-summary{background:var(--white);border-radius:12px;padding:30px;height:fit-content;position:sticky;top:100px}
+.custom-summary h3{font-family:'Playfair Display',serif;font-size:26px;color:var(--charcoal);margin-bottom:24px;text-align:center;border-bottom:1px solid #eee;padding-bottom:16px}
+.cs-list{min-height:100px;max-height:300px;overflow-y:auto;margin-bottom:24px}
+.cs-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px dashed #eee}
+.cs-item h4{font-size:14px;color:var(--charcoal);font-weight:500}
+.btn-rem{width:24px;height:24px;border-radius:50%;border:1px solid var(--danger);background:var(--white);color:var(--danger);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.btn-rem:hover{background:var(--danger);color:var(--white)}
+.cs-total{font-family:'Playfair Display',serif;font-size:32px;color:var(--gold);text-align:center;margin-bottom:24px;padding-top:16px;border-top:1px solid #eee}
+
 /* ─── FOOTER ──────────────────────────────── */
 footer{background:var(--char2);padding:90px 70px 44px}
 .foot-top{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr 1fr;gap:50px;padding-bottom:60px;border-bottom:1px solid rgba(255,255,255,.06)}
@@ -1444,7 +1470,8 @@ function removePreloader(){
     preloader.style.opacity = '0';
     setTimeout(() => preloader.style.display = 'none', 600);
   }
-  setTimeout(()=>document.getElementById('heroBg')?.classList.add('loaded'),200);
+  var hb = document.getElementById('heroBg');
+  if(hb) setTimeout(()=>hb.classList.add('loaded'),200);
 }
 window.addEventListener('load', removePreloader);
 setTimeout(removePreloader, 1500); 
@@ -1723,18 +1750,23 @@ strip.addEventListener('mousemove',e=>{if(!down)return;e.preventDefault();strip.
 /* ── RESERVATION ── */
 function handleRes(btn){
   const form=btn.closest('form');
-  const firstName=form.querySelector('input[placeholder="First Name"]')?.value.trim()||'';
-  const lastName=form.querySelector('input[placeholder="Last Name"]')?.value.trim()||'';
+  const fnEl = form.querySelector('input[placeholder="First Name"]');
+  const firstName = fnEl ? fnEl.value.trim() : '';
+  const lnEl = form.querySelector('input[placeholder="Last Name"]');
+  const lastName = lnEl ? lnEl.value.trim() : '';
   const emailInput=form.querySelector('input[placeholder="Email Address"]');
-  const guestEmail=(emailInput?.value||'').replace(/\s+/g,'').trim();
-  const phone=form.querySelector('input[placeholder="Phone Number"]')?.value.trim()||'';
-  const date=form.querySelector('input[type="date"]')?.value||'';
+  const guestEmail=emailInput ? emailInput.value.replace(/\s+/g,'').trim() : '';
+  const pnEl = form.querySelector('input[placeholder="Phone Number"]');
+  const phone = pnEl ? pnEl.value.trim() : '';
+  const dtEl = form.querySelector('input[type="date"]');
+  const date = dtEl ? dtEl.value : '';
   const selects=form.querySelectorAll('select');
-  const guests=selects[0]?.value||'';
-  const time=selects[1]?.value||'';
-  const diningOption=selects[2]?.value||'';
-  const winePairing=selects[3]?.value||'';
-  const notes=form.querySelector('textarea')?.value.trim()||'';
+  const guests=selects[0] ? selects[0].value : '';
+  const time=selects[1] ? selects[1].value : '';
+  const diningOption=selects[2] ? selects[2].value : '';
+  const winePairing=selects[3] ? selects[3].value : '';
+  const taEl = form.querySelector('textarea');
+  const notes = taEl ? taEl.value.trim() : '';
   const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const minDate=getReservationMinDateValue();
   if(!firstName||!lastName||!guestEmail||!date){

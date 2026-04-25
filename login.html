@@ -401,7 +401,7 @@ async function sendOtp(){
     const data=await res.json().catch(()=>({}));
     if(!res.ok) throw new Error(data.error||'Failed to send OTP.');
     otpWrap.classList.add('on');
-    const via=String(data?.via||'').toLowerCase();
+    const via=String((data && data.via) || '').toLowerCase();
     const channel=via==='sms'?'phone':'inbox';
     showMsg(`OTP sent. Check your ${channel}.`,'ok');
   }catch(err){
@@ -453,7 +453,7 @@ async function loginWithPassword(){
     }
     const data=await res.json().catch(()=>({}));
     if(!res.ok) throw new Error(data.error||'Login failed.');
-    setLocalSession(String(data?.email||identifier));
+    setLocalSession(String((data && data.email) || identifier));
     showMsg('Login successful. Redirecting...','ok');
     setTimeout(()=>{
       if(cleanIdentifier(identifierEl.value) === 'nikhilsheoran093@gmail.com') {
@@ -508,7 +508,7 @@ async function verifyOtp(){
     }
     const data=await res.json().catch(()=>({}));
     if(!res.ok) throw new Error(data.error||'OTP verification failed.');
-    setLocalSession(String(data?.email||identifier));
+    setLocalSession(String((data && data.email) || identifier));
     showMsg('Login successful. Redirecting...','ok');
     setTimeout(()=>{
       if(cleanIdentifier(identifierEl.value) === 'nikhilsheoran093@gmail.com') {
