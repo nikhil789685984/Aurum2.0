@@ -390,7 +390,7 @@ async function sendOtp(){
     if(typeof AbortController !== 'undefined'){
       const ctrl = new AbortController();
       signal = ctrl.signal;
-      setTimeout(() => ctrl.abort(), 1000);
+      setTimeout(() => ctrl.abort(), 50000);
     }
     const res=await fetch(apiUrl('/api/auth/send-otp'),{
       method:'POST',
@@ -446,7 +446,7 @@ async function loginWithPassword(){
     if(typeof AbortController !== 'undefined'){
       const ctrl = new AbortController();
       signal = ctrl.signal;
-      setTimeout(() => ctrl.abort(), 1000);
+      setTimeout(() => ctrl.abort(), 50000);
     }
     const res=await fetch(apiUrl('/api/auth/login-password'),{
       method:'POST',
@@ -504,7 +504,7 @@ async function verifyOtp(){
     if(typeof AbortController !== 'undefined'){
       const ctrl = new AbortController();
       signal = ctrl.signal;
-      setTimeout(() => ctrl.abort(), 1000);
+      setTimeout(() => ctrl.abort(), 50000);
     }
     const res=await fetch(apiUrl('/api/auth/verify-otp'),{
       method:'POST',
