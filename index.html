@@ -1434,7 +1434,10 @@ function clearLocalSession(){
 
 (async function ensureAccess(){
   try{
-    const res=await fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include'});
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+    const res=await fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include', signal: controller.signal});
+    clearTimeout(timeoutId);
     if(res.ok){
       const data=await res.json().catch(()=>null);
       if(data&&typeof data.authenticated==='boolean'){
@@ -1448,9 +1451,9 @@ function clearLocalSession(){
     window.location.replace('login.html');
     return;
   }catch(_){
-    clearLocalSession();
-    window.location.replace('login.html');
-    return;
+    let localAuth = false;
+    try { localAuth = Boolean(localStorage.getItem(DEMO_SESSION_KEY)); } catch (_) { }
+    if (!localAuth) window.location.replace('login.html');
   }
 })();
 
@@ -1464,11 +1467,18 @@ function removePreloader(){
   if(preloader && preloader.style.display !== 'none') {
     preloader.style.opacity = '0';
     setTimeout(() => preloader.style.display = 'none', 600);
-    setTimeout(()=>document.getElementById('heroBg')?.classList.add('loaded'),200);
   }
+  setTimeout(()=>document.getElementById('heroBg')?.classList.add('loaded'),200);
 }
 window.addEventListener('load', removePreloader);
-setTimeout(removePreloader, 2500); // Fallback: force remove after 2.5 seconds
+setTimeout(removePreloader, 1500); 
+
+window.addEventListener('error', function(e) {
+  if (e.target.tagName && e.target.tagName.toLowerCase() === 'img') {
+    e.target.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+    e.target.style.backgroundColor = '#2A221A';
+  }
+}, true);
 
 /* ── CURSOR ── */
 const cur=document.getElementById('cur'),fol=document.getElementById('fol');
