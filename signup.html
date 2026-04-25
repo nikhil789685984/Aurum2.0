@@ -221,35 +221,7 @@ function isApiUnavailableError(err){
   return txt.includes('api not found')||txt.includes('failed to fetch')||txt.includes('networkerror')||txt.includes('load failed')||name.includes('abort');
 }
 
-function getDemoUsers(){
-  try{
-    const raw=localStorage.getItem(DEMO_USERS_KEY);
-    const parsed=raw?JSON.parse(raw):[];
-    return Array.isArray(parsed)?parsed:[];
-  }catch(_){
-    return [];
-  }
-}
-
-function saveDemoUsers(users){
-  try{localStorage.setItem(DEMO_USERS_KEY,JSON.stringify(users));}catch(_){}
-}
-
-async function signup(){
-  const name=String(nameEl.value||'').trim();
-  const email=cleanEmail(emailEl.value);
-  const phone=cleanPhone(phoneEl.value);
-  const password=String(passwordEl.value||'');
-  const confirmPassword=String(confirmPasswordEl.value||'');
-  emailEl.value=email;
-  phoneEl.value=phone;
-
-  if(!name||!email||!phone||!password||!confirmPassword){
-    showMsg('Please fill all fields.','err');
-    return;
-  }
-  if(password.length<8){
-    showMsg('Password must be at least 8 characters.','err');
+rt(    sg('Password must be at least 8 characters.','err');
     return;
   }
   if(password!==confirmPassword){
@@ -289,24 +261,7 @@ async function signup(){
     setTimeout(()=>{window.location.href='login.html';},1200);
   }catch(err){
     clearTimeout(slowTimer);
-    if(isApiUnavailableError(err)){
-      const users=getDemoUsers();
-      if(users.some(u=>String(u.email||'').toLowerCase()===email)){
-        showMsg('Account already exists for this email.','err');
-      }else{
-        users.push({name,email,createdAt:Date.now()});
-        saveDemoUsers(users);
-        showMsg('Account created in demo mode. Redirecting to login...','ok');
-        nameEl.value='';
-        emailEl.value='';
-        phoneEl.value='';
-        passwordEl.value='';
-        confirmPasswordEl.value='';
-        setTimeout(()=>{window.location.href='login.html';},1200);
-      }
-    }else{
-      showMsg(err.message||'Signup failed.','err');
-    }
+    showMsg(err.message||'Signup failed.','err');
   }finally{
     signupBtn.disabled=false;
     signupBtn.textContent='Create Account';

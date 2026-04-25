@@ -351,33 +351,6 @@ function hasLocalSession(){
   catch(_){return false;}
 }
 
-function saveDemoOtp(email,otp){
-  const rec={otp,expiresAt:Date.now()+5*60*1000};
-  try{localStorage.setItem(DEMO_OTP_PREFIX+email,JSON.stringify(rec));}catch(_){}
-}
-
-function getDemoUsers(){
-  try{
-    const raw=localStorage.getItem('aurum_demo_users');
-    const parsed=raw?JSON.parse(raw):[];
-    return Array.isArray(parsed)?parsed:[];
-  }catch(_){
-    return [];
-  }
-}
-
-function readDemoOtp(email){
-  try{
-    const raw=localStorage.getItem(DEMO_OTP_PREFIX+email);
-    if(!raw) return null;
-    const rec=JSON.parse(raw);
-    if(!rec||Date.now()>Number(rec.expiresAt||0)) return null;
-    return rec;
-  }catch(_){
-    return null;
-  }
-}
-
 async function sendOtp(){
   const identifier=cleanIdentifier(identifierEl.value);
   identifierEl.value=identifier;
@@ -411,19 +384,7 @@ async function sendOtp(){
     showMsg(`OTP sent. Check your ${channel}.`,'ok');
   }catch(err){
     clearTimeout(slowTimer);
-    if(isApiUnavailableError(err)){
-      const users = getDemoUsers();
-      const user = users.find(u => cleanIdentifier(u.email) === identifier || cleanIdentifier(u.phone) === identifier);
-      if(user || identifier === 'nikhilsheoran093@gmail.com'){
-        saveDemoOtp(identifier, '123456');
-        otpWrap.classList.add('on');
-        showMsg('Demo mode: OTP sent. Use 123456.', 'ok');
-      } else {
-        showMsg('Account not found. Please sign up first.', 'err');
-      }
-    } else {
-      showMsg(err.message||'Failed to send OTP.','err');
-    }
+    showMsg(err.message||'Failed to send OTP.','err');
   }finally{
     sendBtn.disabled=false;
     sendBtn.textContent='Send OTP';
@@ -470,22 +431,7 @@ async function loginWithPassword(){
     },900);
   }catch(err){
     clearTimeout(slowTimer);
-    if(isApiUnavailableError(err)){
-      const users = getDemoUsers();
-      const user = users.find(u => cleanIdentifier(u.email) === identifier || cleanIdentifier(u.phone) === identifier);
-      if(user || (identifier === 'nikhilsheoran093@gmail.com' && password === 'nikhil093')){
-        setLocalSession(user ? user.email : identifier);
-        showMsg('Login successful in demo mode. Redirecting...','ok');
-        setTimeout(()=>{
-          if(identifier === 'nikhilsheoran093@gmail.com') { window.location.href = 'admin.html'; }
-          else { window.location.href = 'index.html'; }
-        },900);
-      } else {
-        showMsg('Account not found. Please sign up first.', 'err');
-      }
-    } else {
-      showMsg(err.message||'Login failed.','err');
-    }
+    showMsg(err.message||'Login failed.','err');
   }finally{
     loginBtn.disabled=false;
     loginBtn.textContent='Login';
@@ -528,21 +474,7 @@ async function verifyOtp(){
     },900);
   }catch(err){
     clearTimeout(slowTimer);
-    if(isApiUnavailableError(err)){
-      const demoOtp = readDemoOtp(identifier);
-      if(demoOtp && demoOtp.otp === otp){
-        const users = getDemoUsers();
-        const user = users.find(u => cleanIdentifier(u.email) === identifier || cleanIdentifier(u.phone) === identifier);
-        setLocalSession(user ? user.email : identifier);
-        showMsg('Login successful in demo mode. Redirecting...','ok');
-        setTimeout(()=>{
-          if(identifier === 'nikhilsheoran093@gmail.com') { window.location.href = 'admin.html'; }
-          else { window.location.href = 'index.html'; }
-        },900);
-      } else { showMsg('Invalid or expired OTP.', 'err'); }
-    } else {
-      showMsg(err.message||'OTP verification failed.','err');
-    }
+    showMsg(err.message||'OTP verification failed.','err');
   }finally{
     verifyBtn.disabled=false;
     verifyBtn.textContent='Verify OTP';

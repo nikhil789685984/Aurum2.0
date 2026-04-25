@@ -2129,7 +2129,7 @@ app.get('/signup.html', (req, res) => {
 
 app.get('/', (req, res) => {
   setNoStore(res);
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.redirect('/login');
 });
 
 app.get('/index.html', (req, res) => {
