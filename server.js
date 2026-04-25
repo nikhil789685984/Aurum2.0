@@ -285,7 +285,6 @@ async function initMongoDB() {
     console.error("MongoDB Connection Error:", err);
   }
 }
-initMongoDB();
 
 function persistUsersToDisk() {
   if (!db || usersStore.size === 0) return;
@@ -2222,6 +2221,8 @@ app.get('*', (req, res) => {
   res.redirect('/');
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+initMongoDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+  });
 });

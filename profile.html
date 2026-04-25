@@ -166,7 +166,7 @@ async function loadProfile() {
     if (typeof AbortController !== 'undefined') {
       const ctrl = new AbortController();
       signal = ctrl.signal;
-      setTimeout(() => ctrl.abort(), 1200);
+      setTimeout(() => ctrl.abort(), 50000);
     }
     const res = await fetch(apiUrl('/api/user/profile'), { credentials: 'include', headers:{'X-Auth-Email':getAuthEmail()}, signal });
     if (!res.ok) throw new Error('Not logged in');

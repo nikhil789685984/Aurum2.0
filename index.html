@@ -1664,7 +1664,7 @@ let bottomSignal;
 if (typeof AbortController !== 'undefined') {
   const bottomCtrl = new AbortController();
   bottomSignal = bottomCtrl.signal;
-  setTimeout(() => bottomCtrl.abort(), 1000);
+  setTimeout(() => bottomCtrl.abort(), 50000);
 }
 fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include', headers:{'X-Auth-Email':getAuthEmail()}, signal: bottomSignal})
   .then(res=>{
@@ -1719,7 +1719,7 @@ async function loadEvents() {
     if (typeof AbortController !== 'undefined') {
       const evCtrl = new AbortController();
       evSignal = evCtrl.signal;
-      setTimeout(() => evCtrl.abort(), 1000);
+      setTimeout(() => evCtrl.abort(), 50000);
     }
     const res = await fetch(apiUrl('/api/events/list'), { signal: evSignal });
     const data = await res.json();
