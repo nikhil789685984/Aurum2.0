@@ -181,7 +181,7 @@ function getTwilioConfig() {
   const accountSid = String(process.env.TWILIO_ACCOUNT_SID || '').trim();
   const authToken = String(process.env.TWILIO_AUTH_TOKEN || '').trim();
   const verifyServiceSid = String(process.env.TWILIO_VERIFY_SERVICE_SID || '').trim();
-  if (!accountSid || !authToken || !verifyServiceSid) return null;
+  if (!accountSid || !authToken || !verifyServiceSid || accountSid.includes('your_')) return null;
   return { accountSid, authToken, verifyServiceSid };
 }
 
@@ -472,12 +472,13 @@ function requireAdmin(req, res, next) {
 function createTransporter() {
   const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
   const smtpPort = Number(process.env.SMTP_PORT || 465);
-  const smtpUser = process.env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASS;
-  const fromEmail = process.env.FROM_EMAIL || smtpUser;
+  const smtpUser = String(process.env.SMTP_USER || '').trim();
+  const smtpPass = String(process.env.SMTP_PASS || '').replace(/\s+/g, '');
+  let fromEmail = String(process.env.FROM_EMAIL || smtpUser || '').trim();
+  if (fromEmail.includes('your_')) fromEmail = smtpUser;
 
-  if (!smtpUser || !smtpPass) {
-    throw new Error('Server email configuration is incomplete.');
+  if (!smtpUser || !smtpPass || smtpUser.includes('your_')) {
+    throw new Error('Server email configuration is incomplete. Missing valid SMTP_USER or SMTP_PASS.');
   }
 
   const isGmail = smtpHost.includes('gmail');
@@ -538,13 +539,14 @@ async function sendViaResend({ fromEmail, to, subject, text, html, replyTo, atta
 async function sendEmail({ to, subject, text, html, replyTo, attachments }) {
   const resendKey = String(process.env.RESEND_API_KEY || '').trim();
   const smtpUser = String(process.env.SMTP_USER || '').trim();
-  const fromEmail = String(process.env.FROM_EMAIL || smtpUser || '').trim();
+  let fromEmail = String(process.env.FROM_EMAIL || smtpUser || '').trim();
+  if (fromEmail.includes('your_')) fromEmail = smtpUser;
 
   if (!fromEmail) {
     throw new Error('FROM_EMAIL is required.');
   }
 
-  if (resendKey) {
+  if (resendKey && resendKey.startsWith('re_')) {
     return sendViaResend({ fromEmail, to, subject, text, html, replyTo, attachments });
   }
 
