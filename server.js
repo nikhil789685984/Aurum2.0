@@ -16,7 +16,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DEFAULT_ALLOWED_ORIGINS = [
   'https://nikhil789685984.github.io',
-  'https://sprightly-brioche-bdd3e4.netlify.app'
+  'https://sprightly-brioche-bdd3e4.netlify.app',
+  'https://aurum2-0-1.onrender.com'
 ];
 const ENV_ALLOWED_ORIGINS = String(process.env.CORS_ORIGINS || '')
   .split(',')

@@ -309,8 +309,8 @@ const DEMO_SESSION_KEY='aurum_auth_email';
 const API_BASE=(()=>{
   let saved='';
   try{saved=String(localStorage.getItem('aurum_api_base')||'').trim();}catch(_){}
-  const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-  const fallback = isLocal ? 'http://localhost:3000' : 'https://aurum2-0-1.onrender.com';
+  const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname.startsWith('192.168') || location.hostname.startsWith('10.');
+  const fallback = isLocal ? location.origin : 'https://aurum2-0-1.onrender.com';
   return String(window.AURUM_API_BASE||saved||fallback).replace(/\/+$/,'');
 })();
 const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
@@ -363,7 +363,7 @@ async function sendOtp(){
     if(typeof AbortController !== 'undefined'){
       const ctrl = new AbortController();
       signal = ctrl.signal;
-      setTimeout(() => ctrl.abort(), 50000);
+      setTimeout(() => ctrl.abort(), 120000);
     }
     const res=await fetch(apiUrl('/api/auth/send-otp'),{
       method:'POST',
@@ -407,7 +407,7 @@ async function loginWithPassword(){
     if(typeof AbortController !== 'undefined'){
       const ctrl = new AbortController();
       signal = ctrl.signal;
-      setTimeout(() => ctrl.abort(), 50000);
+      setTimeout(() => ctrl.abort(), 120000);
     }
     const res=await fetch(apiUrl('/api/auth/login-password'),{
       method:'POST',
@@ -450,7 +450,7 @@ async function verifyOtp(){
     if(typeof AbortController !== 'undefined'){
       const ctrl = new AbortController();
       signal = ctrl.signal;
-      setTimeout(() => ctrl.abort(), 50000);
+      setTimeout(() => ctrl.abort(), 120000);
     }
     const res=await fetch(apiUrl('/api/auth/verify-otp'),{
       method:'POST',
