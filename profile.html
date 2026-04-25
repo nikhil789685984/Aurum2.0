@@ -197,7 +197,16 @@ async function loadProfile() {
     }
 
   } catch (err) {
-    window.location.replace('login.html');
+    const isAbort = err.name === 'AbortError' || String(err.message).toLowerCase().includes('failed to fetch');
+    if (isAbort) {
+      document.getElementById('userName').textContent = 'Server is waking up...';
+      document.getElementById('userEmail').textContent = 'Your profile will load in about 40 seconds. Please refresh the page then.';
+      document.getElementById('resList').innerHTML = '<div class="empty">Please refresh in a moment.</div>';
+      document.getElementById('eventList').innerHTML = '<div class="empty">Please refresh in a moment.</div>';
+      document.getElementById('orderList').innerHTML = '<div class="empty">Please refresh in a moment.</div>';
+    } else {
+      window.location.replace('login.html');
+    }
   }
 }
 

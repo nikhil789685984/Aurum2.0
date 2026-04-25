@@ -384,13 +384,17 @@ async function sendOtp(){
   sendBtn.textContent='Sending OTP...';
   let slowTimer = setTimeout(() => { sendBtn.textContent = 'Waking server (~40s)...'; }, 3000);
   try{
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
     const res=await fetch(apiUrl('/api/auth/send-otp'),{
       method:'POST',
       credentials:'include',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({identifier})
+      body:JSON.stringify({identifier}),
+      signal: controller.signal
     });
     clearTimeout(slowTimer);
+    clearTimeout(timeoutId);
     if(res.status===404){
       throw new Error('Login API not found. Backend server is not running/deployed.');
     }
@@ -433,13 +437,17 @@ async function loginWithPassword(){
   loginBtn.textContent='Logging In...';
   let slowTimer = setTimeout(() => { loginBtn.textContent = 'Waking server (~40s)...'; }, 3000);
   try{
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
     const res=await fetch(apiUrl('/api/auth/login-password'),{
       method:'POST',
       credentials:'include',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({identifier,password})
+      body:JSON.stringify({identifier,password}),
+      signal: controller.signal
     });
     clearTimeout(slowTimer);
+    clearTimeout(timeoutId);
     if(res.status===404){
       throw new Error('Login API not found. Backend server is not running/deployed.');
     }
@@ -484,13 +492,17 @@ async function verifyOtp(){
   verifyBtn.textContent='Verifying...';
   let slowTimer = setTimeout(() => { verifyBtn.textContent = 'Waking server (~40s)...'; }, 3000);
   try{
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
     const res=await fetch(apiUrl('/api/auth/verify-otp'),{
       method:'POST',
       credentials:'include',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({identifier,otp})
+      body:JSON.stringify({identifier,otp}),
+      signal: controller.signal
     });
     clearTimeout(slowTimer);
+    clearTimeout(timeoutId);
     if(res.status===404){
       throw new Error('Login API not found. Backend server is not running/deployed.');
     }

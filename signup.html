@@ -259,13 +259,17 @@ async function signup(){
   signupBtn.textContent='Creating...';
   let slowTimer = setTimeout(() => { signupBtn.textContent = 'Waking server (~40s)...'; }, 3000);
   try{
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
     const res=await fetch(apiUrl('/api/auth/signup'),{
       method:'POST',
       credentials:'include',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name,email,phone,password,confirmPassword})
+      body:JSON.stringify({name,email,phone,password,confirmPassword}),
+      signal: controller.signal
     });
     clearTimeout(slowTimer);
+    clearTimeout(timeoutId);
     if(res.status===404){
       throw new Error('Signup API not found. Backend server is not running/deployed.');
     }

@@ -1836,8 +1836,13 @@ function setGuestNavState(){
   logoutLink.setAttribute('href','login.html');
 }
 
-fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include'})
-  .then(res=>res.ok?res.json():null)
+const bottomAuthController = new AbortController();
+const bottomAuthTimeout = setTimeout(() => bottomAuthController.abort(), 3000);
+fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include', signal: bottomAuthController.signal})
+  .then(res=>{
+    clearTimeout(bottomAuthTimeout);
+    return res.ok?res.json():null;
+  })
   .then(data=>{
     if(data&&data.authenticated) {
       if(data.isAdmin) {
@@ -1850,7 +1855,19 @@ fetch(apiUrl('/api/auth/status'),{cache:'no-store',credentials:'include'})
     }
     setGuestNavState();
   })
-  .catch(()=>setGuestNavState());
+  .catch(()=>{
+    try {
+      const savedUser = localStorage.getItem(DEMO_SESSION_KEY);
+      if (savedUser) {
+        if (savedUser === 'nikhilsheoran093@gmail.com') {
+          const adminLi = document.getElementById('adminNavLi');
+          if (adminLi) adminLi.style.display = '';
+        }
+        const profileLi = document.getElementById('profileNavLi');
+        if (profileLi) profileLi.style.display = '';
+      } else { setGuestNavState(); }
+    } catch(e) { setGuestNavState(); }
+  });
 
 if(logoutLink){
   logoutLink.addEventListener('click',async e=>{
