@@ -1411,7 +1411,8 @@ app.post('/api/orders/create-razorpay-order', requireAuth, createRateLimit({ key
       prefill: { email: req.authEmail }
     });
   } catch (err) {
-    const reason = err?.message || 'Razorpay order creation failed.';
+    console.error("Razorpay Delivery Order Error:", err);
+    const reason = err?.error?.description || err?.message || 'Razorpay order creation failed.';
     return res.status(500).json({ error: reason });
   }
 });
@@ -1594,7 +1595,9 @@ app.post('/api/events/create-razorpay-order', requireAuth, createRateLimit({ key
 
     return res.json({ ok: true, keyId: process.env.RAZORPAY_KEY_ID, orderId: order.id, amount: amountPaise, currency: 'INR', prefill: { email: req.authEmail, contact: phone, name } });
   } catch (err) {
-    return res.status(500).json({ error: err?.message || 'Order creation failed.' });
+    console.error("Razorpay Event Order Error:", err);
+    const reason = err?.error?.description || err?.message || 'Order creation failed.';
+    return res.status(500).json({ error: reason });
   }
 });
 
