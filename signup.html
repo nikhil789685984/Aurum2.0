@@ -200,7 +200,10 @@ const API_BASE=(()=>{
   const fallback = isLocal ? location.origin : 'https://aurum2-0-1.onrender.com';
   return String(window.AURUM_API_BASE||saved||fallback).replace(/\/+$/,'');
 })();
-const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
+const apiUrl=path=>{
+  if(location.hostname.includes('onrender.com')) return path;
+  return API_BASE?`${API_BASE}${path}`:path;
+};
 
 function showMsg(text,type){
   msg.textContent=text;
@@ -221,6 +224,7 @@ function isApiUnavailableError(err){
   return txt.includes('api not found')||txt.includes('failed to fetch')||txt.includes('networkerror')||txt.includes('load failed')||name.includes('abort');
 }
 
+let signupAttempts = 0;
 async function signup(){
   const name=String(nameEl.value||'').trim();
   const email=cleanEmail(emailEl.value);
@@ -267,9 +271,17 @@ async function signup(){
     phoneEl.value='';
     passwordEl.value='';
     confirmPasswordEl.value='';
+    signupAttempts = 0;
     setTimeout(()=>{window.location.href='login.html';},1200);
   }catch(err){
     clearTimeout(slowTimer);
+    if(isApiUnavailableError(err) && signupAttempts < 2) {
+      signupAttempts++;
+      showMsg(`Waking server... Retrying (${signupAttempts}/2)`, 'ok');
+      setTimeout(signup, 3000);
+      return;
+    }
+    signupAttempts = 0;
     showMsg(err.message||'Signup failed.','err');
   }finally{
     signupBtn.disabled=false;

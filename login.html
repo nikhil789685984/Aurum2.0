@@ -313,7 +313,10 @@ const API_BASE=(()=>{
   const fallback = isLocal ? location.origin : 'https://aurum2-0-1.onrender.com';
   return String(window.AURUM_API_BASE||saved||fallback).replace(/\/+$/,'');
 })();
-const apiUrl=path=>API_BASE?`${API_BASE}${path}`:path;
+const apiUrl=path=>{
+  if(location.hostname.includes('onrender.com')) return path;
+  return API_BASE?`${API_BASE}${path}`:path;
+};
 
 function showMsg(text,type){
   msg.textContent=text;
@@ -351,6 +354,7 @@ function hasLocalSession(){
   catch(_){return false;}
 }
 
+let otpAttempts = 0;
 async function sendOtp(){
   const identifier=cleanIdentifier(identifierEl.value);
   identifierEl.value=identifier;
@@ -382,8 +386,16 @@ async function sendOtp(){
     const via=String((data && data.via) || '').toLowerCase();
     const channel=via==='sms'?'phone':'inbox';
     showMsg(`OTP sent. Check your ${channel}.`,'ok');
+    otpAttempts = 0;
   }catch(err){
     clearTimeout(slowTimer);
+    if(isApiUnavailableError(err) && otpAttempts < 2) {
+      otpAttempts++;
+      showMsg(`Waking server... Retrying (${otpAttempts}/2)`, 'ok');
+      setTimeout(sendOtp, 3000);
+      return;
+    }
+    otpAttempts = 0;
     showMsg(err.message||'Failed to send OTP.','err');
   }finally{
     sendBtn.disabled=false;
@@ -391,6 +403,7 @@ async function sendOtp(){
   }
 }
 
+let loginAttempts = 0;
 async function loginWithPassword(){
   const identifier=cleanIdentifier(identifierEl.value);
   const password=String(passwordEl.value||'');
@@ -429,8 +442,16 @@ async function loginWithPassword(){
         window.location.href = 'admin.html';
       } else { window.location.href = 'index.html'; }
     },900);
+    loginAttempts = 0;
   }catch(err){
     clearTimeout(slowTimer);
+    if(isApiUnavailableError(err) && loginAttempts < 2) {
+      loginAttempts++;
+      showMsg(`Waking server... Retrying (${loginAttempts}/2)`, 'ok');
+      setTimeout(loginWithPassword, 3000);
+      return;
+    }
+    loginAttempts = 0;
     showMsg(err.message||'Login failed.','err');
   }finally{
     loginBtn.disabled=false;
@@ -438,6 +459,7 @@ async function loginWithPassword(){
   }
 }
 
+let verifyAttempts = 0;
 async function verifyOtp(){
   const identifier=cleanIdentifier(identifierEl.value);
   const otp=String(otpEl.value||'').replace(/\s+/g,'').trim();
@@ -472,8 +494,16 @@ async function verifyOtp(){
         window.location.href = 'admin.html';
       } else { window.location.href = 'index.html'; }
     },900);
+    verifyAttempts = 0;
   }catch(err){
     clearTimeout(slowTimer);
+    if(isApiUnavailableError(err) && verifyAttempts < 2) {
+      verifyAttempts++;
+      showMsg(`Waking server... Retrying (${verifyAttempts}/2)`, 'ok');
+      setTimeout(verifyOtp, 3000);
+      return;
+    }
+    verifyAttempts = 0;
     showMsg(err.message||'OTP verification failed.','err');
   }finally{
     verifyBtn.disabled=false;
